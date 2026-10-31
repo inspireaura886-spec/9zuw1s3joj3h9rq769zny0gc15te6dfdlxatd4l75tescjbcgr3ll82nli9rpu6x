@@ -1,0 +1,2 @@
+# Drop vo.wav into this /public folder before rendering:
+# npx remotion render Triangle out.mp4
