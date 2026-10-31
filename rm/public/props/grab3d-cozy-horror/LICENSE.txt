@@ -1,0 +1,6 @@
+Grab3D - Cozy Horror Props Kit (34 models)
+Source: https://grab3d.com/kits/cozy-horror-props/  (per-model files https://grab3d.com/dl/<slug>/<slug>.glb, API https://grab3d.com/api/v1/kits.json)
+License: CC0 1.0 Universal (Public Domain Dedication) - https://grab3d.com/license/ , https://creativecommons.org/publicdomain/zero/1.0/
+No attribution required. Downloaded 2026-10-30 21:09 IST without login.
+Origin per Grab3D API: built procedurally with Blender scripts (scripts written with an AI coding assistant; no generative-AI geometry/textures).
+orig/ = untouched originals. *.glb in this folder = IA recolour (tools/recolor_props.mjs, palette ia-dark, textures 2048->1024).
