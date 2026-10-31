@@ -1,0 +1,179 @@
+{
+ "route-globe": {
+  "component": "RouteGlobe",
+  "id": "a",
+  "status": "approved",
+  "s_per_frame": 0.92,
+  "peak_ram_gb": 0.91,
+  "fits": [
+   "journey",
+   "train",
+   "voyage",
+   "ship",
+   "flight",
+   "missing",
+   "route",
+   "sky",
+   "map",
+   "places",
+   "vanished",
+   "crew"
+  ],
+  "tested": "2026-10-30 lavapipe CONC=1 30-frame chunk, wall incl ~5-6 s browser start; f80 still 5.3 s"
+ },
+ "blueprint-xray": {
+  "component": "BlueprintXray",
+  "id": "b",
+  "status": "approved",
+  "s_per_frame": 1.19,
+  "peak_ram_gb": 0.86,
+  "fits": [
+   "lighthouse",
+   "building",
+   "ship",
+   "machine",
+   "aircraft",
+   "object",
+   "craft",
+   "house",
+   "invention",
+   "mechanism"
+  ],
+  "tested": "2026-10-30 lavapipe CONC=1 30-frame chunk, wall incl ~5-6 s browser start; f75 still 5.0 s"
+ },
+ "pov-walk": {
+  "component": "PovWalk",
+  "id": "c",
+  "status": "approved",
+  "s_per_frame": 1.03,
+  "peak_ram_gb": 1.1,
+  "fits": [
+   "house",
+   "haunted",
+   "room",
+   "hospital",
+   "asylum",
+   "attic",
+   "cellar",
+   "nursery",
+   "indoor",
+   "entity"
+  ],
+  "tested": "2026-10-30 lavapipe CONC=1 30-frame chunk, wall incl ~5-6 s browser start; f62 still 7.6 s"
+ },
+ "tilt-shift": {
+  "component": "TiltShift",
+  "id": "d",
+  "status": "approved",
+  "s_per_frame": 1.35,
+  "peak_ram_gb": 0.91,
+  "fits": [
+   "village",
+   "town",
+   "mass",
+   "crowd",
+   "farm",
+   "street",
+   "community",
+   "event",
+   "witnesses"
+  ],
+  "tested": "2026-10-30 lavapipe CONC=1 30-frame chunk, wall incl ~5-6 s browser start; f60 still 8.6 s"
+ },
+ "found-footage": {
+  "component": "FoundFootage",
+  "id": "e",
+  "status": "approved",
+  "s_per_frame": 1.72,
+  "peak_ram_gb": 0.65,
+  "fits": [
+   "broadcast",
+   "signal",
+   "newspaper",
+   "archive",
+   "tape",
+   "film",
+   "photo",
+   "press",
+   "intrusion",
+   "1980s"
+  ],
+  "tested": "2026-10-30 lavapipe CONC=1 30-frame chunk, wall incl ~5-6 s browser start; f40 still 5.3 s (v2; v1 2.30 s/f)"
+ },
+ "shadow-puppet": {
+  "component": "ShadowPuppet",
+  "id": "f",
+  "status": "approved",
+  "s_per_frame": 1.08,
+  "peak_ram_gb": 0.72,
+  "fits": [
+   "legend",
+   "folklore",
+   "medieval",
+   "vanished",
+   "children",
+   "creature",
+   "reenactment",
+   "old",
+   "witness"
+  ],
+  "tested": "2026-10-30 lavapipe CONC=1 30-frame chunk, wall incl ~5-6 s browser start; f85 still 7.3 s"
+ },
+ "particle-figure": {
+  "component": "ParticleFigure",
+  "id": "g",
+  "status": "approved",
+  "s_per_frame": 0.67,
+  "peak_ram_gb": 0.84,
+  "fits": [
+   "vanished",
+   "ghost",
+   "entity",
+   "creature",
+   "ufo",
+   "witness",
+   "person",
+   "disappearance",
+   "apparition"
+  ],
+  "tested": "2026-10-30 lavapipe CONC=1 30-frame chunk, wall incl ~5-6 s browser start; f60 still 5.6 s"
+ },
+ "timeline-clock": {
+  "component": "TimelineClock",
+  "id": "h",
+  "status": "approved",
+  "s_per_frame": 0.5,
+  "peak_ram_gb": 0.6,
+  "fits": [
+   "countdown",
+   "timeline",
+   "dates",
+   "hours",
+   "deadline",
+   "minutes",
+   "signal",
+   "years",
+   "time"
+  ],
+  "tested": "2026-10-30 lavapipe CONC=1 30-frame chunk, wall incl ~5-6 s browser start; f80 still 4.5 s"
+ },
+ "face-closeup": {
+  "component": "FaceCloseUp",
+  "id": "i",
+  "status": "approved",
+  "s_per_frame": 0.94,
+  "peak_ram_gb": 0.85,
+  "fits": [
+   "witness",
+   "person",
+   "fear",
+   "testimony",
+   "keeper",
+   "pilot",
+   "survivor",
+   "encounter",
+   "quote"
+  ],
+  "tested": "2026-10-30 lavapipe CONC=1 30-frame chunk, wall incl ~5-6 s browser start; f50 still 5.0 s"
+ }
+}
