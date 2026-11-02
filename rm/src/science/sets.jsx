@@ -11,11 +11,6 @@ export const Deck = ({r = 2.6}) => (
     <Cyl r={r * 0.97} h={0.05} pos={[0, 0.02, 0]} color="#8f93cf" ink={0} seg={56} />
     {Array.from({length: 9}).map((_, i) => { const a = Math.PI * (0.95 + i * 0.1375); return <Cyl key={i} r={0.04} h={0.6} pos={[Math.cos(a) * r * 0.93, 0.3, Math.sin(a) * r * 0.93]} color="#c7d0d8" ink={0.025} seg={10} />; })}
     <Ball r={0.12} pos={[0, -1.4, 0]} color="#ffb547" emissive="#ff8a2a" glow="#ffb547" glowS={2.2} glowO={0.4} />
-    {/* telescope */}
-    <group position={[1.9, 0, -1.4]}>
-      <Cyl r={0.05} h={0.9} pos={[0, 0.45, 0]} color="#3a3f4b" ink={0.02} seg={10} />
-      <Cyl r={0.16} r2={0.11} h={1.0} pos={[0.15, 1.05, 0]} rot={[0, 0, -0.9]} color="#e2453c" ink={0.03} seg={24} />
-    </group>
   </group>
 );
 

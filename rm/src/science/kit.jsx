@@ -161,9 +161,9 @@ export const Arrow = ({a, b, color = '#ffb547', w = 0.08, opacity = 1}) => {
 export const Ring = ({pos = [0, 0, 0], r = 1, color = '#fff', opacity = 1, face}) => opacity <= 0 ? null : (
   <group position={pos} quaternion={face}><mesh><ringGeometry args={[r * 0.86, r, 64]} /><meshBasicMaterial color={color} transparent opacity={opacity} side={THREE.DoubleSide} depthWrite={false} toneMapped={false} /></mesh></group>
 );
-export const Lights = ({sun = [6, 5, 8], amb = 0.9, key = 1.7, color = '#ffffff'}) => (<>
+export const Lights = ({sun = [6, 5, 8], amb = 0.9, keyI = 1.7, color = '#ffffff'}) => (<>
   <ambientLight intensity={amb} />
-  <directionalLight position={sun} intensity={key} color={color} />
+  <directionalLight position={sun} intensity={keyI} color={color} />
 </>);
 
 // ------------------------------------------------------------ stage (one canvas; scenes are children)
@@ -195,10 +195,11 @@ export const chunks = (vo) => {
     if (!cur || cur.words.length >= 3 || cur.li !== li || /[.,!?;:]$/.test(cur.words[cur.words.length - 1][0])) { cur = {li, who, words: []}; out.push(cur); }
     cur.words.push([w, s, e]);
   });
-  out.forEach((c, i) => { c.s = c.words[0][1]; c.e = c.words[c.words.length - 1][2]; c.next = out[i + 1] ? out[i + 1].s : 1e9; });
+  out.forEach((c) => { c.s = c.words[0][1]; c.e = c.words[c.words.length - 1][2]; });
+  out.forEach((c, i) => { c.next = out[i + 1] ? out[i + 1].s : 1e9; });
   return out;
 };
-export const Captions = ({vo, scheme, y = 1290, size = 76, hideAfter = 1e9}) => {
+export const Captions = ({vo, scheme, y = 1330, size = 72, hideAfter = 1e9}) => {
   const f = useCurrentFrame(); const t = f / FPS;
   const C = useMemo(() => chunks(vo), [vo]);
   const c = C.find((c) => t >= c.s - 0.03 && t < Math.min(c.next - 0.03, c.e + 0.3));
@@ -228,7 +229,7 @@ export const Title = ({lines, scheme, out = 75, y = 300}) => {
   );
 };
 /** a stat / label card that eases in at frame `at` (composition frames) and out at `to` */
-export const Label = ({text, sub, at, to, scheme, y = 420, size = 92}) => {
+export const Label = ({text, sub, at, to, scheme, y = 250, size = 84}) => {
   const f = useCurrentFrame(); if (f < at || f > to + 8) return null;
   const k = easeOut((f - at) / 9), o = Math.min(k, 1 - sstep((f - to) / 8));
   return (
@@ -265,3 +266,11 @@ export const Shots = ({shots, f}) => {
 /** frame of the k-th word (in line li) that starts with prefix */
 export const wordF = (vo, li, prefix) => { const w = vo.words.find((w) => w[4] === li && w[0].toLowerCase().replace(/[^a-z0-9]/g, '').startsWith(prefix.toLowerCase())); return w ? Math.round(w[1] * FPS) : Math.round(vo.lines[li].s * FPS); };
 export const lineF = (vo, li) => Math.round(vo.lines[li].s * FPS);
+/** smooth camera glide between two framings over [a, b] */
+export const glide = (f, a, b, A, B) => { const t = sstep((f - a) / Math.max(1, b - a)); return {pos: lerp3(A.pos, B.pos, t), look: lerp3(A.look, B.look, t), fov: A.fov + (B.fov - A.fov) * t}; };
+/** medium framing on a character standing at (x, z) with height h, camera d metres away (side offset sx) */
+export const med = (x, z, h, d = 3.0, sx = 0, fov = 40) => ({pos: [x + sx, h * 0.66, z + d], look: [x, h * 0.52, z], fov});
+/** slow push: same framing, d shrinks by k (creeping hold, never static) */
+export const push = (A, k = 0.12) => ({pos: lerp3(A.pos, A.look, k), look: A.look, fov: A.fov - 1.5});
+/** diagram camera (space diagrams: subject centred at y ~1.6, presenter card bottom corner) */
+export const DG = {pos: [0, 1.2, 9.5], look: [0, 1.6, 0], fov: 44};

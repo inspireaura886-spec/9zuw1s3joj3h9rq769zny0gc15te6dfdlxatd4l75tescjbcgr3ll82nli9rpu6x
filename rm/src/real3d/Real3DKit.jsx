@@ -83,7 +83,8 @@ export const SCHEMES = SCHEMES_RAW;
 
 /** Word-timed caption in 1-3 word phrases: each word appears exactly when spoken, the spoken word in the scheme's
  *  accent colour, the rest in its text colour. Calm entrance (fade + 10 px rise over 4 frames), no bounce, no pop. */
-export const R3DCaption = ({words, scheme = 'ember', y = 1240, size = 70, maxWords = 3, hold = 0.3}) => {
+export const R3DCaption = ({words, scheme = 'ember', y = 1240, size = 70, maxWords = 3, hold = 0.3, backing = false}) => {
+  // backing: soft dark radial pad behind the phrase, for bright plates (glowing orbs, moon haze). Added 2026-11-02 manises-1979.
   const f = useCurrentFrame(); const t = f / 30; const S = SCHEMES[scheme] || SCHEMES.ember;
   // phrase grouping: break after punctuation or every maxWords words
   const groups = []; let cur = [];
@@ -96,7 +97,7 @@ export const R3DCaption = ({words, scheme = 'ember', y = 1240, size = 70, maxWor
   if (t > lastW[2] + hold && (!nextG || t < words[nextG[0]][1])) return null;
   const g0 = Math.round(words[g[0]][1] * 30); const a = clamp01((f - g0) / 4);
   return (<div style={{position: 'absolute', top: y, left: 70, width: 940, textAlign: 'center', opacity: a,
-    transform: `translateY(${(1 - ease(a)) * 10}px)`}}>
+    transform: `translateY(${(1 - ease(a)) * 10}px)`, ...(backing ? {padding: '26px 0', top: y - 26, background: 'radial-gradient(ellipse 60% 50% at center, rgba(0,0,0,0.55), rgba(0,0,0,0.28) 55%, rgba(0,0,0,0) 78%)'} : {})}}>
     {g.map((i) => { const [w, s0, e0] = words[i]; if (t < s0 - 0.001) return null;
       const on = t >= s0 && (t < e0 + 0.08 || i === g[g.length - 1]);
       const wa = clamp01((f - Math.round(s0 * 30)) / 3);

@@ -1,6 +1,6 @@
 // manises-1979: FIRST REAL3D Short (2026-11-02). Plates = Blender Cycles on GitHub (blender/scenes/manises-1979),
 // composited here. No shake, no dips, smooth emphasis pushes only; caption scheme 'ember' (CAPTION_LOG.csv).
-import {AbsoluteFill, Sequence} from 'remotion';
+import {AbsoluteFill, Sequence, useCurrentFrame} from 'remotion';
 import {PlateTrack, Real3DFinish, R3DTag, IAMark, R3DFonts, R3DCaption, R3DHead} from '../Real3DKit.jsx';
 import VO from './vo.json';
 
@@ -20,14 +20,17 @@ const plates = [
   {src: P + 'b10.mp4', from: 1122, dur: 216, punches: [{at: 190, to: 1.03, dur: 20}]},
   {src: P + 'b11.mp4', from: 1338, dur: 192},
 ];
-const Head = ({from, dur, lines}) => (<Sequence from={from} durationInFrames={dur}><R3DHead scheme={SCHEME} lines={lines} outF={dur - 6} /></Sequence>);
+// top scrim keeps headlines readable over moon haze / bright sky; fades with the headline (no pop)
+const Scrim = ({inF, outF}) => { const f = useCurrentFrame(); const o = Math.min(1, Math.max(0, (f - inF) / 6)) * (1 - Math.min(1, Math.max(0, (f - outF) / 8)));
+  return <div style={{position: 'absolute', top: 0, left: 0, width: 1080, height: 640, opacity: o, background: 'linear-gradient(rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.42) 45%, rgba(0,0,0,0) 100%)'}} />; };
+const Head = ({from, dur, lines, inF = 0}) => (<Sequence from={from} durationInFrames={dur}><Scrim inF={inF} outF={dur - 8} /><R3DHead scheme={SCHEME} lines={lines} inF={inF} outF={dur - 6} /></Sequence>);
 const Tag = ({from, dur, text, y = 300}) => (<Sequence from={from} durationInFrames={dur}><R3DTag text={text} at={0} y={y} size={32} /></Sequence>);
 export const Manises1979 = () => (
   <AbsoluteFill style={{background: '#000'}}>
     <R3DFonts />
     <PlateTrack plates={plates} dip={0} />
     <Real3DFinish seed={11} />
-    <Head from={0} dur={80} lines={['2 red lights', 'chased a jet with 109 aboard']} />
+    <Head from={0} dur={80} inF={-12} lines={['2 red lights', 'chased a jet with 109 aboard']} />
     <Head from={537} dur={54} lines={['But...', "the Air Force wasn't done"]} />
     <Head from={940} dur={48} lines={['His warnings', 'went off']} />
     <Head from={1135} dur={72} lines={['Official answer', 'refinery flares']} />
@@ -39,7 +42,7 @@ export const Manises1979 = () => (
     <Tag from={716} dur={110} text="CAPT. FERNANDO CÁMARA · MIRAGE F1" />
     <Tag from={992} dur={60} text="SAGUNTO" />
     <Tag from={1210} dur={120} text="ESCOMBRERAS REFINERY · CARTAGENA" />
-    <R3DCaption words={VO.words} scheme={SCHEME} y={1250} />
+    <R3DCaption words={VO.words} scheme={SCHEME} y={1250} backing />
     <IAMark />
     <div style={{position: 'absolute', top: 1590, width: '100%', textAlign: 'center', fontFamily: 'Inter', fontWeight: 500, fontSize: 22, letterSpacing: 3, color: 'rgba(240,238,232,0.42)'}}>3D RECONSTRUCTION</div>
   </AbsoluteFill>
