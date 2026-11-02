@@ -155,15 +155,6 @@ const Tower = ({f = 0, dark = false}) => <>
     <mesh position={[0, 0.05, 0.271]}><ringGeometry args={[0.28, 0.285, 32]} /><meshBasicMaterial color="#2a8a5a" toneMapped={false} /></mesh><Glow p={[0, 0.05, 0.6]} s={1.4} c="#7dffb0" o={0.12} /></group>)}
 </>;
 
-const Scene = ({bg, title, ty, sub, subAt = 0, seed = 1, density = 0.04, ambient = 0.14, fog, flash = 0, over, children}) => {
-  const f = useCurrentFrame();
-  return <NoirStage density={density} ambient={ambient} bg={bg} fogColor={fog} overlay={<>
-    {title && <NoirTitle y={ty || 240} lines={title} sub={sub} subAt={subAt} />}
-    {over && over(f)}
-    <NoirFinish seed={seed} />
-    {flash > 0 && f < 5 && <AbsoluteFill style={{background: '#fff', opacity: flash * (1 - f / 5)}} />}
-  </>}>{children(f)}<Post bloom={1.25} threshold={0.42} vignette={0.5} /></NoirStage>;
-};
 const Moon = () => <MoonGlow p={[-16, 18, -60]} s={26} />;
 const Fld = ({f, kids = 0, raise = false, z = 1.0, disc = true}) => <>
   <Oval /><Pines f={f} /><School /><Moon />
