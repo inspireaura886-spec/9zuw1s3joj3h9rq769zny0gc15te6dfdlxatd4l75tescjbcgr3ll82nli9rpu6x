@@ -4,15 +4,21 @@ import bpy, os, math, glob
 A = lambda: os.environ.get('IA3D_ASSETS', os.path.expanduser('~/ia3d_assets'))
 
 
+ALIAS = {'ShaderNodeBsdfGlossy': 'ShaderNodeBsdfAnisotropic', 'ShaderNodeMixRGB': 'ShaderNodeMix'}
+
+
 class NB:
-    """Tiny node-builder: nb = NB(mat); n = nb.n('ShaderNodeNoiseTexture', Scale=4); nb.l(n, 'Fac', other, 'Roughness')"""
+    """Tiny node-builder: nb = NB(mat); n = nb.n('ShaderNodeTexNoise', Scale=4); nb.l(n, 'Fac', other, 'Roughness')"""
     def __init__(self, tree):
         self.t = tree
         self.N = tree.nodes
         self.L = tree.links
 
     def n(self, kind, _loc=None, **inputs):
-        node = self.N.new(kind)
+        try:
+            node = self.N.new(kind)
+        except RuntimeError:
+            node = self.N.new(ALIAS[kind])
         for k, v in inputs.items():
             if k.startswith('_'):
                 setattr(node, k[1:], v)
@@ -72,7 +78,7 @@ def principled(name, base=(0.8, 0.8, 0.8), rough=0.5, metal=0.0, coat=0.0, coat_
         b.inputs['Emission Strength'].default_value = emit
     if rough_noise or grime:
         tc = nb.n('ShaderNodeTexCoord')
-        nz = nb.n('ShaderNodeNoiseTexture', Scale=6.0, Detail=8.0, Roughness=0.6)
+        nz = nb.n('ShaderNodeTexNoise', Scale=6.0, Detail=8.0, Roughness=0.6)
         nb.l(tc, 'Object', nz, 'Vector')
         if rough_noise:
             mr = nb.n('ShaderNodeMapRange')
@@ -90,7 +96,7 @@ def principled(name, base=(0.8, 0.8, 0.8), rough=0.5, metal=0.0, coat=0.0, coat_
             nb.l(cr, 'Color', b, 'Base Color')
     if bump:
         tc = nb.n('ShaderNodeTexCoord')
-        n2 = nb.n('ShaderNodeNoiseTexture', Scale=bump_scale, Detail=4.0)
+        n2 = nb.n('ShaderNodeTexNoise', Scale=bump_scale, Detail=4.0)
         nb.l(tc, 'Object', n2, 'Vector')
         bp = nb.n('ShaderNodeBump', Strength=bump, Distance=0.02)
         nb.l(n2, 'Fac', bp, 'Height')

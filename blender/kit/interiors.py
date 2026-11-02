@@ -12,7 +12,6 @@ def _img(name, arr):
     rgba = np.ones((h, w, 4), np.float32)
     rgba[..., :3] = arr[..., :3]
     im.pixels.foreach_set(rgba.ravel())
-    im.pack()
     return im
 
 
@@ -160,7 +159,7 @@ def cockpit(panel_glow=1.2, seed=5):
     return {'root': root, 'gauges': gl}
 
 
-def ppi_material(name='PPI', sweep_s=4.0, frames=200, blips=(), seed=0, glow=6.0, clutter=0.6):
+def ppi_material(name='PPI', sweep_s=4.0, frames=200, blips=(), seed=0, glow=6.0, clutter=0.6, t0=0.0):
     """Animated radar scope on a UV disc. blips = [((x0,y0),(x1,y1), brightness)] in [-1,1] scope space over frames.
     Everything (rings, coast clutter, blips) is modulated by the phosphor afterglow behind the rotating beam."""
     m, nb, b, out = M.new(name)
@@ -183,9 +182,9 @@ def ppi_material(name='PPI', sweep_s=4.0, frames=200, blips=(), seed=0, glow=6.0
     ang = nb.math('ARCTAN2', py.outputs[0], px.outputs[0])
     # time (keyed linear): beam angle = -2pi * t / sweep
     tv = nb.n('ShaderNodeValue')
-    tv.outputs[0].default_value = 0.0
+    tv.outputs[0].default_value = t0
     tv.outputs[0].keyframe_insert('default_value', frame=0)
-    tv.outputs[0].default_value = frames / 30.0
+    tv.outputs[0].default_value = t0 + frames / 30.0
     tv.outputs[0].keyframe_insert('default_value', frame=frames)
     beam = nb.math('MULTIPLY', tv.outputs[0], vb=2 * math.pi / sweep_s)
     # time since beam passed this angle (clockwise sweep), in turns
@@ -202,7 +201,7 @@ def ppi_material(name='PPI', sweep_s=4.0, frames=200, blips=(), seed=0, glow=6.0
     rings = nb.math('GREATER_THAN', rd.outputs[0], vb=0.485)
     rings2 = nb.math('MULTIPLY', rings.outputs[0], vb=0.35)
     # coast clutter: thresholded noise in scope space
-    nz = nb.n('ShaderNodeNoiseTexture', Scale=2.2, Detail=8.0, Roughness=0.7)
+    nz = nb.n('ShaderNodeTexNoise', Scale=2.2, Detail=8.0, Roughness=0.7)
     nz.inputs['W'].default_value = seed
     nz.noise_dimensions = '4D'
     nb.l(comb, 'Vector', nz, 'Vector')
@@ -256,7 +255,7 @@ def ppi_material(name='PPI', sweep_s=4.0, frames=200, blips=(), seed=0, glow=6.0
     return m
 
 
-def radar_room(frames=120, blips=(), seed=2, haze=0.02):
+def radar_room(frames=120, blips=(), seed=2, haze=0.02, t0=0.0):
     """Dark ATC radar room: hero PPI console at origin (scope face up, tilted toward the operator), 2 background
     consoles with their own scopes (bokeh), green spill, desk lamp, smoky haze."""
     root = Md.empty('RadarRoom')
@@ -275,7 +274,7 @@ def radar_room(frames=120, blips=(), seed=2, haze=0.02):
     tilt = math.radians(-20)
     nrm = (0, -math.sin(-tilt), math.cos(tilt))
     nrm = (0, -0.342, 0.94)
-    ppi = ppi_material('PPI_hero', frames=frames, blips=blips, seed=seed)
+    ppi = ppi_material('PPI_hero', frames=frames, blips=blips, seed=seed, t0=t0)
     disc('Bezel', (0, 0.03, 1.025), nrm, 0.33, dark, n=48)
     disc('Scope', (0, 0.028, 1.03), nrm, 0.29, ppi, n=64)
     # knobs / buttons row
@@ -291,7 +290,7 @@ def radar_room(frames=120, blips=(), seed=2, haze=0.02):
     for j, (x, y) in enumerate(((-2.1, 2.6), (1.9, 3.2), (-0.2, 4.6))):
         bb = Wd.box('BgCon%d' % j, (x, y, 0.5), (1.2, 0.9, 1.0))
         bb.data.materials.append(console)
-        pm = ppi_material('PPI_bg%d' % j, frames=frames, seed=seed + j + 1, glow=4.0)
+        pm = ppi_material('PPI_bg%d' % j, frames=frames, seed=seed + j + 1, glow=4.0, t0=t0 + 1.3 * j)
         disc('BgScope%d' % j, (x, y - 0.2, 1.05), (0, -0.34, 0.94), 0.28, pm, n=40)
     # room
     fl = Wd.box('RoomFloor', (0, 1.5, -0.02), (12, 12, 0.04))

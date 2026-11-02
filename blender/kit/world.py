@@ -38,7 +38,7 @@ def hdri(hid='kloppenheim_02_puresky', strength=0.25, rot=0.0, bg_strength=None,
         vo.feature = 'F1'
         nb.l(tc, 'Generated', vo, 'Vector')
         st = nb.math('POWER', nb.math('SUBTRACT', va=1.0, b=vo.outputs['Distance']).outputs[0], vb=60.0)
-        nz = nb.n('ShaderNodeNoiseTexture', Scale=40.0)
+        nz = nb.n('ShaderNodeTexNoise', Scale=40.0)
         nb.l(tc, 'Generated', nz, 'Vector')
         st2 = nb.math('MULTIPLY', st.outputs[0], nz.outputs['Fac'])
         st3 = nb.math('MULTIPLY', st2.outputs[0], vb=stars * 8)
@@ -152,7 +152,7 @@ def fog(center=(0, 0, 0), size=(200, 200, 60), density=0.004, color=(0.75, 0.8, 
         tc = nb.n('ShaderNodeTexCoord')
         fac = None
         if noise:
-            nz = nb.n('ShaderNodeNoiseTexture', Scale=noise_scale * 100, Detail=4.0)
+            nz = nb.n('ShaderNodeTexNoise', Scale=noise_scale * 100, Detail=4.0)
             nz.noise_dimensions = '4D'
             nb.l(tc, 'Object', nz, 'Vector')
             M.animate(nz.inputs['W'], 'default_value', [(0, 0.0), (900, 1.2)])
@@ -195,7 +195,7 @@ def clouds(center=(0, 0, -400), size=(9000, 9000, 260), density=0.06, scale=0.00
     nb.l(tc, 'Object', mp, 'Vector')
     mp.inputs['Scale'].default_value = (size[0] / 2 * scale, size[1] / 2 * scale, size[2] / 2 * scale * 1.6)
     M.animate(mp.inputs['Location'], 'default_value', [(0, (0, 0, 0)), (frames, (drift[0] * frames * scale, drift[1] * frames * scale, 0))])
-    nz = nb.n('ShaderNodeNoiseTexture', Scale=1.0, Detail=float(detail), Roughness=0.58, Lacunarity=2.2)
+    nz = nb.n('ShaderNodeTexNoise', Scale=1.0, Detail=float(detail), Roughness=0.58, Lacunarity=2.2)
     nz.noise_dimensions = '4D'
     nb.l(mp, 'Vector', nz, 'Vector')
     M.animate(nz.inputs['W'], 'default_value', [(0, 0.0), (frames, evolve)])
@@ -266,11 +266,11 @@ def sea_plane(size=60000, z=0.0, color=(0.002, 0.004, 0.007), rough=0.04, wave=0
     b.inputs['IOR'].default_value = 1.33
     b.inputs['Specular IOR Level'].default_value = 0.6
     tc = nb.n('ShaderNodeTexCoord')
-    w1 = nb.n('ShaderNodeWaveTexture', Scale=wave_scale, Distortion=6.0, Detail=6.0, _wave_type='BANDS')
+    w1 = nb.n('ShaderNodeTexWave', Scale=wave_scale, Distortion=6.0, Detail=6.0, _wave_type='BANDS')
     w1.inputs['Detail Scale'].default_value = 2.0
     nb.l(tc, 'Object', w1, 'Vector')
     M.animate(w1.inputs['Phase Offset'], 'default_value', [(0, 0.0), (frames, 18.0)])
-    nz = nb.n('ShaderNodeNoiseTexture', Scale=wave_scale * 25, Detail=8.0)
+    nz = nb.n('ShaderNodeTexNoise', Scale=wave_scale * 25, Detail=8.0)
     nz.noise_dimensions = '4D'
     nb.l(tc, 'Object', nz, 'Vector')
     M.animate(nz.inputs['W'], 'default_value', [(0, 0.0), (frames, 3.0)])

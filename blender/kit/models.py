@@ -183,7 +183,7 @@ def airliner(name='Airliner', loc=(0, 0, 0), cabin_glow=4.0, livery=(0.05, 0.12,
     nb.l(sep, 'Z', zr, 'Value')
     nb.l(zr, 'Result', cr, 'Fac')
     # subtle grime/panel breakup
-    nz = nb.n('ShaderNodeNoiseTexture', Scale=1.5, Detail=10.0, Roughness=0.65)
+    nz = nb.n('ShaderNodeTexNoise', Scale=1.5, Detail=10.0, Roughness=0.65)
     nb.l(tc, 'Object', nz, 'Vector')
     mx = nb.n('ShaderNodeMix')
     mx.data_type = 'RGBA'
