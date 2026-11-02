@@ -88,7 +88,8 @@ export const Char = ({who, pos = [0, 0, 0], h, expr, armL, armR, look = 0, mouth
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return [c, t];
   }, []);
   const pose = {mouth, blink, look, glow, item, ...extra}; if (expr) pose.expr = expr; if (armL !== undefined) pose.armL = armL; if (armR !== undefined) pose.armR = armR;
-  const g2 = cv.getContext('2d'); g2.setTransform(1, 0, 0, 1, 0, 0); g2.clearRect(0, 0, CARD.W * RES, CARD.H * RES); g2.scale(RES, RES); g2.translate(CARD.PAD, 0); DRAW[who](g2, pose); tex.needsUpdate = true;
+  const pk = who + JSON.stringify(pose); // redraw the card only when the pose changes (v2 cards are heavy on software canvas)
+  if (cv._pk !== pk) { cv._pk = pk; const g2 = cv.getContext('2d'); g2.setTransform(1, 0, 0, 1, 0, 0); g2.clearRect(0, 0, CARD.W * RES, CARD.H * RES); g2.scale(RES, RES); g2.translate(CARD.PAD, 0); DRAW[who](g2, pose); tex.needsUpdate = true; }
   const H = (h || HEIGHT[who]); const Wd = H * CARD.W / CARD.H;
   const e = new THREE.Euler().setFromQuaternion(q || new THREE.Quaternion());
   return (
