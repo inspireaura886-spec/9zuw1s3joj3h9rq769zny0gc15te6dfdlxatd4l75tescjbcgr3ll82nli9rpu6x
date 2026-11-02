@@ -11,25 +11,25 @@ a = core.args()
 variant = 'B' if '--variant' in a.extra and a.extra[a.extra.index('--variant') + 1] == 'B' else 'A'
 sc = core.reset()
 NF = 230 if variant == 'A' else 185
-core.setup_render(sc, samples=20, look='AgX - Medium High Contrast', exposure=0.6, vol_step=6.0, vol_max_steps=64,
+core.setup_render(sc, samples=20, look='AgX - Medium High Contrast', exposure=0.8, vol_step=6.0, vol_max_steps=64,
                   bounces=4, clamp_ind=4.0)
 core.finish(sc, glare=0.6, glare_thr=1.0, glare_size=8, vignette=0.4, streaks=0.0,
             lift=(0.98, 1.0, 1.06), gain=(1.02, 1.0, 0.97), sat=0.95)
 
 # ---------------- world ----------------
 Wd.hdri('kloppenheim_02_puresky', strength=0.35, bg_strength=0.5, rot=140, tint=(0.75, 0.85, 1.1), stars=0.0)
-Wd.moon(direction=(0.35, 0.8, 0.38), strength=1.8, color=(0.6, 0.7, 1.0), angle=0.55)
+Wd.moon(direction=(0.35, 0.8, 0.30), strength=2.4, color=(0.6, 0.7, 1.0), angle=0.55)
 V = 110.0 / 30  # m per frame (~110 m/s approach speed, reads as motion against the deck)
 Wd.clouds(center=(0, 600, -520), size=(18000, 18000, 340), density=0.05, scale=0.0011, coverage=0.5, detail=4,
           color=(0.9, 0.93, 1.0), anisotropy=0.4, evolve=0.08, frames=NF, sharp=0.2)
 Wd.cloud_deck_far(z=-400, hole=6800)
-Wd.sea_plane(size=80000, z=-2600, color=(0.003, 0.006, 0.01), rough=0.05, frames=NF)
+Wd.sea_plane(size=80000, z=-2600, color=(0.003, 0.006, 0.01), rough=0.32, wave=0.15, frames=NF)
 # Ibiza: island glow + town lights below the gaps, far ahead/below
 land = Wd.terrain('Ibiza', size=14000, res=90, height=180, scale=0.00035, center=(2500, 5500, -2650), seed=4,
                   mat=M.principled('Land', base=(0.03, 0.035, 0.03), rough=0.9), island=1.0)
 for i, (cx, cy, n, r) in enumerate([(1200, 4200, 900, 1600), (3800, 6900, 600, 1100), (600, 7600, 400, 900),
                                      (4200, 3300, 300, 700)]):
-    Wd.city_lights('Town%d' % i, center=(cx, cy, -2430), radius=r, count=n, seed=11 + i, strength=3, size=1.1,
+    Wd.city_lights('Town%d' % i, center=(cx, cy, -2430), radius=r, count=n, seed=11 + i, strength=6, size=1.2,
                    cluster=0.8)
 # thin high haze for depth (aerial perspective)
 Wd.fog(center=(0, 2000, -300), size=(90000, 90000, 1600), density=0.000025, color=(0.7, 0.78, 0.95), anisotropy=0.3)
@@ -47,13 +47,13 @@ if variant == 'A':
     Md.fly(red2, [(0, (790, 2700, 120), None), (NF, (600, V * NF + 1580, 80), None)], interp='LINEAR')
     cam = C.Cam(clip_end=90000)
     # shot 1 (0-104): behind-left, low over the wing line, plane in the upper third, red lights tiny far right
-    cam.shot(0, 105, C.track('Airliner', offset=(-27, -50, 7), offset1=(-21, -38, 5), look_offset=(12, 30, 0)),
-             lens=(48, 52), fstop=5.6, focus='Airliner')
+    cam.shot(0, 105, C.track('Airliner', offset=(-24, -40, 5), offset1=(-19, -31, 3.5), look_offset=(14, 34, 1)),
+             lens=(50, 56), fstop=5.6, focus='Airliner')
     # shot 2 (105-174): close glide along the lit windows toward the nose ('a hundred and nine passengers')
     cam.shot(105, 175, C.track('Airliner', offset=(-5.5, -6, -0.2), offset1=(-5.0, 6.5, 0.2), look_offset=(0, 2, 0.3)),
              lens=(32, 30), fstop=2.2, focus=None, roll=(-4, -2))
     # shot 3 (175-229): high, looking down past the fin at the island lights through the gaps ('over Ibiza')
-    cam.shot(175, NF, C.track('Airliner', offset=(14, -42, 26), offset1=(10, -34, 20), look_offset=(0, 160, -60)),
+    cam.shot(175, NF, C.track('Airliner', offset=(16, -36, 14), offset1=(12, -30, 11), look_offset=(-6, 200, -45)),
              lens=(28, 31), fstop=8, focus='Airliner', roll=(3, 2))
     cam.handheld(0.04)
 else:

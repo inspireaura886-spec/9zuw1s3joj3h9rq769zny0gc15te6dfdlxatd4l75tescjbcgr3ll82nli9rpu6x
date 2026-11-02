@@ -160,8 +160,8 @@ def airliner(name='Airliner', loc=(0, 0, 0), cabin_glow=4.0, livery=(0.05, 0.12,
     v, f = loft(rings, cap_start=True, cap_end=True)
     paint = M.new('AirlinerPaint')
     pm, nb, b, out = paint
-    b.inputs['Roughness'].default_value = 0.32
-    b.inputs['Coat Weight'].default_value = 0.35
+    b.inputs['Roughness'].default_value = 0.24
+    b.inputs['Coat Weight'].default_value = 0.6
     b.inputs['Coat Roughness'].default_value = 0.08
     tc = nb.n('ShaderNodeTexCoord')
     sep = nb.n('ShaderNodeSeparateXYZ')

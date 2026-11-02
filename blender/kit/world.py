@@ -303,14 +303,14 @@ def cloud_deck_far(z=-380, size=120000, hole=9000, color=(0.6, 0.65, 0.78), scal
     nb.l(vm, 'Vector', nz, 'Vector')
     cr = nb.n('ShaderNodeValToRGB')
     cr.color_ramp.elements[0].position = coverage
-    cr.color_ramp.elements[0].color = (0.004, 0.006, 0.01, 1)
-    cr.color_ramp.elements[1].position = coverage + 0.15
+    cr.color_ramp.elements[0].color = (0.16, 0.18, 0.24, 1)
+    cr.color_ramp.elements[1].position = coverage + 0.25
     cr.color_ramp.elements[1].color = (*color, 1)
     nb.l(nz, 'Fac', cr, 'Fac')
     nb.l(cr, 'Color', b, 'Base Color')
     b.inputs['Roughness'].default_value = 1.0
     b.inputs['Specular IOR Level'].default_value = 0.0
-    bp = nb.n('ShaderNodeBump', Strength=0.6, Distance=40.0)
+    bp = nb.n('ShaderNodeBump', Strength=0.25, Distance=40.0)
     nb.l(nz, 'Fac', bp, 'Height')
     nb.l(bp, 'Normal', b, 'Normal')
     o.data.materials.append(m)
