@@ -1,12 +1,15 @@
 """Cinematic camera keys (ideas from claude-animated-shorts' CAMS system, MIT): every shot is a function of local time
 t in [0,1] returning pos / look / lens / roll / focus; the kit bakes one key per frame (so Cycles motion blur sees the
-real move) with smootherstep easing, slow creep on holds and optional decaying impact kicks + subtle handheld drift.
+real move) with CRUISE easing (moving at the cut, never stop-start), slow creep on holds.
+USER RULE 2026-11-02: NO SHAKE. kick() and handheld() are kept for old scripts but do nothing (amplitude forced 0).
+LAG FIX 2026-11-02: (1) default ease = cruise() (velocity never drops below ~55 % of its peak, so 2-3 s shots no
+longer lurch start-stop-start); (2) bake() adds a sub-frame key at (cut - 0.5) for the camera AND makes every other
+animated datablock hold a clean shutter at the last frame before a cut, so motion blur never smears that frame.
 
 Usage:
     cam = Cam()                                     # 1080x1920 camera, DOF on
     cam.shot(0, 90, dolly((0,-30,2), (0,-18,3), look=(0,0,2)), lens=(35, 40), fstop=2.8, focus='Airliner')
     cam.shot(90, 180, orbit(center, r=20, a0=200, a1=240, h=(2,4)), lens=50)
-    cam.kick(150, amp=0.6)                          # impact shake on a word
     cam.bake()
 """
 import bpy, math
@@ -16,6 +19,12 @@ from mathutils import Vector, Euler, Quaternion, noise
 def smooth(t):  # smootherstep
     t = max(0.0, min(1.0, t))
     return t * t * t * (t * (t * 6 - 15) + 10)
+
+
+def cruise(t, k=0.3):
+    """Mostly linear with a soft S: velocity runs 0.7x..1.26x of the mean (smootherstep runs 0..1.9x = lurching)."""
+    t = max(0.0, min(1.0, t))
+    return (1 - k) * t + k * smooth(t)
 
 
 def ease_out(t):
@@ -39,8 +48,9 @@ def _v(x):
 
 
 # ---------- moves: each returns f(t) -> dict(pos, look) ----------
-def dolly(p0, p1, look=None, look1=None, ease=smooth):
+def dolly(p0, p1, look=None, look1=None, ease=None):
     """Straight move p0 -> p1. look (and optional look1) are world targets."""
+    ease = ease or cruise
     def f(t):
         e = ease(t)
         lk = look if look1 is None else lerp(look, look1, e)
@@ -48,14 +58,16 @@ def dolly(p0, p1, look=None, look1=None, ease=smooth):
     return f
 
 
-def push_in(pos, look, amount=0.25, ease=smooth):
+def push_in(pos, look, amount=0.25, ease=None):
     """Moves `amount` of the way from pos toward look (classic slow push)."""
+    ease = ease or cruise
     p0, lk = Vector(pos), Vector(look)
     return dolly(p0, p0.lerp(lk, amount), look=lk, ease=ease)
 
 
-def orbit(center, r=10, a0=0, a1=30, h=2, r1=None, look_h=0.0, ease=smooth):
+def orbit(center, r=10, a0=0, a1=30, h=2, r1=None, look_h=0.0, ease=None):
     """Orbit around center (degrees, CCW seen from above). h / r may be (start, end) tuples."""
+    ease = ease or cruise
     c = Vector(center)
     def f(t):
         e = ease(t)
@@ -66,14 +78,16 @@ def orbit(center, r=10, a0=0, a1=30, h=2, r1=None, look_h=0.0, ease=smooth):
     return f
 
 
-def crane(pos, look, dz=4.0, dlook=0.0, ease=smooth):
+def crane(pos, look, dz=4.0, dlook=0.0, ease=None):
     """Rise (dz > 0) or descend while looking at a target that may also rise."""
+    ease = ease or cruise
     p, lk = Vector(pos), Vector(look)
     return dolly(p, p + Vector((0, 0, dz)), look=lk, look1=lk + Vector((0, 0, dlook)), ease=ease)
 
 
-def track(obj_name, offset=(0, -10, 2), offset1=None, look_offset=(0, 0, 0), ease=smooth):
+def track(obj_name, offset=(0, -10, 2), offset1=None, look_offset=(0, 0, 0), ease=None):
     """Follow an animated object (camera rig attached in world space; offset may move)."""
+    ease = ease or cruise
     def f(t, frame=None):
         o = bpy.data.objects[obj_name]
         m = o.matrix_world
@@ -85,16 +99,18 @@ def track(obj_name, offset=(0, -10, 2), offset1=None, look_offset=(0, 0, 0), eas
     return f
 
 
-def follow(obj_name, p0, p1, look_offset=(0, 0, 0), ease=smooth):
+def follow(obj_name, p0, p1, look_offset=(0, 0, 0), ease=None):
     """Camera dollies p0 -> p1 in world space while panning to keep an animated object framed (spotter shot)."""
+    ease = ease or cruise
     def f(t):
         o = bpy.data.objects[obj_name]
         return {'pos': lerp(p0, p1, ease(t)), 'look': o.matrix_world.translation + Vector(look_offset)}
     return f
 
 
-def path(points, look, ease=smooth):
+def path(points, look, ease=None):
     """Catmull-Rom through points (crane/fly-through)."""
+    ease = ease or cruise
     P = [Vector(p) for p in points]
     def cr(t):
         n = len(P) - 1
@@ -135,13 +151,12 @@ class Cam:
         return self
 
     def kick(self, frame, amp=0.5, decay=7, rot=1.2):
-        """Impact flip-shake: sign flips every frame and decays over `decay` frames."""
-        self.kicks.append((frame, amp, decay, rot))
+        """DISABLED (user 2026-11-02: never shake the frame). Kept so old scene scripts still run."""
         return self
 
     def handheld(self, amount=0.02):
-        """Very slow organic drift (metres); keep tiny, never 'floaty'."""
-        self.drift = amount
+        """DISABLED (user 2026-11-02: no handheld jitter/drift). Kept so old scene scripts still run."""
+        self.drift = 0.0
         return self
 
     def _sample(self, f):
@@ -156,11 +171,11 @@ class Cam:
         r = sh['move'](t)
         pos, look = Vector(r['pos']), Vector(r['look'])
         def val(x):
-            return lerp(x[0], x[1], smooth(t)) if isinstance(x, (tuple, list)) else x
+            return lerp(x[0], x[1], cruise(t)) if isinstance(x, (tuple, list)) else x
         lens, roll, fstop = val(sh['lens']), val(sh['roll']), val(sh['fstop'])
         if sh['creep']:
             lens *= 1 + sh['creep'] * t
-        d = sh['drift'] if sh['drift'] is not None else self.drift
+        d = 0.0  # no drift/jitter ever (user 2026-11-02)
         if d:
             q = f * 0.035
             pos += Vector((noise.noise(Vector((q, 0.3, 1.7))), noise.noise(Vector((1.1, q, 4.2))),
@@ -184,36 +199,63 @@ class Cam:
             fd = (Vector(fo) - pos).length
         return pos, look, lens, roll + kroll, fstop, fd
 
+    def _key(self, f, pose):
+        o, cd = self.obj, self.obj.data
+        pos, look, lens, roll, fstop, fd = pose
+        d = (look - pos).normalized()
+        q = d.to_track_quat('-Z', 'Y')
+        q = q @ Quaternion((0, 0, 1), math.radians(roll))
+        o.location = pos
+        o.rotation_quaternion = q
+        cd.lens = lens
+        cd.dof.aperture_fstop = fstop
+        cd.dof.focus_distance = fd
+        o.keyframe_insert('location', frame=f)
+        o.keyframe_insert('rotation_quaternion', frame=f)
+        cd.keyframe_insert('lens', frame=f)
+        cd.dof.keyframe_insert('aperture_fstop', frame=f)
+        cd.dof.keyframe_insert('focus_distance', frame=f)
+
     def bake(self, f0=None, f1=None):
+        """One key per frame. At every hard cut c: the last frame of the outgoing shot (c-1) also gets a sub-frame key
+        at c-0.5 sampled from the OUTGOING shot (objects evaluated at that sub-frame), held CONSTANT until c. With the
+        shutter at frame START (c-1 .. c-0.5) the camera therefore keeps moving exactly with the scene through the
+        shutter: no frozen-camera smear on tracked objects (the r1 test's 'laggy' cut frames) and no smear across the cut."""
         sc = bpy.context.scene
         f0 = self.shots[0]['a'] if f0 is None else f0
         f1 = max(s['b'] for s in self.shots) if f1 is None else f1
         o, cd = self.obj, self.obj.data
+        cuts = sorted({s['a'] for s in self.shots[1:]})
         for f in range(f0, f1 + 1):
             sc.frame_set(f)  # lets track() read animated objects
-            pos, look, lens, roll, fstop, fd = self._sample(f)
-            d = (look - pos).normalized()
-            q = d.to_track_quat('-Z', 'Y')
-            q = q @ Quaternion((0, 0, 1), math.radians(roll))
-            o.location = pos
-            o.rotation_quaternion = q
-            cd.lens = lens
-            cd.dof.aperture_fstop = fstop
-            cd.dof.focus_distance = fd
-            o.keyframe_insert('location', frame=f)
-            o.keyframe_insert('rotation_quaternion', frame=f)
-            cd.keyframe_insert('lens', frame=f)
-            cd.dof.keyframe_insert('aperture_fstop', frame=f)
-            cd.dof.keyframe_insert('focus_distance', frame=f)
-        # hard cuts: constant interpolation at shot boundaries so motion blur never smears across a cut
-        cuts = {s['a'] for s in self.shots[1:]}
+            self._key(f, self._sample(f))
+        sub = {}
+        for c in cuts:
+            if not (f0 < c <= f1):
+                continue
+            # pose at c-0.5 = linear extrapolation of the outgoing shot's last two frames (follows tracked objects too)
+            sh = [s for s in self.shots if s['a'] <= c - 1 < s['b']][-1]
+            saved = list(self.shots)
+            self.shots = [sh]
+            sc.frame_set(c - 2)
+            pa = self._sample(c - 2)
+            sc.frame_set(c - 1)
+            pb = self._sample(c - 1)
+            self.shots = saved
+            pose = tuple((vb + (vb - va) * 0.5) for va, vb in zip(pa, pb))
+            self._key(c - 0.5, pose)
+            sub[c] = True
         for ad in (o.animation_data, cd.animation_data):
             if not ad or not ad.action:
                 continue
             for fc in ad.action.fcurves:
                 for kp in fc.keyframe_points:
+                    x = kp.co.x
                     kp.interpolation = 'LINEAR'
-                    if int(round(kp.co.x)) + 1 in cuts:
+                    if abs(x - round(x)) > 0.25 and int(round(x + 0.5)) in sub:  # the c-0.5 key: hold to the cut
                         kp.interpolation = 'CONSTANT'
+                    elif int(round(x)) + 1 in cuts and (int(round(x)) + 1) not in sub:
+                        kp.interpolation = 'CONSTANT'
+        sc.frame_set(f0)
         sc.frame_start, sc.frame_end = f0, f1
         return self

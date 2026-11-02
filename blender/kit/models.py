@@ -340,7 +340,7 @@ def orb(name, loc, color=(1.0, 0.06, 0.02), strength=400.0, power=2.0e5, radius=
         es = m.node_tree.nodes['Emission'].inputs['Strength']
         rnd = random.Random(seed)
         for fr in range(0, f1 + 1, 6):
-            k = 1 + pulse * math.sin(fr * 0.21 + seed) * (0.6 + 0.4 * rnd.random())
+            k = 1 + pulse * math.sin(fr * 0.07 + seed)  # slow smooth breathing only (no random flicker; user 2026-11-02 no wobble)
             es.default_value = strength * k
             es.keyframe_insert('default_value', frame=fr)
             L.data.energy = power * k
@@ -401,4 +401,97 @@ def boat(name='Boat', loc=(0, 0, 0), length=9.0, cabin_light=True):
     if cabin_light:
         nav_light(name + '_Lamp', (0, 0.6, 4.7), (1.0, 0.85, 0.6), root, power=40, strength=12)
         Wd.point(name + '_Cabin', (0, -0.8, 1.4), color=(1, 0.7, 0.4), power=30).parent = root
+    return root
+
+
+def fighter(name='Fighter', loc=(0, 0, 0), burner=1.0, f1=900, lights=True, seed=7, gear=False):
+    """Generic 1970s swept high-wing fighter (Mirage F1-like proportions, no national marks): ~15 m long, 8.4 m span,
+    nose toward +Y. burner = afterburner flame strength (0 = off). Returns the root empty (animate it with fly())."""
+    root = empty(name, loc)
+    skin = M.principled(name + '_skin', base=(0.16, 0.17, 0.165), rough=0.42, metal=0.35, grime=0.5, rough_noise=0.25,
+                        bump=0.04)
+    dark = M.principled(name + '_dark', base=(0.03, 0.03, 0.032), rough=0.35, metal=0.6)
+    canopy = M.principled(name + '_canopy', base=(0.02, 0.025, 0.03), rough=0.05, coat=1.0, spec=0.8)
+    # fuselage: circular-ish rings along Y, radius profile (nose cone -> cockpit hump -> constant -> nozzle)
+    def prof(y):  # y in [-7.6, 7.7]
+        if y > 4.6:
+            u = (7.7 - y) / 3.1
+            return 0.06 + 0.66 * math.sin(min(1.0, u) * math.pi / 2) ** 0.8
+        if y > -5.8:
+            return 0.72 + 0.08 * math.exp(-((y - 1.0) / 2.2) ** 2)
+        u = (y + 7.6) / 1.8
+        return 0.52 + 0.20 * u
+    rings = []
+    n = 20
+    ys = [7.7 - i * 0.35 for i in range(45)]
+    for y in ys:
+        r = prof(y)
+        ring = []
+        for i in range(n):
+            a = 2 * math.pi * i / n
+            ring.append((math.cos(a) * r * 1.05, y, math.sin(a) * r * (0.95 if math.sin(a) < 0 else 1.0)))
+        rings.append(ring)
+    v, f = loft(rings, cap_start=True)
+    body = mesh_obj(name + '_body', v, f, parent=root, mats=(skin,))
+    subsurf(body, 1, 1)
+    # nozzle (dark ring) + afterburner flame
+    noz = mesh_obj(name + '_nozzle', *loft([[(math.cos(2 * math.pi * i / n) * r, y, math.sin(2 * math.pi * i / n) * r)
+                                              for i in range(n)] for y, r in ((-7.55, 0.56), (-7.95, 0.50))]),
+                   parent=root, mats=(dark,))
+    if burner > 0:
+        import bmesh
+        me = bpy.data.meshes.new(name + '_flame')
+        bm = bmesh.new()
+        bmesh.ops.create_cone(bm, cap_ends=False, segments=16, radius1=0.46, radius2=0.05, depth=3.2)
+        bm.to_mesh(me)
+        bm.free()
+        fl = bpy.data.objects.new(name + '_flame', me)
+        bpy.context.scene.collection.objects.link(fl)
+        fl.parent = root
+        fl.rotation_euler = (math.radians(90), 0, 0)
+        fl.location = (0, -9.5, 0)
+        fm = M.emission(name + '_flame_m', (1.0, 0.45, 0.12), 60 * burner)
+        me.materials.append(fm)
+        fl.visible_shadow = False
+        Lf = Wd.point(name + '_burnL', (0, -9.0, 0), color=(1.0, 0.5, 0.18), power=4000 * burner, radius=0.4)
+        Lf.parent = root
+    # canopy bubble
+    import bmesh
+    me = bpy.data.meshes.new(name + '_can')
+    bm = bmesh.new()
+    bmesh.ops.create_uvsphere(bm, u_segments=20, v_segments=10, radius=1.0)
+    bm.to_mesh(me)
+    bm.free()
+    can = bpy.data.objects.new(name + '_canopy', me)
+    bpy.context.scene.collection.objects.link(can)
+    can.parent = root
+    can.scale = (0.48, 1.5, 0.42)
+    can.location = (0, 3.3, 0.62)
+    me.materials.append(canopy)
+    for p in me.polygons:
+        p.use_smooth = True
+    # high swept wings, tail fin, stabilisers
+    for s in (1, -1):
+        wing(name + ('_wR' if s > 0 else '_wL'), (s * 0.55, 0.6, 0.45), 3.7, 3.6, 1.2, 47, -6, t_r=0.06, t_t=0.05,
+             side=s, parent=root, mats=(skin,))
+        wing(name + ('_hR' if s > 0 else '_hL'), (s * 0.45, -5.4, 0.05), 2.0, 1.9, 0.7, 45, -4, t_r=0.06, t_t=0.05,
+             side=s, parent=root, mats=(skin,))
+    wing(name + '_fin', (0, -3.6, 0.6), 2.6, 3.6, 1.2, 50, 0, t_r=0.07, t_t=0.05, vertical=True, parent=root,
+         mats=(skin,))
+    if lights:
+        nav_light(name + '_navL', (-4.15, -3.9, 0.07), (1.0, 0.05, 0.03), root, power=6, strength=60)
+        nav_light(name + '_navR', (4.15, -3.9, 0.07), (0.1, 1.0, 0.25), root, power=6, strength=60)
+        nav_light(name + '_tail', (0, -7.0, 3.1), (1, 1, 1), root, power=4, strength=80,
+                  blink_kw=dict(period_f=40, on_f=3, f1=f1, phase=seed))
+    if gear:  # simple struts + wheels so a jet on the runway sits ON it (wheel bottoms at z = -1.3)
+        tyre = M.principled(name + '_tyre', base=(0.02, 0.02, 0.02), rough=0.8)
+        for gx, gy in ((0, 4.6), (-1.35, -1.6), (1.35, -1.6)):
+            st = Wd.box(name + '_strut%d' % len(root.children), (gx, gy, -0.75), (0.12, 0.12, 0.9))
+            st.data.materials.append(dark)
+            st.parent = root
+            bpy.ops.mesh.primitive_cylinder_add(vertices=20, radius=0.32, depth=0.22, location=(gx, gy, -0.98),
+                                                rotation=(0, math.radians(90), 0))
+            wh = bpy.context.object
+            wh.data.materials.append(tyre)
+            wh.parent = root
     return root

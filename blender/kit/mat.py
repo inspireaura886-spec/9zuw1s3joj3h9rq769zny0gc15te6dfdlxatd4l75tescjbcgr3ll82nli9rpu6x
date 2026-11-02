@@ -127,6 +127,28 @@ def emission(name, color=(1, 0.2, 0.1), strength=10.0, light=False):
     return m
 
 
+def thin_glass(name, refl=0.08, tint=(0.95, 0.97, 1.0)):
+    """Window pane modelled as ONE plane: transparent + a faint Fresnel reflection. (A refractive Glass/Principled
+    transmission shader on a single plane bends everything behind it -> the wavy 'horizon stripes' seen through the
+    r1 cockpit windshield.)"""
+    m, nb, b, out = new(name)
+    m.node_tree.nodes.remove(b)
+    tr = nb.n('ShaderNodeBsdfTransparent')
+    tr.inputs['Color'].default_value = (*tint, 1)
+    gl = nb.n('ShaderNodeBsdfGlossy', Roughness=0.04)
+    lw = nb.n('ShaderNodeLayerWeight', Blend=0.25)
+    mxf = nb.n('ShaderNodeMath')
+    mxf.operation = 'MULTIPLY'
+    mxf.inputs[1].default_value = refl * 4
+    nb.l(lw, 'Fresnel', mxf, 0)
+    mx = nb.n('ShaderNodeMixShader')
+    nb.l(mxf, 'Value', mx, 'Fac')
+    nb.l(tr, 'BSDF', mx, 1)
+    nb.l(gl, 'BSDF', mx, 2)
+    nb.l(mx, 'Shader', out, 'Surface')
+    return m
+
+
 def glass(name, tint=(0.9, 0.95, 1.0), rough=0.02, dark=0.0):
     m = principled(name, base=tint, rough=rough, transmission=1.0, ior=1.5, spec=0.5)
     if dark:

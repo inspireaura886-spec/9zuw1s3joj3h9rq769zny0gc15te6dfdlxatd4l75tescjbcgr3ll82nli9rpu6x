@@ -79,7 +79,7 @@ def cockpit(panel_glow=1.2, seed=5):
     leather = M.principled('Glareshield', base=(0.018, 0.018, 0.02), rough=0.75, bump=0.25, bump_scale=120, rough_noise=0.15)
     paint = M.principled('PanelPaint', base=(0.06, 0.065, 0.07), rough=0.55, grime=0.4, rough_noise=0.2, bump=0.05)
     frame = M.principled('FrameMetal', base=(0.09, 0.09, 0.095), rough=0.45, metal=0.6, grime=0.4)
-    glass = M.glass('Windshield', tint=(0.92, 0.96, 1.0), rough=0.0)
+    glass = M.thin_glass('Windshield', refl=0.06)  # thin pane: no refraction stripes (2026-11-02)
     # windshield frame: three panes, pillars, top + sill
     pillars = [(-0.95, 1.30), (-0.35, 1.42), (0.35, 1.42), (0.95, 1.30)]
     for i, (x, y) in enumerate(pillars):
