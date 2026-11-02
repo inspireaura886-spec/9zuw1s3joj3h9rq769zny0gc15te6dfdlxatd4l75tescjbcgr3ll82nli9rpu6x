@@ -16,7 +16,7 @@ import {easeInOut, clamp01} from './noise.js';
  * start/end = frames (local to the Sequence). shake/shakeFrom/shakeLen as CameraRig. drift = handheld drift (0 to lock off).
  * <ShotCam preset="crane" target={[0, 2, 0]} h0={1} h1={14} r0={8} r1={22} angle={0.6} start={0} end={90} ease="inout" />
  */
-const E = {inout: easeInOut, linear: (t) => t, out: (t) => 1 - Math.pow(1 - t, 3),
+const E = {inout: easeInOut, linear: (t) => t, in: (t) => t * t * t, out: (t) => 1 - Math.pow(1 - t, 3),
   ramp: (t) => (t < 0.5 ? Math.pow(2, 20 * t - 10) / 2 : (2 - Math.pow(2, -20 * t + 10)) / 2)};
 const L = (a, b, t) => a + (b - a) * t; const LV = (a, b, t) => a.map((x, i) => L(x, b[i], t));
 export const shotPose = (o, f) => {
