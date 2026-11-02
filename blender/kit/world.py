@@ -318,7 +318,7 @@ def cloud_deck_far(z=-380, size=120000, hole=9000, color=(0.6, 0.65, 0.78), scal
     return o
 
 
-def sea_plane(size=60000, z=0.0, color=(0.002, 0.004, 0.007), rough=0.04, wave=0.35, wave_scale=0.08, frames=900):
+def sea_plane(size=60000, z=0.0, color=(0.002, 0.004, 0.007), rough=0.18, wave=0.2, wave_scale=0.08, frames=900):
     """Cheap infinite-looking sea for aerial views: glossy plane + animated multi-scale wave bump."""
     me = bpy.data.meshes.new('Sea')
     s = size / 2
@@ -331,15 +331,16 @@ def sea_plane(size=60000, z=0.0, color=(0.002, 0.004, 0.007), rough=0.04, wave=0
     b.inputs['IOR'].default_value = 1.33
     b.inputs['Specular IOR Level'].default_value = 0.6
     tc = nb.n('ShaderNodeTexCoord')
-    w1 = nb.n('ShaderNodeTexWave', Scale=wave_scale, Distortion=6.0, Detail=6.0, _wave_type='BANDS')
-    w1.inputs['Detail Scale'].default_value = 2.0
-    nb.l(tc, 'Object', w1, 'Vector')
-    M.animate(w1.inputs['Phase Offset'], 'default_value', [(0, 0.0), (frames, 18.0)])
+    # two noise octave groups (no wave bands: bands alias into dark stripes at grazing angles near the horizon)
     nz = nb.n('ShaderNodeTexNoise', Scale=wave_scale * 25, Detail=8.0)
     nz.noise_dimensions = '4D'
     nb.l(tc, 'Object', nz, 'Vector')
     M.animate(nz.inputs['W'], 'default_value', [(0, 0.0), (frames, 3.0)])
-    mix = nb.math('ADD', w1.outputs['Fac'], nz.outputs['Fac'])
+    nz2 = nb.n('ShaderNodeTexNoise', Scale=wave_scale * 4, Detail=4.0)
+    nz2.noise_dimensions = '4D'
+    nb.l(tc, 'Object', nz2, 'Vector')
+    M.animate(nz2.inputs['W'], 'default_value', [(0, 0.0), (frames, 1.0)])
+    mix = nb.math('ADD', nz.outputs['Fac'], nz2.outputs['Fac'])
     bp = nb.n('ShaderNodeBump', Strength=wave, Distance=1.0)
     nb.l(mix, 0, bp, 'Height')
     nb.l(bp, 'Normal', b, 'Normal')
