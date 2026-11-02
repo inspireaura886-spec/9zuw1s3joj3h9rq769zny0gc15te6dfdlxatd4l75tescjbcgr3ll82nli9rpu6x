@@ -266,6 +266,49 @@ def ocean(size=4000, center=(0, 0, 0), scale=1.0, wave_scale=1.2, choppy=1.2, re
     return o
 
 
+def cloud_deck_far(z=-380, size=120000, hole=9000, color=(0.55, 0.6, 0.72), scale=0.00025, coverage=0.45):
+    """Cheap distant cloud tops (a lit, bumpy surface) that continue the volumetric deck out to the horizon.
+    The middle (radius `hole`) is cut away so the real volume shows there."""
+    me = bpy.data.meshes.new('FarDeck')
+    import bmesh
+    bm = bmesh.new()
+    n = 48
+    inner, outer = [], []
+    for k in range(n):
+        a = 2 * math.pi * k / n
+        inner.append(bm.verts.new((hole * math.cos(a), hole * math.sin(a), z)))
+        outer.append(bm.verts.new((size / 2 * math.cos(a), size / 2 * math.sin(a), z)))
+    for k in range(n):
+        bm.faces.new((inner[k], outer[k], outer[(k + 1) % n], inner[(k + 1) % n]))
+    bm.to_mesh(me)
+    bm.free()
+    o = bpy.data.objects.new('FarDeck', me)
+    bpy.context.scene.collection.objects.link(o)
+    m, nb, b, out = M.new('FarDeckMat')
+    tc = nb.n('ShaderNodeTexCoord')
+    nz = nb.n('ShaderNodeTexNoise', Scale=scale * 1000, Detail=6.0, Roughness=0.6)
+    vm = nb.n('ShaderNodeVectorMath')
+    vm.operation = 'SCALE'
+    nb.l(tc, 'Object', vm, 0)
+    vm.inputs['Scale'].default_value = 0.001
+    nb.l(vm, 'Vector', nz, 'Vector')
+    cr = nb.n('ShaderNodeValToRGB')
+    cr.color_ramp.elements[0].position = coverage
+    cr.color_ramp.elements[0].color = (0.004, 0.006, 0.01, 1)
+    cr.color_ramp.elements[1].position = coverage + 0.15
+    cr.color_ramp.elements[1].color = (*color, 1)
+    nb.l(nz, 'Fac', cr, 'Fac')
+    nb.l(cr, 'Color', b, 'Base Color')
+    b.inputs['Roughness'].default_value = 1.0
+    b.inputs['Specular IOR Level'].default_value = 0.0
+    bp = nb.n('ShaderNodeBump', Strength=0.6, Distance=40.0)
+    nb.l(nz, 'Fac', bp, 'Height')
+    nb.l(bp, 'Normal', b, 'Normal')
+    o.data.materials.append(m)
+    o.visible_shadow = False
+    return o
+
+
 def sea_plane(size=60000, z=0.0, color=(0.002, 0.004, 0.007), rough=0.04, wave=0.35, wave_scale=0.08, frames=900):
     """Cheap infinite-looking sea for aerial views: glossy plane + animated multi-scale wave bump."""
     me = bpy.data.meshes.new('Sea')

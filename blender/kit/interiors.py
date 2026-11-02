@@ -201,7 +201,7 @@ def ppi_material(name='PPI', sweep_s=4.0, frames=200, blips=(), seed=0, glow=6.0
     fr = nb.math('FRACT', d2.outputs[0])
     after = nb.math('MULTIPLY', fr.outputs[0], vb=-5.0)
     glowc = nb.math('EXPONENT', after.outputs[0])
-    beamline = nb.math('LESS_THAN', fr.outputs[0], vb=0.006)
+    beamline = nb.math('LESS_THAN', fr.outputs[0], vb=0.0028)
     # range rings
     r5 = nb.math('MULTIPLY', r, vb=5.0)
     rf = nb.math('FRACT', r5.outputs[0])
@@ -267,7 +267,7 @@ def radar_room(frames=120, blips=(), seed=2, haze=0.02, t0=0.0):
     """Dark ATC radar room: hero PPI console at origin (scope face up, tilted toward the operator), 2 background
     consoles with their own scopes (bokeh), green spill, desk lamp, smoky haze."""
     root = Md.empty('RadarRoom')
-    console = M.principled('Console', base=(0.16, 0.19, 0.17), rough=0.5, grime=0.5, rough_noise=0.15, bump=0.06)
+    console = M.principled('Console', base=(0.07, 0.085, 0.08), rough=0.42, metal=0.3, grime=0.5, rough_noise=0.15, bump=0.06)
     dark = M.principled('Bezel', base=(0.02, 0.02, 0.022), rough=0.35, metal=0.7)
     floor = M.texture_set('Floor', 'concrete_floor_worn_001', scale=0.5, tint=(0.35, 0.35, 0.35))
     wall = M.texture_set('Wall', 'rough_concrete', scale=0.4, tint=(0.22, 0.24, 0.24))

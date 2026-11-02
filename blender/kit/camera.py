@@ -85,6 +85,14 @@ def track(obj_name, offset=(0, -10, 2), offset1=None, look_offset=(0, 0, 0), eas
     return f
 
 
+def follow(obj_name, p0, p1, look_offset=(0, 0, 0), ease=smooth):
+    """Camera dollies p0 -> p1 in world space while panning to keep an animated object framed (spotter shot)."""
+    def f(t):
+        o = bpy.data.objects[obj_name]
+        return {'pos': lerp(p0, p1, ease(t)), 'look': o.matrix_world.translation + Vector(look_offset)}
+    return f
+
+
 def path(points, look, ease=smooth):
     """Catmull-Rom through points (crane/fly-through)."""
     P = [Vector(p) for p in points]

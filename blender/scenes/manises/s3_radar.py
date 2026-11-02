@@ -7,7 +7,7 @@ from kit import core, camera as C, world as Wd, models as Md, mat as M, interior
 a = core.args()
 sc = core.reset()
 NF = 95
-core.setup_render(sc, samples=48, look='AgX - Medium High Contrast', exposure=0.9, vol_step=8.0, vol_max_steps=32,
+core.setup_render(sc, samples=20, look='AgX - Medium High Contrast', exposure=0.9, vol_step=8.0, vol_max_steps=32,
                   bounces=5)
 core.finish(sc, glare=0.6, glare_thr=0.8, glare_size=8, vignette=0.45, lift=(0.99, 1.01, 1.03),
             gain=(1.0, 1.0, 0.97), sat=0.95)
