@@ -76,14 +76,15 @@ export const Cam = ({pos, look, fov = 40, children}) => {
 };
 
 // ------------------------------------------------------------ cast card
-export const Char = ({who, pos = [0, 0, 0], h, expr, armL, armR, look = 0, mouth = 0, blink = 0, glow = 0.6, flip = false, tilt = 0, shadow = true, opacity = 1, item = null}) => {
+export const Char = ({who, pos = [0, 0, 0], h, expr, armL, armR, look = 0, mouth = 0, blink = 0, glow = 0.6, flip = false, tilt = 0, shadow = true, opacity = 1, item = null, ...extra}) => {
+  const RES = CARD.RES || 1;
   const {q} = useCam();
   const [cv, tex] = useMemo(() => {
-    const c = document.createElement('canvas'); c.width = CARD.W; c.height = CARD.H;
+    const c = document.createElement('canvas'); c.width = CARD.W * RES; c.height = CARD.H * RES;
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return [c, t];
   }, []);
-  const pose = {mouth, blink, look, glow, item}; if (expr) pose.expr = expr; if (armL !== undefined) pose.armL = armL; if (armR !== undefined) pose.armR = armR;
-  const g2 = cv.getContext('2d'); g2.setTransform(1, 0, 0, 1, 0, 0); g2.clearRect(0, 0, CARD.W, CARD.H); g2.translate(CARD.PAD, 0); DRAW[who](g2, pose); tex.needsUpdate = true;
+  const pose = {mouth, blink, look, glow, item, ...extra}; if (expr) pose.expr = expr; if (armL !== undefined) pose.armL = armL; if (armR !== undefined) pose.armR = armR;
+  const g2 = cv.getContext('2d'); g2.setTransform(1, 0, 0, 1, 0, 0); g2.clearRect(0, 0, CARD.W * RES, CARD.H * RES); g2.scale(RES, RES); g2.translate(CARD.PAD, 0); DRAW[who](g2, pose); tex.needsUpdate = true;
   const H = (h || HEIGHT[who]); const Wd = H * CARD.W / CARD.H;
   const e = new THREE.Euler().setFromQuaternion(q || new THREE.Quaternion());
   return (
