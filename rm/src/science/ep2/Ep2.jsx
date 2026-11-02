@@ -17,14 +17,14 @@ const PR = 3; // tiny-planet radius, north pole at y = 0
 /** tiny Earth with a hole at the north pole (top at y = 0) */
 const TinyEarth = ({f, flip = false}) => (
   <group rotation={[0, 0, flip ? Math.PI : 0]} position={[0, flip ? -2 * PR : 0, 0]}>
-    <Planet file={EARTH} r={PR} pos={[0, -PR, 0]} rotY={1.2} atmo="#7fc8ff" ink={1.012} />
+    <Planet file={EARTH} r={PR} pos={[0, -PR, 0]} rotY={0.35} tilt={Math.PI / 2} atmo="#7fc8ff" ink={1.012} />
     <mesh position={[0, 0.012, 0]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[0.36, 40]} /><meshBasicMaterial color="#120a16" /></mesh>
     <mesh position={[0, 0.014, 0]} rotation={[-Math.PI / 2, 0, 0]}><ringGeometry args={[0.36, 0.44, 40]} /><meshBasicMaterial color="#8a5a3c" /></mesh>
     {[[-0.55, 0.05, -0.2], [0.5, 0.05, 0.25], [0.2, 0.04, -0.45]].map((p, i) => <Ball key={i} r={0.07 + i * 0.02} pos={p} color="#8a5a3c" ink={1.1} />)}
   </group>
 );
 const World = ({children, f}) => (<><Lights sun={[6, 6, 8]} /><Stars />{children}</>);
-const HOOK = {pos: [0.15, 0.95, 3.6], look: [0, 0.55, 0], fov: 46};
+const HOOK = {pos: [0.1, 1.0, 4.3], look: [0, 0.5, 0], fov: 46};
 /** Zib inside the cut-away diagram: u in [-1, 1] = position along the tunnel (1 = top surface) */
 const CUT = {y: 2.0, R: 1.6};
 const ZibIn = ({f, t, u, expr = 'happy', arms = 150}) => <Actor who="ZIB" vo={VO} t={t} pos={[0, CUT.y + u * CUT.R - 0.17, 0.05]} h={0.34} expr={expr} armL={arms} armR={arms} shadow={false} seed={3} />;
@@ -34,7 +34,7 @@ const Presenter = ({who, t, x = -0.95, ...p}) => <Actor who={who} vo={VO} t={t} 
 
 const JUMP0 = W(1, 'wheee'), JUMPE = JUMP0 + 16; // Zib leaps into the hole
 const JUMP2 = W(12, 'wheee') - 6; // end: leaps again (loop)
-const leap = (f, f0, from = [0.75, 0, 0.5]) => { const u = clamp((f - f0) / 20); if (u <= 0) return from; const k = sstep(u / 0.7);
+const leap = (f, f0, from = [0.5, -0.06, 0.4]) => { const u = clamp((f - f0) / 20); if (u <= 0) return from; const k = sstep(u / 0.7);
   const y = u < 0.45 ? from[1] + 0.8 * Math.sin(Math.PI / 2 * u / 0.45) : from[1] + 0.8 - 2.2 * sstep((u - 0.45) / 0.55);
   return [from[0] * (1 - k), y, from[2] * (1 - k)]; };
 
@@ -42,15 +42,15 @@ const shots = [
   // 0 PIP with shovel next to the hole on a tiny Earth (hook)
   {from: 0, render: (f, t) => { const c = glide(f, 0, L(1), HOOK, push(HOOK, 0.08));
     return <Cam {...c}><World f={f}><TinyEarth f={f} />
-      <Actor who="PIP" vo={VO} t={t} pos={[-0.65, -0.07, 0]} expr="happy" armR={40} item="shovel" look={0.5} seed={1} />
-      <Actor who="ZIB" vo={VO} t={t} pos={[0.75, -0.09, 0.5]} expr="smug" armR={25} armL={25} look={-0.6} seed={3} />
+      <Actor who="PIP" vo={VO} t={t} pos={[-0.45, -0.04, 0]} expr="happy" armR={40} item="shovel" look={0.5} seed={1} />
+      <Actor who="ZIB" vo={VO} t={t} pos={[0.5, -0.06, 0.4]} expr="smug" armR={25} armL={25} look={-0.6} seed={3} />
     </World></Cam>; }},
   // 1 ZIB "Dibs! Wheee!" leaps in
   {from: L(1), render: (f, t) => { const A = {pos: [0.2, 1.0, 3.2], look: [0.1, 0.35, 0], fov: 44}; const c = glide(f, L(1), L(2), A, push(A, 0.1));
     const p = leap(f, JUMP0 - 4); const gone = p[1] < -0.95;
     return <Cam {...c}><World f={f}><TinyEarth f={f} />
-      <Actor who="PIP" vo={VO} t={t} pos={[-0.65, -0.07, 0]} expr="shock" armL={140} armR={40} item="shovel" look={0.6} seed={1} />
-      {!gone && <Actor who="ZIB" vo={VO} t={t} pos={p} expr="happy" armL={160} armR={160} seed={3} shadow={p[1] > -0.1} />}
+      <Actor who="PIP" vo={VO} t={t} pos={[-0.45, -0.04, 0]} expr="shock" armL={140} armR={40} item="shovel" look={0.6} seed={1} />
+      {!gone && <Actor who="ZIB" vo={VO} t={t} pos={p} expr="happy" armL={160} armR={160} seed={3} shadow={f < JUMP0 - 4 || p[1] < -10} />}
     </World></Cam>; }},
   // 2 BOLT: assumptions
   {from: L(2), render: (f, t) => { const A = med(0.75, 0.1, 1.7, 3.2, 0.3); const c = glide(f, L(2), L(3), A, push(A));
@@ -127,14 +127,14 @@ const shots = [
     return <Cam {...c}><World f={f}><TinyEarth f={f} />
       <Actor who="PIP" vo={VO} t={t} pos={[-0.7, -0.08, 0]} expr="happy" armR={110} item="shovel" look={0.4} seed={1} />
       <Actor who="BOLT" vo={VO} t={t} pos={[0.8, -0.11, -0.2]} expr="deadpan" look={-0.4} seed={2} />
-      <Actor who="ZIB" vo={VO} t={t} pos={[0.6, -0.09, 0.6]} expr="smug" armR={30} seed={3} look={-0.5} />
+      <Actor who="ZIB" vo={VO} t={t} pos={[0.5, -0.06, 0.45]} expr="smug" armR={30} seed={3} look={-0.5} />
     </World></Cam>; }},
   // 12 ZIB leaps again -> glides into the frame-0 framing (loop)
   {from: L(12), render: (f, t) => { const c = glide(f, L(12), EP2_FRAMES - 1, push(HOOK, 0.12), HOOK);
-    const p = leap(f, JUMP2, [0.6, -0.09, 0.6]); const gone = p[1] < -0.95;
+    const p = leap(f, JUMP2, [0.5, -0.06, 0.45]); const gone = p[1] < -0.95;
     return <Cam {...c}><World f={f}><TinyEarth f={f} />
-      <Actor who="PIP" vo={VO} t={t} pos={[-0.65, -0.07, 0]} expr="shock" armR={40} item="shovel" look={0.5} seed={1} />
-      {!gone && <Actor who="ZIB" vo={VO} t={t} pos={p} expr="happy" armL={160} armR={160} seed={3} shadow={p[1] > -0.1} />}
+      <Actor who="PIP" vo={VO} t={t} pos={[-0.45, -0.04, 0]} expr="shock" armR={40} item="shovel" look={0.5} seed={1} />
+      {!gone && <Actor who="ZIB" vo={VO} t={t} pos={p} expr="happy" armL={160} armR={160} seed={3} shadow={f < JUMP2} />}
     </World></Cam>; }},
 ];
 
