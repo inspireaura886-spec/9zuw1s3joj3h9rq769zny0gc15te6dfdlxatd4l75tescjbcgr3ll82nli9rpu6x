@@ -21,7 +21,7 @@ sc = core.reset()
 NF = 240
 BOOP = 120
 rnd = random.Random(2142)
-core.setup_render(sc, samples=20, look='AgX - Medium High Contrast', exposure=0.15, bounces=5, clamp_ind=5.0,
+core.setup_render(sc, samples=20, look='AgX - Medium High Contrast', exposure=0.55, bounces=5, clamp_ind=5.0,
                   vol_step=8.0, vol_max_steps=16)
 if LAYER == 'bg':
     core.finish(sc, glare=0.6, glare_thr=1.0, glare_size=8, vignette=0.32, lens_dist=0.0, dispersion=0.0,
@@ -81,7 +81,7 @@ rubber = M.principled('Rubber', base=(0.012, 0.012, 0.014), rough=0.7)
 cable_r = M.principled('CableRed', base=(0.35, 0.04, 0.03), rough=0.6)
 cable_y = M.principled('CableYel', base=(0.5, 0.36, 0.05), rough=0.6)
 cable_b = M.principled('CableBlu', base=(0.03, 0.12, 0.3), rough=0.6)
-glass = M.thin_glass('Window', refl=0.05)
+glass = M.thin_glass('Window', refl=0.015)
 
 
 def hazard(name, scale=14.0):
@@ -249,7 +249,7 @@ for s in (-1, 1):
 lampm = M.emission('StripLamp', color=(1.0, 0.82, 0.62), strength=6.0)
 for k, yy in enumerate((-1.6, -0.2, 1.1)):
     bx('Strip%d' % k, (0, yy, ZR - 0.13), (0.7, 0.07, 0.02), lampm, bev=0)
-    Wd.area('StripLight%d' % k, (0, yy, ZR - 0.18), (0, yy, 0), color=(1.0, 0.8, 0.6), power=14, size=0.7)
+    Wd.area('StripLight%d' % k, (0, yy, ZR - 0.18), (0, yy, 0), color=(1.0, 0.8, 0.6), power=30, size=0.7)
 # sagging cable bundles along the ceiling (lived-in)
 for k, (x0, mm) in enumerate(((-1.1, cable_r), (-1.0, rubber), (1.05, cable_b), (1.15, rubber), (0.95, cable_y))):
     cable('CeilCable%d' % k, [(x0, -3.0, ZR - 0.1), (x0 + 0.05, -1.6, ZR - 0.42 - 0.05 * k), (x0 - 0.05, -0.3, ZR - 0.15),
@@ -260,8 +260,6 @@ bx('JambL', (-1.62, YF, 1.37), (0.46, 0.16, 2.75), hull, bev=0.02)
 bx('JambR', (1.62, YF, 1.37), (0.46, 0.16, 2.75), hull, bev=0.02)
 bx('Header', (0, YF, 2.62), (3.7, 0.18, 0.34), hull, bev=0.02)
 bx('Sill', (0, YF, 0.5), (3.7, 0.16, 1.0), paint_m, bev=0.02)
-for i, xx in enumerate((-0.47, 0.47)):
-    bx('Mullion%d' % i, (xx, YF - 0.02, 1.72), (0.07, 0.14, 1.5), dark, bev=0.012)
 bx('FrameIn', (0, YF - 0.09, 2.44), (2.8, 0.04, 0.05), dark, bev=0.005)
 gl = I.Md.mesh_obj('Glass', [(-1.4, YF + 0.03, 0.98), (1.4, YF + 0.03, 0.98), (1.4, YF + 0.03, 2.46), (-1.4, YF + 0.03, 2.46)],
                    [(0, 1, 2, 3)], smooth=False, mats=(glass,))
@@ -340,18 +338,18 @@ cable('LooseB', [(1.1, 1.5, 0.7), (1.15, 1.35, 0.05), (1.4, 0.9, 0.012), (1.7, 0
 
 # ---------------------------------------------------------------- FOREGROUND layer objects (FG_*)
 fgm = M.principled('FGPaint', base=(0.07, 0.08, 0.09), rough=0.5, grime=0.5, metal=0.3)
-bx('FG_SideConsole', (1.0, -0.42, 0.21), (0.9, 0.55, 0.42), fgm, rot=(0, 0, -6), bev=0.03)
-bx('FG_SideLip', (1.0, -0.68, 0.43), (0.92, 0.06, 0.04), dark, rot=(0, 0, -6), bev=0.012)
-bx('FG_SideStrip', (1.0, -0.715, 0.43), (0.8, 0.01, 0.012), M.emission('FGStrip', color=(0.2, 0.9, 1.0), strength=6.0), rot=(0, 0, -6), bev=0)
-for k in range(6):
-    bx('FG_Key%d' % k, (0.66 + k * 0.08, -0.5, 0.44), (0.05, 0.05, 0.02), ledm['a' if k == 2 else 'c'] if k % 2 else rubber, rot=(0, 0, -6), bev=0)
-cable('FG_CableA', [(-1.3, -0.55, ZR - 0.05), (-0.65, -0.42, 1.98), (-0.2, -0.33, 2.15), (0.3, -0.25, ZR - 0.05)], 0.03, rubber)
-cable('FG_CableB', [(-1.3, -0.5, ZR - 0.05), (-0.75, -0.4, 2.05), (-0.25, -0.3, 2.25), (0.3, -0.2, ZR - 0.05)], 0.022, cable_r)
+bx('FG_SideConsole', (0.85, -0.5, 0.15), (1.3, 0.45, 0.3), fgm, bev=0.03)
+bx('FG_SideLip', (0.85, -0.725, 0.3), (1.32, 0.06, 0.04), dark, bev=0.012)
+bx('FG_SideStrip', (0.85, -0.758, 0.3), (1.2, 0.01, 0.012), M.emission('FGStrip', color=(0.2, 0.9, 1.0), strength=6.0), bev=0)
+for k in range(9):
+    bx('FG_Key%d' % k, (0.35 + k * 0.1, -0.55, 0.31), (0.05, 0.05, 0.02), ledm['a' if k == 4 else 'c'] if k % 2 else rubber, bev=0)
+cable('FG_CableA', [(-1.6, 0.1, ZR - 0.05), (-0.9, 0.18, 1.9), (0.0, 0.2, 1.74), (0.9, 0.25, 1.9), (1.6, 0.3, ZR - 0.05)], 0.03, rubber)
+cable('FG_CableB', [(-1.6, 0.16, ZR - 0.05), (-0.85, 0.22, 1.96), (0.05, 0.25, 1.82), (0.95, 0.3, 1.97), (1.6, 0.34, ZR - 0.05)], 0.02, cable_r)
 
 # ---------------------------------------------------------------- Jupiter + light
-CAMC = Vector((0.08, -1.3, 1.08))
-d = Vector((-0.3, 1.0, 0.36)).normalized()
-JD, JR = 3000.0, 520.0
+CAMC = Vector((0.10, -1.55, 1.10))
+d = Vector((-0.1429, 0.9642, 0.2236)).normalized()  # lands at screen ~(380, 560) on frame 0 (plan.py unproject)
+JD, JR = 3000.0, 620.0
 bpy.ops.mesh.primitive_uv_sphere_add(segments=96, ring_count=48, radius=JR, location=CAMC + d * JD)
 jup = bpy.context.active_object
 jup.name = 'Jupiter'
@@ -389,11 +387,11 @@ sun.color = (1.0, 0.86, 0.68)
 sun.angle = math.radians(0.6)
 so = bpy.data.objects.new('Sun', sun)
 sc.collection.objects.link(so)
-rays = Vector((-0.55, -0.62, -0.5)).normalized()
+rays = Vector((-0.85, -0.057, -0.51)).normalized()  # sun to the right: Jupiter half-lit, warm streak on the left wall
 so.rotation_euler = rays.to_track_quat('-Z', 'Y').to_euler()
 # warm planetshine through the window (rim/back light) + cyan console fill toward the crew
-ps = Wd.area('Planetshine', (-0.3, 3.4, 1.9), (0, 0.5, 0.8), color=(1.0, 0.55, 0.25), power=90, size=2.6)
-cf = Wd.area('ConsoleFill', (0.0, 1.45, 1.25), (0.0, 0.2, 0.9), color=(0.25, 0.85, 1.0), power=22, size=1.4)
+ps = Wd.area('Planetshine', (-0.3, 3.4, 1.9), (0, 0.5, 0.8), color=(1.0, 0.55, 0.25), power=160, size=2.6)
+cf = Wd.area('ConsoleFill', (0.0, 1.45, 1.25), (0.0, 0.2, 0.9), color=(0.25, 0.85, 1.0), power=30, size=1.4)
 for lo in (ps, cf):
     lo.visible_camera = False
     lo.visible_glossy = True
