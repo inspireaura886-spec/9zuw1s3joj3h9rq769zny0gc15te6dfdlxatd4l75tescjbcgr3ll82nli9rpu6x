@@ -29,7 +29,7 @@ export const EarthCut = ({R = 3, glowCore = 0, tunnel = true}) => {
         <mesh key={'l' + i} position={[0, 0, 0.01]}><ringGeometry args={[R * k - 0.025, R * k + 0.025, 96]} /><meshBasicMaterial color="#241726" /></mesh>
       ))}
       {glowCore > 0 && <mesh position={[0, 0, 0.012]}><circleGeometry args={[R * 0.55, 96]} /><meshBasicMaterial color="#ffffff" transparent opacity={0.35 * glowCore} toneMapped={false} /></mesh>}
-      {tunnel && <mesh position={[0, 0, 0.014]}><planeGeometry args={[0.16, R * 2 * 1.01]} /><meshBasicMaterial color="#1a1020" /></mesh>}
+      {tunnel && <mesh position={[0, 0, 0.014]}><planeGeometry args={[0.24, R * 2 * 1.01]} /><meshBasicMaterial color="#1a1020" /></mesh>}
       <mesh position={[0, 0, 0.0]}><ringGeometry args={[R, R * 1.025, 128]} /><meshBasicMaterial color="#241726" /></mesh>
     </group>
   );

@@ -88,7 +88,7 @@ export const Char = ({who, pos = [0, 0, 0], h, expr, armL, armR, look = 0, mouth
   const e = new THREE.Euler().setFromQuaternion(q || new THREE.Quaternion());
   return (
     <group position={pos}>
-      {shadow && <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}><circleGeometry args={[H * 0.24, 28]} /><meshBasicMaterial color="#000" transparent opacity={0.25 * opacity} depthWrite={false} /></mesh>}
+      {shadow && <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}><circleGeometry args={[H * 0.16, 28]} /><meshBasicMaterial color="#000" transparent opacity={0.2 * opacity} depthWrite={false} /></mesh>}
       <group quaternion={q}>
         <group rotation={[0, 0, tilt]}>
           <mesh position={[0, H / 2 - H * 0.025, 0]} scale={[flip ? -1 : 1, 1, 1]}>
@@ -122,7 +122,7 @@ export const Planet = ({file, color = '#ffffff', r = 1, pos = [0, 0, 0], rotY = 
         <mesh rotation={[0, rotY, 0]}><sphereGeometry args={[r, 64, 48]} /><Toon map={map} color={color} emissive={emissive} /></mesh>
         <mesh scale={[ink, ink, ink]}><sphereGeometry args={[r, 48, 32]} /><InkMat /></mesh>
       </group>
-      {atmo && <mesh scale={[1.12, 1.12, 1.12]}><sphereGeometry args={[r, 48, 32]} /><meshBasicMaterial color={atmo} transparent opacity={0.22} side={THREE.BackSide} depthWrite={false} /></mesh>}
+      {atmo && <mesh scale={[1.12, 1.12, 1.12]}><sphereGeometry args={[r, 48, 32]} /><meshBasicMaterial color={atmo} transparent opacity={0.3} side={THREE.BackSide} depthWrite={false} blending={THREE.AdditiveBlending} /></mesh>}
     </group>
   );
 };
@@ -130,7 +130,7 @@ export const Ball = ({r = 1, pos = [0, 0, 0], color = '#fff', emissive = '#000',
   <group position={pos} scale={[scale, scale, scale]}>
     <mesh><sphereGeometry args={[r, 40, 30]} /><Toon color={color} emissive={emissive} /></mesh>
     {ink > 0 && <mesh scale={[ink, ink, ink]}><sphereGeometry args={[r, 32, 24]} /><InkMat /></mesh>}
-    {glow && <mesh scale={[glowS, glowS, glowS]}><sphereGeometry args={[r, 32, 24]} /><meshBasicMaterial color={glow} transparent opacity={glowO} side={THREE.BackSide} depthWrite={false} toneMapped={false} /></mesh>}
+    {glow && <mesh scale={[glowS, glowS, glowS]}><sphereGeometry args={[r, 32, 24]} /><meshBasicMaterial color={glow} transparent opacity={glowO} side={THREE.BackSide} depthWrite={false} toneMapped={false} blending={THREE.AdditiveBlending} /></mesh>}
   </group>
 );
 export const Box = ({size = [1, 1, 1], pos = [0, 0, 0], rot = [0, 0, 0], color = '#ccc', ink = 0.04, emissive = '#000'}) => (
@@ -204,7 +204,7 @@ export const Captions = ({vo, scheme, y = 1330, size = 72, hideAfter = 1e9}) => 
   const C = useMemo(() => chunks(vo), [vo]);
   const c = C.find((c) => t >= c.s - 0.03 && t < Math.min(c.next - 0.03, c.e + 0.3));
   if (!c || t > hideAfter) return null;
-  const k = easeOut((t - c.s) / 0.12);
+  const k = easeOut((t - c.s + 0.03) / 0.08);
   return (
     <AbsoluteFill style={{pointerEvents: 'none'}}>
       <div style={{position: 'absolute', top: y - size * 0.7, left: 70, right: 70, textAlign: 'center', fontFamily: scheme.font, fontWeight: scheme.weight,
@@ -267,10 +267,16 @@ export const Shots = ({shots, f}) => {
 export const wordF = (vo, li, prefix) => { const w = vo.words.find((w) => w[4] === li && w[0].toLowerCase().replace(/[^a-z0-9]/g, '').startsWith(prefix.toLowerCase())); return w ? Math.round(w[1] * FPS) : Math.round(vo.lines[li].s * FPS); };
 export const lineF = (vo, li) => Math.round(vo.lines[li].s * FPS);
 /** smooth camera glide between two framings over [a, b] */
-export const glide = (f, a, b, A, B) => { const t = sstep((f - a) / Math.max(1, b - a)); return {pos: lerp3(A.pos, B.pos, t), look: lerp3(A.look, B.look, t), fov: A.fov + (B.fov - A.fov) * t}; };
+export const glide = (f, a, b, A, B) => { const u = clamp((f - a) / Math.max(1, b - a)); const t = 0.4 * u + 0.6 * sstep(u); // never comes to a full stop inside a shot
+  return {pos: lerp3(A.pos, B.pos, t), look: lerp3(A.look, B.look, t), fov: A.fov + (B.fov - A.fov) * t}; };
 /** medium framing on a character standing at (x, z) with height h, camera d metres away (side offset sx) */
 export const med = (x, z, h, d = 3.0, sx = 0, fov = 40) => ({pos: [x + sx, h * 0.66, z + d], look: [x, h * 0.52, z], fov});
 /** slow push: same framing, d shrinks by k (creeping hold, never static) */
 export const push = (A, k = 0.12) => ({pos: lerp3(A.pos, A.look, k), look: A.look, fov: A.fov - 1.5});
 /** diagram camera (space diagrams: subject centred at y ~1.6, presenter card bottom corner) */
 export const DG = {pos: [0, 1.2, 9.5], look: [0, 1.6, 0], fov: 44};
+
+/** group framing used by the end-question shot of every episode (characters between the question card and the captions) */
+export const GROUP = {pos: [0, 1.3, 7.0], look: [0, 0.55, 0], fov: 36};
+
+export const lerpCol = (a, b, t) => '#' + new THREE.Color(a).lerp(new THREE.Color(b), clamp(t)).getHexString();

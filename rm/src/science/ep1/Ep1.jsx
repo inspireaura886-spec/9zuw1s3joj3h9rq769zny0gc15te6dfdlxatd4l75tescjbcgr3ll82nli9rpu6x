@@ -3,7 +3,7 @@ import React from 'react';
 import * as THREE from 'three';
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
 import {Stage, Cam, Actor, Stars, Planet, Ball, Cyl, Ring, Arrow, Lights, SciFonts, Captions, Title, Label, EndQ, Flash, Vignette, Mark, Shots,
-  keyed, sstep, lerp3, lineF, wordF, FPS, glide, med, push, DG} from '../kit.jsx';
+  keyed, sstep, lerp3, lineF, wordF, FPS, glide, med, push, DG, GROUP, lerpCol} from '../kit.jsx';
 import {Deck} from '../sets.jsx';
 import VO from './vo.json';
 import SCH from '../schemes.json';
@@ -53,21 +53,21 @@ const shots = [
     </Space></Cam>; }},
   // 3 PIP: tides = two bulges pulled toward the Moon (Moon ghost above, vertical layout)
   {from: L(3), render: (f, t) => { const c = glide(f, L(3), L(4), DG, DGP);
-    const b = 1 + 0.2 * sstep((f - W(3, 'bulges') + 8) / 14);
+    const b = 1 + 0.3 * sstep((f - W(3, 'bulges') + 8) / 14);
     return <Cam {...c}><Lights sun={[8, 4, 6]} /><Stars />
       <Planet file={EARTH} r={1.3} pos={[0, 1.6, 0]} rotY={f * 0.004} tilt={0.2} atmo={null} />
-      <mesh position={[0, 1.6, 0]} scale={[1.36, 1.36 * b, 1.36]}><sphereGeometry args={[1, 48, 32]} /><meshBasicMaterial color="#5fb8ff" transparent opacity={0.4} depthWrite={false} /></mesh>
-      <Planet file={MOON} r={0.45} pos={[0, 3.9, -1]} />
-      <Arrow a={[0, 3.3, -0.6]} b={[0, 3.05, -0.2]} color="#ffb547" w={0.05} opacity={sstep((f - W(3, 'gravity')) / 8)} />
+      <mesh position={[0, 1.6, 0]} scale={[1.36, 1.36 * b, 1.36]}><sphereGeometry args={[1, 48, 32]} /><meshBasicMaterial color="#3fa9ff" transparent opacity={0.45} depthWrite={false} /></mesh>
+      <Planet file={MOON} r={0.42} pos={[0, 4.35, -1]} />
+      <Arrow a={[0, 3.85, -0.8]} b={[0, 3.05, -0.25]} color="#ffb547" w={0.05} opacity={sstep((f - W(3, 'gravity')) / 8)} />
       <Presenter who="PIP" f={f} t={t} expr="happy" armR={110} look={0.8} />
     </Cam>; }},
   // 4 BOLT: the Sun keeps smaller tides (bulge shrinks)
   {from: L(4), render: (f, t) => { const c = glide(f, L(4), L(5), DGP, DG);
     const b = 1.2 - 0.12 * sstep((f - W(4, 'less') + 6) / 14);
-    return <Cam {...c}><Lights sun={[0, 8, 3]} color="#fff3d6" /><Stars />
-      <Ball r={0.6} pos={[0, 4.0, -1.5]} color="#ffd25a" emissive="#ff9d2a" glow="#ffcf6a" glowS={1.6} glowO={0.35} />
+    return <Cam {...c}><Lights sun={[-8, 1, 3]} color="#fff3d6" /><Stars />
+      <Ball r={1.0} pos={[-2.75, 1.7, -1.0]} color="#ffd25a" emissive="#ff9d2a" glow="#ffcf6a" glowS={1.35} glowO={0.4} />
       <Planet file={EARTH} r={1.3} pos={[0, 1.6, 0]} rotY={1 + f * 0.004} tilt={0.2} />
-      <mesh position={[0, 1.6, 0]} scale={[1.36, 1.36 * b, 1.36]}><sphereGeometry args={[1, 48, 32]} /><meshBasicMaterial color="#5fb8ff" transparent opacity={0.4} depthWrite={false} /></mesh>
+      <mesh position={[0, 1.6, 0]} scale={[1.36 * b, 1.36, 1.36]}><sphereGeometry args={[1, 48, 32]} /><meshBasicMaterial color="#3fa9ff" transparent opacity={0.45} depthWrite={false} /></mesh>
       <Presenter who="BOLT" f={f} t={t} x={0.95} expr="deadpan" look={-0.6} armL={110} />
     </Cam>; }},
   // 5 ZIB "Tiny waves! Cute!"
@@ -85,8 +85,8 @@ const shots = [
   {from: L(7), render: (f, t) => { const c = glide(f, L(7), L(8), DG, DGP);
     const k = sstep((f - L(7) - 4) / 12);
     return <Cam {...c}><ambientLight intensity={1.3} /><Stars />
-      <Planet file={MOON} r={1.0} scale={k} pos={[-0.55, 2.3, 0]} emissive="#55524a" atmo="#fff6d8" />
-      <Ball r={0.05} pos={[1.15, 2.3, 0]} color="#fffbe8" emissive="#fff3c8" glow="#fff3c8" glowS={3} glowO={0.5} ink={0} />
+      <Planet file={MOON} r={1.0} scale={k} pos={[-0.45, 2.2, 0]} emissive="#55524a" atmo="#fff6d8" />
+      <Ball r={0.05} pos={[0.95, 3.5, 0]} color="#fffbe8" emissive="#fff3c8" glow="#fff3c8" glowS={3} glowO={0.5} ink={0} />
       <Presenter who="BOLT" f={f} t={t} x={0.95} expr="deadpan" look={-0.4} armL={95} />
     </Cam>; }},
   // 8 PIP: tilt 23.4 deg -> seasons
@@ -108,8 +108,8 @@ const shots = [
   // 10 PIP: wild seasons (Earth tipped far, hot then cold tint)
   {from: L(10), render: (f, t) => { const A = med(0.2, -0.6, 1.5, 3.4, -0.4); const c = glide(f, L(10), L(11), A, push(A));
     const hot = sstep((f - W(10, 'blazing')) / 10), cold = sstep((f - W(10, 'brutal')) / 10);
-    return <Cam {...c}><Lights sun={[8, 4, 6]} color={cold > 0.5 ? '#d8ecff' : hot > 0.5 ? '#ffd9b0' : '#ffffff'} /><Stars />
-      <Planet file={EARTH} r={5} pos={[2.5, 6, -24]} rotY={f * 0.002} tilt={1.1} atmo={cold > 0.5 ? '#cfefff' : hot > 0.5 ? '#ff9a5a' : '#7fc8ff'} />
+    return <Cam {...c}><Lights sun={[8, 4, 6]} color={lerpCol(lerpCol('#ffffff', '#ffd9b0', hot), '#d8ecff', cold)} /><Stars />
+      <Planet file={EARTH} r={5} pos={[2.5, 6, -24]} rotY={f * 0.002} tilt={1.1} atmo={lerpCol(lerpCol('#7fc8ff', '#ff9a5a', hot), '#cfefff', cold)} />
       <Deck />
       <Actor who="PIP" vo={VO} t={t} pos={[0.2, 0, -0.6]} expr={hot > 0.5 ? 'shock' : 'worry'} armL={hot > 0.5 ? 120 : 20} armR={hot > 0.5 ? 120 : 20} seed={1} />
     </Cam>; }},
@@ -120,7 +120,7 @@ const shots = [
   {from: L(12), render: (f, t) => { const A = med(-0.3, -0.4, 1.7, 2.7, 0.3); const c = glide(f, L(12), L(13), A, push(A, 0.1));
     return <Cam {...c}><Space f={f} moon={false}><Deck /><Actor who="BOLT" vo={VO} t={t} pos={[-0.3, 0, -0.4]} expr="deadpan" look={0.4} seed={2} /></Space></Cam>; }},
   // 13 PIP question, group wide (end card)
-  {from: L(13), render: (f, t) => { const A = {pos: [0, 1.6, 7.4], look: [0, 1.15, 0], fov: 38}; const c = glide(f, L(13), L(14), A, push(A, 0.06));
+  {from: L(13), render: (f, t) => { const A = GROUP; const c = glide(f, L(13), L(14), A, push(A, 0.04));
     return <Cam {...c}><Space f={f} moon={false}><Deck />
       <Actor who="PIP" vo={VO} t={t} pos={[-0.95, 0, 0.1]} expr="happy" armR={110} look={0.3} seed={1} />
       <Actor who="BOLT" vo={VO} t={t} pos={[0.95, 0, -0.4]} expr="deadpan" look={-0.4} seed={2} />

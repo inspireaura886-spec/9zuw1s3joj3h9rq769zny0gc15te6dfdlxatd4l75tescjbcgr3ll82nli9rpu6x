@@ -27,7 +27,7 @@ export const Sheet = () => (
         <Deck />
         <Char who="PIP" pos={[-0.85, 0, 0.2]} expr="happy" armR={150} armL={10} />
         <Char who="BOLT" pos={[0.85, 0, -0.2]} expr="deadpan" armL={20} armR={5} look={-0.5} />
-        <Char who="ZIB" pos={[0, 0, 0.8]} expr="smug" armR={60} armL={25} item="remote" />
+        <Char who="ZIB" pos={[0.14, 0, 0.8]} expr="smug" armR={60} armL={25} item="remote" />
       </Cam>
     </Stage>
   </AbsoluteFill>

@@ -2,7 +2,7 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
 import {Stage, Cam, Actor, Stars, Planet, Ball, Ring, Arrow, Lights, SciFonts, Captions, Title, Label, EndQ, Flash, Vignette, Mark, Shots,
-  sstep, clamp, lineF, wordF, FPS, glide, med, push, DG} from '../kit.jsx';
+  sstep, clamp, lineF, wordF, FPS, glide, med, push, DG, GROUP} from '../kit.jsx';
 import {EarthCut} from '../sets.jsx';
 import VO from './vo.json';
 import SCH from '../schemes.json';
@@ -27,7 +27,7 @@ const World = ({children, f}) => (<><Lights sun={[6, 6, 8]} /><Stars />{children
 const HOOK = {pos: [0.1, 1.0, 4.3], look: [0, 0.5, 0], fov: 46};
 /** Zib inside the cut-away diagram: u in [-1, 1] = position along the tunnel (1 = top surface) */
 const CUT = {y: 2.0, R: 1.6};
-const ZibIn = ({f, t, u, expr = 'happy', arms = 150}) => <Actor who="ZIB" vo={VO} t={t} pos={[0, CUT.y + u * CUT.R - 0.17, 0.05]} h={0.34} expr={expr} armL={arms} armR={arms} shadow={false} seed={3} />;
+const ZibIn = ({f, t, u, expr = 'happy', arms = 150}) => <Actor who="ZIB" vo={VO} t={t} pos={[0, CUT.y + u * CUT.R - 0.25, 0.05]} h={0.5} expr={expr} armL={arms} armR={arms} shadow={false} seed={3} />;
 const Streaks = ({u, dir = 1, k = 1}) => k <= 0.02 ? null : (<>{[-0.12, 0.12].map((x, i) => (
   <mesh key={i} position={[x, CUT.y + u * CUT.R + dir * (0.35 + i * 0.05), 0.04]}><planeGeometry args={[0.025, 0.5 * k]} /><meshBasicMaterial color="#ffffff" transparent opacity={0.7 * k} /></mesh>))}</>);
 const Presenter = ({who, t, x = -0.95, ...p}) => <Actor who={who} vo={VO} t={t} pos={[x, 0.44, 3.5]} shadow={false} seed={who === 'PIP' ? 1 : who === 'BOLT' ? 2 : 3} {...p} />;
@@ -61,7 +61,7 @@ const shots = [
   {from: L(3), render: (f, t, lf, p) => { const c = glide(f, L(3), L(4), DG, push(DG, 0.1));
     const u = Math.cos(Math.PI / 2 * 0.62 * sstep(p * 1.1));
     return <Cam {...c}><World f={f}>
-      <group position={[0, CUT.y, 0]} scale={[CUT.R / 3, CUT.R / 3, CUT.R / 3]}><EarthCut R={3} /></group>
+      <group position={[0, CUT.y, 0]} rotation={[0, 0.5, 0]} scale={[CUT.R / 3, CUT.R / 3, CUT.R / 3]}><EarthCut R={3} /></group>
       <ZibIn f={f} t={t} u={u} /><Streaks u={u} k={sstep(p * 2)} />
       <Presenter who="PIP" t={t} expr="happy" armR={100} look={0.8} />
     </World></Cam>; }},
@@ -69,7 +69,7 @@ const shots = [
   {from: L(4), render: (f, t, lf, p) => { const c = glide(f, L(4), L(5), push(DG, 0.1), push(DG, 0.2));
     const u = Math.cos(Math.PI / 2 * (0.62 + 0.38 * sstep(p)));
     return <Cam {...c}><World f={f}>
-      <group position={[0, CUT.y, 0]} scale={[CUT.R / 3, CUT.R / 3, CUT.R / 3]}><EarthCut R={3} /></group>
+      <group position={[0, CUT.y, 0]} rotation={[0, 0.5, 0]} scale={[CUT.R / 3, CUT.R / 3, CUT.R / 3]}><EarthCut R={3} /></group>
       <ZibIn f={f} t={t} u={u} /><Streaks u={u} k={1} />
       <Presenter who="BOLT" t={t} x={0.95} expr="deadpan" look={-0.6} armL={100} />
     </World></Cam>; }},
@@ -77,7 +77,7 @@ const shots = [
   {from: L(5), render: (f, t, lf, p) => { const A = {pos: [0, CUT.y, 1.6], look: [0, CUT.y, 0], fov: 40}; const c = glide(f, L(5), L(6), A, push(A, 0.1));
     const u = -0.08 * sstep(p);
     return <Cam {...c}><World f={f}>
-      <group position={[0, CUT.y, 0]} scale={[CUT.R / 3, CUT.R / 3, CUT.R / 3]}><EarthCut R={3} glowCore={0.6} /></group>
+      <group position={[0, CUT.y, 0]} rotation={[0, 0.5, 0]} scale={[CUT.R / 3, CUT.R / 3, CUT.R / 3]}><EarthCut R={3} glowCore={0.6} /></group>
       <Actor who="ZIB" vo={VO} t={t} pos={[0, CUT.y + u * CUT.R - 0.3, 0.06]} h={0.6} expr="happy" armL={160} armR={160} shadow={false} seed={3} />
       <Streaks u={u + 0.15} k={1} />
     </World></Cam>; }},
@@ -86,7 +86,7 @@ const shots = [
     const u = -Math.sin(Math.PI / 2 * sstep(p * 1.05));
     const zy = CUT.y + u * CUT.R;
     return <Cam {...c}><World f={f}>
-      <group position={[0, CUT.y, 0]} scale={[CUT.R / 3, CUT.R / 3, CUT.R / 3]}><EarthCut R={3} /></group>
+      <group position={[0, CUT.y, 0]} rotation={[0, 0.5, 0]} scale={[CUT.R / 3, CUT.R / 3, CUT.R / 3]}><EarthCut R={3} /></group>
       <ZibIn f={f} t={t} u={u} expr={p > 0.6 ? 'worry' : 'happy'} /><Streaks u={u} dir={1} k={1 - sstep(p * 1.1)} />
       <Arrow a={[0.32, zy - 0.05, 0.06]} b={[0.32, zy + Math.min(0.5, -u * CUT.R * 0.6) + 0.05, 0.06]} color="#ffb547" w={0.035} opacity={sstep((f - W(6, 'gravity')) / 8) * (u < -0.15 ? 1 : 0)} />
       <Presenter who="PIP" t={t} expr="happy" armR={100} look={0.8} />
@@ -94,7 +94,7 @@ const shots = [
   // 7 BOLT: 38 minutes (PREM / seismic data)
   {from: L(7), render: (f, t, lf, p) => { const c = glide(f, L(7), L(8), push(DG, 0.1), DG);
     return <Cam {...c}><World f={f}>
-      <group position={[0, CUT.y, 0]} scale={[CUT.R / 3, CUT.R / 3, CUT.R / 3]}><EarthCut R={3} /></group>
+      <group position={[0, CUT.y, 0]} rotation={[0, 0.5, 0]} scale={[CUT.R / 3, CUT.R / 3, CUT.R / 3]}><EarthCut R={3} /></group>
       <ZibIn f={f} t={t} u={-0.98} expr="worry" arms={20} />
       <Presenter who="BOLT" t={t} x={0.95} expr="deadpan" look={-0.6} armL={100} />
     </World></Cam>; }},
@@ -102,7 +102,7 @@ const shots = [
   {from: L(8), render: (f, t, lf, p) => { const c = glide(f, L(8), L(9), DG, push(DG, 0.12));
     const g = sstep((f - W(8, 'heavy') + 2) / 10) * (0.6 + 0.4 * Math.sin((f - L(8)) / 9));
     return <Cam {...c}><World f={f}>
-      <group position={[0, CUT.y, 0]} scale={[CUT.R / 3, CUT.R / 3, CUT.R / 3]}><EarthCut R={3} glowCore={g} /></group>
+      <group position={[0, CUT.y, 0]} rotation={[0, 0.5, 0]} scale={[CUT.R / 3, CUT.R / 3, CUT.R / 3]}><EarthCut R={3} glowCore={g} /></group>
       <ZibIn f={f} t={t} u={-0.98} expr="worry" arms={20} />
       <Presenter who="PIP" t={t} expr="happy" armR={100} look={0.8} />
     </World></Cam>; }},
@@ -118,16 +118,16 @@ const shots = [
   {from: L(10), render: (f, t, lf, p) => { const c = glide(f, L(10), L(11), DG, push(DG, 0.1));
     const u = -Math.cos(Math.PI * (f - L(10)) / 45);
     return <Cam {...c}><World f={f}>
-      <group position={[0, CUT.y, 0]} scale={[CUT.R / 3, CUT.R / 3, CUT.R / 3]}><EarthCut R={3} /></group>
+      <group position={[0, CUT.y, 0]} rotation={[0, 0.5, 0]} scale={[CUT.R / 3, CUT.R / 3, CUT.R / 3]}><EarthCut R={3} /></group>
       <ZibIn f={f} t={t} u={u} /><Streaks u={u} dir={Math.sin(Math.PI * (f - L(10)) / 45) > 0 ? -1 : 1} k={Math.abs(Math.sin(Math.PI * (f - L(10)) / 45))} />
       <Presenter who="BOLT" t={t} x={0.95} expr="deadpan" look={-0.6} armL={100} />
     </World></Cam>; }},
   // 11 PIP question: group on the tiny Earth
-  {from: L(11), render: (f, t) => { const A = {pos: [0, 1.3, 5.6], look: [0, 0.75, 0], fov: 40}; const c = glide(f, L(11), L(12), A, push(A, 0.06));
+  {from: L(11), render: (f, t) => { const A = {pos: [0, 1.25, 6.2], look: [0, 0.45, 0], fov: 36}; const c = glide(f, L(11), L(12), A, push(A, 0.04));
     return <Cam {...c}><World f={f}><TinyEarth f={f} />
       <Actor who="PIP" vo={VO} t={t} pos={[-0.7, -0.08, 0]} expr="happy" armR={110} item="shovel" look={0.4} seed={1} />
       <Actor who="BOLT" vo={VO} t={t} pos={[0.8, -0.11, -0.2]} expr="deadpan" look={-0.4} seed={2} />
-      <Actor who="ZIB" vo={VO} t={t} pos={[0.5, -0.06, 0.45]} expr="smug" armR={30} seed={3} look={-0.5} />
+      <Actor who="ZIB" vo={VO} t={t} pos={[0.05, -0.02, 0.9]} expr="smug" armR={30} seed={3} look={-0.5} />
     </World></Cam>; }},
   // 12 ZIB leaps again -> glides into the frame-0 framing (loop)
   {from: L(12), render: (f, t) => { const c = glide(f, L(12), EP2_FRAMES - 1, push(HOOK, 0.12), HOOK);

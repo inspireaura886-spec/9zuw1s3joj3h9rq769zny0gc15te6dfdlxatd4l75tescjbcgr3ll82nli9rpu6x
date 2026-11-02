@@ -2,7 +2,7 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
 import {Stage, Cam, Actor, Stars, Ball, Box, Cyl, Ring, Arrow, Lights, SciFonts, Captions, Title, Label, EndQ, Flash, Vignette, Mark, Shots,
-  sstep, clamp, lineF, wordF, FPS, glide, med, push, DG} from '../kit.jsx';
+  sstep, clamp, lineF, wordF, FPS, glide, med, push, DG, GROUP} from '../kit.jsx';
 import {Lab} from '../sets.jsx';
 import VO from './vo.json';
 import SCH from '../schemes.json';
@@ -44,12 +44,12 @@ const shots = [
     const k = sstep((f - W(2, 'mountain') + 4) / 10);
     return <Cam {...c}><Void>
       <Cyl r={0.08} r2={0.22} h={0.9} pos={[0, 1.15, 0]} color="#8d97a3" />
-      <Box size={[3.4, 0.09, 0.4]} pos={[0, 1.65, 0]} color="#f08a2c" />
-      {k > 0.001 && <group position={[-1.2, 1.7, 0]} scale={[k, k, k]}>
+      <Box size={[2.6, 0.09, 0.4]} pos={[0, 1.65, 0]} color="#f08a2c" />
+      {k > 0.001 && <group position={[-0.85, 1.7, 0]} scale={[k * 0.8, k * 0.8, k * 0.8]}>
         <Cyl r={0.0001} r2={0.75} h={1.2} pos={[0, 0.6, 0]} color="#7a8a9a" seg={7} />
         <Cyl r={0.0001} r2={0.29} h={0.46} pos={[0, 0.97, 0]} color="#ffffff" seg={7} ink={0.02} />
       </group>}
-      <Spoon pos={[1.15, 1.72, 0]} f={f} />
+      <group position={[0.75, 1.75, 0]} scale={[1.8, 1.8, 1.8]}><Spoon pos={[0, 0, 0]} f={f} /></group>
       <Presenter who="BOLT" t={t} x={0.95} expr="deadpan" look={-0.6} armL={100} />
     </Void></Cam>; }},
   // 3 PIP: a giant star collapses into a city-sized neutron star
@@ -89,12 +89,12 @@ const shots = [
       <Presenter who="BOLT" t={t} x={0.95} expr="deadpan" look={-0.6} armL={100} />
     </Void></Cam>; }},
   // 8 PIP: astronomers say it would explode (lab, blob expands -> white)
-  {from: L(8), render: (f, t) => { const A = {pos: [0.6, 1.5, 3.4], look: [1.6, 1.1, -2.2], fov: 44}; const c = glide(f, L(8), L(9), A, push(A, 0.1));
+  {from: L(8), render: (f, t) => { const A = {pos: [1.4, 1.35, 3.9], look: [1.6, 0.95, -1.4], fov: 46}; const c = glide(f, L(8), L(9), A, push(A, 0.1));
     const ex = sstep((f - BOOM + 6) / 16); const giant = f > W(8, 'giant');
     return <Cam {...c}><LabSet>
       <Spoon pos={[2.2, 1.04, -2.0]} f={f} />
-      {ex > 0 && <Ball r={0.06} scale={1 + ex * 60} pos={[2.2, 1.14, -2.0]} color="#ffffff" emissive="#cfe6ff" glow="#ffffff" glowS={1.3} glowO={0.6} ink={0} />}
-      <Actor who="PIP" vo={VO} t={t} pos={[0.2, 0, -0.4]} expr={giant ? 'shock' : 'worry'} armL={giant ? 140 : 20} armR={giant ? 140 : 20} seed={1} />
+      {ex > 0 && ex < 0.999 && <Ball r={0.06} scale={1 + ex * 14} pos={[2.2, 1.14, -2.0]} color="#ffffff" emissive="#cfe6ff" glow="#bfe0ff" glowS={1.6} glowO={0.6 * (1 - ex)} ink={0} />}
+      <Actor who="PIP" vo={VO} t={t} pos={[0.95, 0, -0.5]} expr={giant ? 'shock' : 'worry'} armL={giant ? 140 : 20} armR={giant ? 140 : 20} seed={1} />
     </LabSet></Cam>; }},
   // 9 ZIB: "can I keep it in space?"
   {from: L(9), render: (f, t) => { const A = med(0, 0, 0.85, 2.0, 0.15); const c = glide(f, L(9), L(10), A, push(A, 0.1));
@@ -103,7 +103,7 @@ const shots = [
   {from: L(10), render: (f, t) => { const A = med(-0.4, -0.6, 1.7, 2.6, -0.3); const c = glide(f, L(10), L(11), A, push(A, 0.1));
     return <Cam {...c}><LabSet><Actor who="BOLT" vo={VO} t={t} pos={[-0.4, 0, -0.6]} expr="deadpan" look={0.2} armR={110} seed={2} /></LabSet></Cam>; }},
   // 11 PIP question: group in the lab
-  {from: L(11), render: (f, t) => { const A = {pos: [0, 1.55, 7.0], look: [0, 1.1, 0], fov: 38}; const c = glide(f, L(11), L(12), A, push(A, 0.06));
+  {from: L(11), render: (f, t) => { const A = GROUP; const c = glide(f, L(11), L(12), A, push(A, 0.04));
     return <Cam {...c}><LabSet>
       <Actor who="PIP" vo={VO} t={t} pos={[-0.95, 0, 0.1]} expr="happy" armR={110} look={0.3} seed={1} />
       <Actor who="BOLT" vo={VO} t={t} pos={[0.95, 0, -0.4]} expr="deadpan" look={-0.4} seed={2} />
@@ -124,7 +124,7 @@ export const Ep3 = () => {
       <SciFonts />
       <Stage bg="radial-gradient(120% 80% at 50% 30%, #3a2f6b 0%, #1a1440 55%, #0b0a20 100%)" overlay={<>
         <Vignette />
-        <Title lines={['A SPOON OF', 'NEUTRON STAR?']} scheme={S} out={70} y={250} />
+        <Title lines={['A SPOON OF', 'NEUTRON STAR?']} scheme={S} out={60} y={250} />
         <Label text="≈ 1 BILLION TONS" sub="as heavy as a mountain (NASA)" at={W(2, 'billion')} to={L(3) - 4} scheme={S} size={76} />
         <Label text="MORE MASS THAN THE SUN" at={W(3, 'mass')} to={W(3, 'twenty') - 2} scheme={S} size={60} />
         <Label text="~20 km WIDE" sub="about the size of a city" at={W(3, 'twenty')} to={L(4) - 4} scheme={S} />
@@ -133,7 +133,7 @@ export const Ep3 = () => {
         <Label text="BOOM" sub="a giant explosion (in theory)" at={BOOM} to={L(9) - 4} scheme={S} size={110} />
         <EndQ text="Would you dare to touch the spoon? YES or NO?" at={L(11)} to={EP3_FRAMES} scheme={S} />
         <Captions vo={VO} scheme={S} />
-        <Flash at={BOOM + 2} len={20} peak={0.95} />
+        <Flash at={BOOM + 2} len={14} peak={0.85} />
         <Mark />
       </>}>
         <Shots shots={shots} f={f} />
