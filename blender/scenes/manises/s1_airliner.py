@@ -36,8 +36,8 @@ Wd.fog(center=(0, 2000, -300), size=(90000, 90000, 1600), density=0.000025, colo
 
 # ---------------- actors ----------------
 plane = Md.airliner('Airliner', f1=NF, cabin_glow=2.2)
-red1 = Md.orb('Red1', (0, 0, 0), strength=600, power=3e5 if variant == 'A' else 8e5, radius=4.0, halo=2.0, pulse=0.12, f1=NF, seed=1)
-red2 = Md.orb('Red2', (0, 0, 0), strength=600, power=3e5 if variant == 'A' else 8e5, radius=4.0, halo=2.0, pulse=0.12, f1=NF, seed=2)
+red1 = Md.orb('Red1', (0, 0, 0), strength=600, power=3e5 if variant == 'A' else 1.5e5, radius=4.0, halo=2.0, pulse=0.12, f1=NF, seed=1)
+red2 = Md.orb('Red2', (0, 0, 0), strength=600, power=3e5 if variant == 'A' else 1.5e5, radius=4.0, halo=2.0, pulse=0.12, f1=NF, seed=2)
 
 if variant == 'A':
     # straight and level, heading +Y
@@ -63,13 +63,13 @@ else:
     # the lights pace the jet: parented to it, closing from far left-above
     for o, k in ((red1, 0), (red2, 1)):
         o.parent = plane
-        Md.fly(o, [(0, (-230 - 40 * k, 160 + 30 * k, 95 + 15 * k), None), (NF, (-70 - 18 * k, 45 + 20 * k, 38 + 10 * k), None)])
+        Md.fly(o, [(0, (-260 - 40 * k, 220 + 30 * k, 60 + 15 * k), None), (NF, (-95 - 18 * k, 90 + 20 * k, 24 + 10 * k), None)])
     cam = C.Cam(clip_end=90000)
     # shot 1 (0-74): low front-right, the jet rolls into the turn across frame ('the captain diverts')
     cam.shot(0, 75, C.follow('Airliner', (110, 330, -40), (95, 360, -42), look_offset=(-20, 10, 8)),
              lens=(38, 42), fstop=5.6, focus='Airliner')
     # shot 2 (75-184): chase from behind-above; the red light hangs off the left wing, coast lights below
-    cam.shot(75, NF, C.track('Airliner', offset=(26, -60, 20), offset1=(18, -46, 14), look_offset=(-30, 120, -30)),
+    cam.shot(75, NF, C.track('Airliner', offset=(34, -70, 16), offset1=(26, -56, 12), look_offset=(-45, 90, 4)),
              lens=(35, 38), fstop=6, focus='Airliner', roll=(-6, -9))
     cam.handheld(0.05)
     for i, (cx, cy, n, r) in enumerate([(-3000, 9000, 3000, 1400)]):
