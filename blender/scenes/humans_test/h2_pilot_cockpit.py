@@ -69,12 +69,15 @@ Md.fly(r2, [(0, (-265, 1300, 50), None), (NF, (-200, 1000, 35), None)], interp='
 
 # --- light on him: warm instrument glow from below the glareshield + faint cool moon spill from the panes ---
 Wd.area('GaugeGlow', (0.0, 0.75, -0.05), tuple(Vector(pl.joint(pose, 0, 'Head')) + Vector((0, 0, -0.1))),
-        color=(1.0, 0.78, 0.55), power=2.5, size=0.7)
-Wd.area('MoonSpill', (-0.6, 1.2, 0.9), tuple(Vector(pl.joint(pose, 0, 'Head'))), color=(0.6, 0.7, 1.0), power=6, size=1.2)
+        color=(1.0, 0.78, 0.55), power=5.0, size=0.7)
+Wd.area('MoonSpill', (-0.6, 1.2, 0.9), tuple(Vector(pl.joint(pose, 0, 'Head'))), color=(0.6, 0.7, 1.0), power=14, size=1.2)
+# fix round 1: cool rim on his left shoulder/collar so the uniform reads (was a flat dark blob)
+Wd.area('ShoulderRim', (-0.75, 0.35, 0.75), tuple(Vector(pl.joint(pose, 0, 'LeftArm'))), color=(0.65, 0.75, 1.0), power=4, size=0.5)
 
 # --- camera: high over his left shoulder (above the seat back), slow push; head lower-centre, lights upper-left ---
 head0 = Vector(pl.joint(pose, 0, 'Head'))
 cam = C.Cam()
 cam.shot(0, NF, C.dolly((-0.18, -0.62, 0.68), (-0.16, -0.54, 0.665), look=(0.0, 1.3, 0.25), look1=(-0.02, 1.3, 0.26)),
-         lens=(20, 21), fstop=2.4, focus=tuple(head0 + Vector((0, 0, 0.08))))
+         lens=(23, 24),  # fix round 1: tighter, less flat roof in frame
+ fstop=2.4, focus=tuple(head0 + Vector((0, 0, 0.08))))
 finish_cam(cam, NF, a, sc)
