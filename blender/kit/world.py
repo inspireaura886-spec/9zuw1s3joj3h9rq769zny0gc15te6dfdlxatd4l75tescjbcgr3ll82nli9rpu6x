@@ -34,14 +34,14 @@ def hdri(hid='kloppenheim_02_puresky', strength=0.25, rot=0.0, bg_strength=None,
     nb.l(env, 'Color', tint_n, 6)
     col = tint_n.outputs[2]
     if stars > 0:
-        vo = nb.n('ShaderNodeTexVoronoi', Scale=900.0)
+        vo = nb.n('ShaderNodeTexVoronoi', Scale=1400.0)
         vo.feature = 'F1'
         nb.l(tc, 'Generated', vo, 'Vector')
         st = nb.math('POWER', nb.math('SUBTRACT', va=1.0, b=vo.outputs['Distance']).outputs[0], vb=60.0)
         nz = nb.n('ShaderNodeTexNoise', Scale=40.0)
         nb.l(tc, 'Generated', nz, 'Vector')
         st2 = nb.math('MULTIPLY', st.outputs[0], nz.outputs['Fac'])
-        st3 = nb.math('MULTIPLY', st2.outputs[0], vb=stars * 8)
+        st3 = nb.math('MULTIPLY', st2.outputs[0], vb=stars * 3)
         # only above the horizon
         sep = nb.n('ShaderNodeSeparateXYZ')
         nb.l(tc, 'Generated', sep, 'Vector')
@@ -134,6 +134,16 @@ def box(name, center, size):
     return o
 
 
+def _gen11(nb, tc):
+    """Generated (0..1 over the bounding box) -> [-1,1] vector socket."""
+    vm = nb.n('ShaderNodeVectorMath')
+    vm.operation = 'MULTIPLY_ADD'
+    nb.l(tc, 'Generated', vm, 0)
+    vm.inputs[1].default_value = (2, 2, 2)
+    vm.inputs[2].default_value = (-1, -1, -1)
+    return vm.outputs['Vector']
+
+
 def fog(center=(0, 0, 0), size=(200, 200, 60), density=0.004, color=(0.75, 0.8, 0.9), anisotropy=0.35, noise=0.0,
         noise_scale=0.05, height_falloff=0.0):
     """Volumetric haze box (cheaper + more controllable than a world volume). Lights through it give god rays.
@@ -150,11 +160,13 @@ def fog(center=(0, 0, 0), size=(200, 200, 60), density=0.004, color=(0.75, 0.8, 
     dens = None
     if noise or height_falloff:
         tc = nb.n('ShaderNodeTexCoord')
+        g = _gen11(nb, tc)
         fac = None
         if noise:
-            nz = nb.n('ShaderNodeTexNoise', Scale=noise_scale * 100, Detail=4.0)
+            # noise_scale = features per metre-ish: scale by the box size so it is size independent
+            nz = nb.n('ShaderNodeTexNoise', Scale=max(1.0, noise_scale * max(size) / 2), Detail=4.0)
             nz.noise_dimensions = '4D'
-            nb.l(tc, 'Object', nz, 'Vector')
+            nt.links.new(g, nz.inputs['Vector'])
             M.animate(nz.inputs['W'], 'default_value', [(0, 0.0), (900, 1.2)])
             mr = nb.n('ShaderNodeMapRange')
             mr.inputs['From Min'].default_value = 0.35
@@ -165,8 +177,8 @@ def fog(center=(0, 0, 0), size=(200, 200, 60), density=0.004, color=(0.75, 0.8, 
             fac = mr.outputs['Result']
         if height_falloff:
             sep = nb.n('ShaderNodeSeparateXYZ')
-            nb.l(tc, 'Object', sep, 'Vector')
-            # object z in [-1,1] -> density factor exp(-falloff*(z+1))
+            nt.links.new(g, sep.inputs['Vector'])
+            # box z in [-1,1] -> density factor exp(-falloff*(z+1))
             z1 = nb.math('ADD', sep.outputs['Z'], vb=1.0)
             e = nb.math('MULTIPLY', z1.outputs[0], vb=-height_falloff)
             ex = nb.math('EXPONENT', e.outputs[0])
@@ -191,8 +203,9 @@ def clouds(center=(0, 0, -400), size=(9000, 9000, 260), density=0.06, scale=0.00
     nt.nodes.remove(nt.nodes['Principled BSDF'])
     out = nt.nodes['Material Output']
     tc = nb.n('ShaderNodeTexCoord')
+    g = _gen11(nb, tc)  # box-normalised coords in [-1,1] (Object coords are metres)
     mp = nb.n('ShaderNodeMapping')
-    nb.l(tc, 'Object', mp, 'Vector')
+    nt.links.new(g, mp.inputs['Vector'])
     mp.inputs['Scale'].default_value = (size[0] / 2 * scale, size[1] / 2 * scale, size[2] / 2 * scale * 1.6)
     M.animate(mp.inputs['Location'], 'default_value', [(0, (0, 0, 0)), (frames, (drift[0] * frames * scale, drift[1] * frames * scale, 0))])
     nz = nb.n('ShaderNodeTexNoise', Scale=1.0, Detail=float(detail), Roughness=0.58, Lacunarity=2.2)
@@ -200,7 +213,7 @@ def clouds(center=(0, 0, -400), size=(9000, 9000, 260), density=0.06, scale=0.00
     nb.l(mp, 'Vector', nz, 'Vector')
     M.animate(nz.inputs['W'], 'default_value', [(0, 0.0), (frames, evolve)])
     sep = nb.n('ShaderNodeSeparateXYZ')
-    nb.l(tc, 'Object', sep, 'Vector')
+    nt.links.new(g, sep.inputs['Vector'])
     # vertical profile: 0 at base (z=-1), peak at z=-0.4, fades to top (z=+1): cumulus-like
     zb = nb.n('ShaderNodeMapRange')
     zb.inputs['From Min'].default_value = -1.0

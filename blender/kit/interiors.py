@@ -83,12 +83,12 @@ def cockpit(panel_glow=1.2, seed=5):
     # windshield frame: three panes, pillars, top + sill
     pillars = [(-0.95, 1.30), (-0.35, 1.42), (0.35, 1.42), (0.95, 1.30)]
     for i, (x, y) in enumerate(pillars):
-        o = Wd.box('Pillar%d' % i, (x, y, 0.62), (0.07, 0.07, 0.62))
+        o = Wd.box('Pillar%d' % i, (x, y + 0.1, 0.68), (0.06, 0.06, 0.82))
         o.rotation_euler = (math.radians(-18), 0, math.atan2(-x, 4) * 0.4)
         o.data.materials.append(frame)
         bevel(o, 0.015)
         o.parent = root
-    top = Wd.box('WsTop', (0, 1.25, 0.95), (2.2, 0.35, 0.06))
+    top = Wd.box('WsTop', (0, 1.30, 1.10), (2.2, 0.35, 0.06))
     top.data.materials.append(frame)
     top.parent = root
     sill = Wd.box('Glareshield', (0, 1.08, 0.24), (2.1, 0.42, 0.10))
@@ -98,7 +98,7 @@ def cockpit(panel_glow=1.2, seed=5):
     for i in range(3):
         x0, x1 = pillars[i][0], pillars[i + 1][0]
         y0, y1 = pillars[i][1], pillars[i + 1][1]
-        pv = [(x0, y0 - 0.04, 0.30), (x1, y1 - 0.04, 0.30), (x1, y1 + 0.25, 0.93), (x0, y0 + 0.25, 0.93)]
+        pv = [(x0, y0 - 0.04, 0.30), (x1, y1 - 0.04, 0.30), (x1, y1 + 0.30, 1.08), (x0, y0 + 0.30, 1.08)]
         Md.mesh_obj('Pane%d' % i, pv, [(0, 1, 2, 3)], parent=root, smooth=False, mats=(glass,))
     # instrument panel (below glareshield) with backlit gauges
     pan = Wd.box('Panel', (0, 1.12, -0.06), (2.0, 0.08, 0.52))
@@ -120,10 +120,16 @@ def cockpit(panel_glow=1.2, seed=5):
             tx.image = im
             em = nb.n('ShaderNodeEmission', Strength=panel_glow)
             nb.l(tx, 'Color', em, 'Color')
-            gb = nb.n('ShaderNodeBsdfGlossy', Roughness=0.08)
+            gb = nb.n('ShaderNodeBsdfGlossy', Roughness=0.15)
+            fr = nb.n('ShaderNodeLayerWeight', Blend=0.12)
+            blk = nb.n('ShaderNodeEmission', Strength=0.0)
+            mxs = nb.n('ShaderNodeMixShader')
+            nb.l(fr, 'Fresnel', mxs, 'Fac')
+            nb.l(blk, 'Emission', mxs, 1)
+            nb.l(gb, 'BSDF', mxs, 2)
             ad = nb.n('ShaderNodeAddShader')
             nb.l(em, 'Emission', ad, 0)
-            nb.l(gb, 'BSDF', ad, 1)
+            nb.l(mxs, 'Shader', ad, 1)
             nb.l(ad, 'Shader', out, 'Surface')
             # tilt with the panel
             zz = z
@@ -151,7 +157,7 @@ def cockpit(panel_glow=1.2, seed=5):
     # side walls / roof (dark, so light only enters through the glass)
     wallm = M.principled('Wall', base=(0.05, 0.05, 0.055), rough=0.8, bump=0.1)
     for nm, c, s in (('WallL', (-1.15, 0.5, 0.3), (0.06, 1.8, 1.6)), ('WallR', (1.15, 0.5, 0.3), (0.06, 1.8, 1.6)),
-                     ('Roof', (0, 0.4, 1.05), (2.4, 1.9, 0.06)), ('Floor', (0, 0.4, -0.75), (2.4, 1.9, 0.06))):
+                     ('Roof', (0, 0.4, 1.16), (2.4, 1.9, 0.06)), ('Floor', (0, 0.4, -0.75), (2.4, 1.9, 0.06))):
         o = Wd.box(nm, c, s)
         o.data.materials.append(wallm)
         o.parent = root
@@ -202,8 +208,8 @@ def ppi_material(name='PPI', sweep_s=4.0, frames=200, blips=(), seed=0, glow=6.0
     rings2 = nb.math('MULTIPLY', rings.outputs[0], vb=0.35)
     # coast clutter: thresholded noise in scope space
     nz = nb.n('ShaderNodeTexNoise', Scale=2.2, Detail=8.0, Roughness=0.7)
-    nz.inputs['W'].default_value = seed
     nz.noise_dimensions = '4D'
+    nz.inputs['W'].default_value = seed
     nb.l(comb, 'Vector', nz, 'Vector')
     cl = nb.n('ShaderNodeMapRange')
     cl.inputs['From Min'].default_value = 0.56

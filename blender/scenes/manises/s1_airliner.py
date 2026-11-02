@@ -28,9 +28,9 @@ land = Wd.terrain('Ibiza', size=14000, res=90, height=180, scale=0.00035, center
                   mat=M.principled('Land', base=(0.03, 0.035, 0.03), rough=0.9), island=1.0)
 for i, (cx, cy, n, r) in enumerate([(1200, 4200, 2200, 900), (3800, 6900, 1200, 600), (600, 7600, 700, 500),
                                      (4200, 3300, 500, 400)]):
-    Wd.city_lights('Town%d' % i, center=(cx, cy, -2430), radius=r, count=n, seed=11 + i, strength=90, size=2.2)
+    Wd.city_lights('Town%d' % i, center=(cx, cy, -2430), radius=r, count=n, seed=11 + i, strength=16, size=1.4)
 # thin high haze for depth (aerial perspective)
-Wd.fog(center=(0, 2000, -300), size=(20000, 20000, 1200), density=0.00012, color=(0.7, 0.78, 0.95), anisotropy=0.3)
+Wd.fog(center=(0, 2000, -300), size=(20000, 20000, 1200), density=0.00002, color=(0.7, 0.78, 0.95), anisotropy=0.3)
 
 # ---------------- actors ----------------
 plane = Md.airliner('Airliner', f1=NF)
@@ -41,8 +41,8 @@ if variant == 'A':
     # straight and level, heading +Y
     Md.fly(plane, [(0, (0, 0, 0), (0, 0, 0)), (NF, (0, V * NF, 0), (0.5, 0, 0))], interp='LINEAR')
     # red lights far behind-right, slowly gaining (hook: visible from frame 0 as two points)
-    Md.fly(red1, [(0, (420, -1500, 60), None), (NF, (300, V * NF - 700, 40), None)], interp='LINEAR')
-    Md.fly(red2, [(0, (470, -1560, 30), None), (NF, (350, V * NF - 760, 20), None)], interp='LINEAR')
+    Md.fly(red1, [(0, (700, 2600, 160), None), (NF, (520, V * NF + 1500, 110), None)], interp='LINEAR')
+    Md.fly(red2, [(0, (790, 2700, 120), None), (NF, (600, V * NF + 1580, 80), None)], interp='LINEAR')
     cam = C.Cam(clip_end=90000)
     # shot 1 (0-104): behind-left, low over the wing line, plane in the upper third, red lights tiny far right
     cam.shot(0, 105, C.track('Airliner', offset=(-38, -70, 10), offset1=(-30, -52, 7), look_offset=(10, 25, -2)),
@@ -69,7 +69,7 @@ else:
              lens=(35, 38), fstop=6, focus='Airliner', roll=(-6, -9))
     cam.handheld(0.05)
     for i, (cx, cy, n, r) in enumerate([(-3000, 9000, 3000, 1400)]):
-        Wd.city_lights('Valencia', center=(cx, cy, -2430), radius=r, count=n, seed=31, strength=110, size=2.4)
+        Wd.city_lights('Valencia', center=(cx, cy, -2430), radius=r, count=n, seed=31, strength=20, size=1.6)
 
 cam.bake(0, NF - 1)
 sc.frame_start, sc.frame_end = 0, NF - 1
