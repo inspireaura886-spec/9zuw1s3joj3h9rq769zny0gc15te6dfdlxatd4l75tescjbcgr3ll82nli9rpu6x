@@ -34,7 +34,7 @@ const shots = [
     const rk = (f - DEL) / 14;
     return <Cam {...c}><Space f={f}>
       <Deck />
-      <Actor who="ZIB" vo={VO} t={t} pos={[-0.2, 0, 0.9]} expr={f < DEL ? 'smug' : 'shock'} armR={f < DEL - 6 ? 40 : 75} armL={20} item="remote" glow={f > DEL ? 1 : 0.5} seed={3} look={0.4} />
+      <Actor who="ZIB" vo={VO} t={t} pos={[-0.2, 0, 0.9]} expr={f < DEL ? 'smug' : 'shock'} armR={40 + 35 * sstep((f - DEL + 8) / 6)} armL={20} item="remote" glow={f > DEL ? 1 : 0.5} seed={3} look={0.4} />
       <Actor who="PIP" vo={VO} t={t} pos={[0.85, 0, -1.2]} expr={f < DEL ? 'happy' : 'shock'} look={0.6} seed={1} />
       {rk > 0 && rk < 1 && <Ring pos={MOONP} r={3 + rk * 7} color="#ffffff" opacity={1 - rk} />}
     </Space></Cam>; }},
@@ -107,11 +107,11 @@ const shots = [
     </Cam>; }},
   // 10 PIP: wild seasons (Earth tipped far, hot then cold tint)
   {from: L(10), render: (f, t) => { const A = med(0.2, -0.6, 1.5, 3.4, -0.4); const c = glide(f, L(10), L(11), A, push(A));
-    const hot = sstep((f - W(10, 'blazing')) / 10), cold = sstep((f - W(10, 'brutal')) / 10);
+    const hot = sstep((f - W(10, 'blazing') + 4) / 8), cold = sstep((f - W(10, 'brutal')) / 10);
     return <Cam {...c}><Lights sun={[8, 4, 6]} color={lerpCol(lerpCol('#ffffff', '#ffd9b0', hot), '#d8ecff', cold)} /><Stars />
       <Planet file={EARTH} r={5} pos={[2.5, 6, -24]} rotY={f * 0.002} tilt={1.1} atmo={lerpCol(lerpCol('#7fc8ff', '#ff9a5a', hot), '#cfefff', cold)} />
       <Deck />
-      <Actor who="PIP" vo={VO} t={t} pos={[0.2, 0, -0.6]} expr={hot > 0.5 ? 'shock' : 'worry'} armL={hot > 0.5 ? 120 : 20} armR={hot > 0.5 ? 120 : 20} seed={1} />
+      <Actor who="PIP" vo={VO} t={t} pos={[0.2, 0, -0.6]} expr={hot > 0.5 ? 'shock' : 'worry'} armL={20 + 100 * hot} armR={20 + 100 * hot} seed={1} />
     </Cam>; }},
   // 11 ZIB: "should I press undo?"
   {from: L(11), render: (f, t) => { const A = med(0, 0, 0.85, 2.0, -0.2); const c = glide(f, L(11), L(12), A, push(A, 0.1));
@@ -131,7 +131,7 @@ const shots = [
     const rk = (f - UNDO) / 14;
     return <Cam {...c}><Space f={f}>
       <Deck />
-      <Actor who="ZIB" vo={VO} t={t} pos={[-0.2, 0, 0.9]} expr={f < UNDO ? 'worry' : 'smug'} armR={f < UNDO - 4 ? 75 : 40} armL={20} item="remote" glow={1} seed={3} look={0.4} />
+      <Actor who="ZIB" vo={VO} t={t} pos={[-0.2, 0, 0.9]} expr={f < UNDO ? 'worry' : 'smug'} armR={75 - 35 * sstep((f - UNDO + 6) / 6)} armL={20} item="remote" glow={1} seed={3} look={0.4} />
       <Actor who="PIP" vo={VO} t={t} pos={[0.85, 0, -1.2]} expr="shock" look={0.6} seed={1} />
       {rk > 0 && rk < 1 && <Ring pos={MOONP} r={3 + rk * 7} color="#ffffff" opacity={1 - rk} />}
     </Space></Cam>; }},

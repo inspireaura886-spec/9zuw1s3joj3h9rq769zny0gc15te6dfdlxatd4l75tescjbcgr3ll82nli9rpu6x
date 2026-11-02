@@ -43,13 +43,13 @@ const shots = [
   {from: L(2), render: (f, t) => { const c = glide(f, L(2), L(3), DG, push(DG, 0.1));
     const k = sstep((f - W(2, 'mountain') + 4) / 10);
     return <Cam {...c}><Void>
-      <Cyl r={0.08} r2={0.22} h={0.9} pos={[0, 1.15, 0]} color="#8d97a3" />
-      <Box size={[2.6, 0.09, 0.4]} pos={[0, 1.65, 0]} color="#f08a2c" />
-      {k > 0.001 && <group position={[-0.85, 1.7, 0]} scale={[k * 0.8, k * 0.8, k * 0.8]}>
+      <Cyl r={0.08} r2={0.22} h={0.9} pos={[-0.35, 1.15, 0]} color="#8d97a3" />
+      <Box size={[2.6, 0.09, 0.4]} pos={[-0.35, 1.65, 0]} color="#f08a2c" />
+      {k > 0.001 && <group position={[-1.2, 1.7, 0]} scale={[k * 0.8, k * 0.8, k * 0.8]}>
         <Cyl r={0.0001} r2={0.75} h={1.2} pos={[0, 0.6, 0]} color="#7a8a9a" seg={7} />
         <Cyl r={0.0001} r2={0.29} h={0.46} pos={[0, 0.97, 0]} color="#ffffff" seg={7} ink={0.02} />
       </group>}
-      <group position={[0.75, 1.75, 0]} scale={[1.8, 1.8, 1.8]}><Spoon pos={[0, 0, 0]} f={f} /></group>
+      <group position={[0.35, 1.75, 0]} scale={[1.8, 1.8, 1.8]}><Spoon pos={[0, 0, 0]} f={f} /></group>
       <Presenter who="BOLT" t={t} x={0.95} expr="deadpan" look={-0.6} armL={100} />
     </Void></Cam>; }},
   // 3 PIP: a giant star collapses into a city-sized neutron star
@@ -57,7 +57,7 @@ const shots = [
     const col = sstep((f - W(3, 'collapses') + 2) / 26);
     const r = 1.5 - 1.28 * col;
     return <Cam {...c}><Void>
-      <Ball r={1} scale={r} pos={[0, 2.1, 0]} color={col < 0.85 ? '#ff9a3d' : '#dff0ff'} emissive={col < 0.85 ? '#c2410c' : '#6fa8ff'} glow={col < 0.85 ? '#ffb547' : '#8cc8ff'} glowS={1.5} glowO={0.35} />
+      <Ball r={1} scale={r} pos={[0, 2.1, 0]} color={col < 0.85 ? '#ff9a3d' : '#dff0ff'} emissive={col < 0.85 ? '#c2410c' : '#6fa8ff'} glow={col < 0.85 ? '#ffd27a' : '#8cc8ff'} glowS={1.35} glowO={0.6} />
       {col > 0.85 && <Ring pos={[0, 2.1, 0.1]} r={0.3 + (col - 0.85) * 8} color="#8cc8ff" opacity={Math.max(0, 1 - (col - 0.85) * 6.6)} />}
       <Presenter who="PIP" t={t} expr={col > 0.2 && col < 0.95 ? 'shock' : 'happy'} armR={100} look={0.8} />
     </Void></Cam>; }},
@@ -90,11 +90,12 @@ const shots = [
     </Void></Cam>; }},
   // 8 PIP: astronomers say it would explode (lab, blob expands -> white)
   {from: L(8), render: (f, t) => { const A = {pos: [1.4, 1.35, 3.9], look: [1.6, 0.95, -1.4], fov: 46}; const c = glide(f, L(8), L(9), A, push(A, 0.1));
-    const ex = sstep((f - BOOM + 6) / 16); const giant = f > W(8, 'giant');
+    const ex = clamp((f - BOOM + 4) / 22); const giant = f > W(8, 'giant'); const gk = sstep((f - W(8, 'giant')) / 6);
     return <Cam {...c}><LabSet>
-      <Spoon pos={[2.2, 1.04, -2.0]} f={f} />
-      {ex > 0 && ex < 0.999 && <Ball r={0.06} scale={1 + ex * 14} pos={[2.2, 1.14, -2.0]} color="#ffffff" emissive="#cfe6ff" glow="#bfe0ff" glowS={1.6} glowO={0.6 * (1 - ex)} ink={0} />}
-      <Actor who="PIP" vo={VO} t={t} pos={[0.95, 0, -0.5]} expr={giant ? 'shock' : 'worry'} armL={giant ? 140 : 20} armR={giant ? 140 : 20} seed={1} />
+      <Spoon pos={[1.65, 1.04, -1.85]} f={f} />
+      {ex > 0 && ex < 0.999 && <mesh position={[1.65, 1.14, -1.85]} scale={[0.06 + ex * 3.2, 0.06 + ex * 3.2, 0.06 + ex * 3.2]}><sphereGeometry args={[1, 40, 30]} /><meshBasicMaterial color="#e8f4ff" transparent opacity={0.95 * Math.pow(1 - ex, 0.6)} depthWrite={false} toneMapped={false} /></mesh>}
+      {ex > 0 && ex < 0.999 && <Ring pos={[1.65, 1.14, -1.8]} r={0.2 + ex * 4.5} color="#8cc8ff" opacity={1 - ex} />}
+      <Actor who="PIP" vo={VO} t={t} pos={[0.95, 0, -0.5]} expr={giant ? 'shock' : 'worry'} armL={20 + 120 * gk} armR={20 + 120 * gk} seed={1} />
     </LabSet></Cam>; }},
   // 9 ZIB: "can I keep it in space?"
   {from: L(9), render: (f, t) => { const A = med(0, 0, 0.85, 2.0, 0.15); const c = glide(f, L(9), L(10), A, push(A, 0.1));

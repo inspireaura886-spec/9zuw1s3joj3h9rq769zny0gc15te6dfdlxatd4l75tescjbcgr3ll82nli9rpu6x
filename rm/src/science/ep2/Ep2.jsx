@@ -17,7 +17,7 @@ const PR = 3; // tiny-planet radius, north pole at y = 0
 /** tiny Earth with a hole at the north pole (top at y = 0) */
 const TinyEarth = ({f, flip = false}) => (
   <group rotation={[0, 0, flip ? Math.PI : 0]} position={[0, flip ? -2 * PR : 0, 0]}>
-    <Planet file={EARTH} r={PR} pos={[0, -PR, 0]} rotY={0.35} tilt={Math.PI / 2} atmo="#7fc8ff" ink={1.012} />
+    <Planet file={EARTH} r={PR} pos={[0, -PR, 0]} rotY={0.35 + f * 0.0012} tilt={Math.PI / 2} atmo="#7fc8ff" ink={1.012} />
     <mesh position={[0, 0.012, 0]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[0.36, 40]} /><meshBasicMaterial color="#120a16" /></mesh>
     <mesh position={[0, 0.014, 0]} rotation={[-Math.PI / 2, 0, 0]}><ringGeometry args={[0.36, 0.44, 40]} /><meshBasicMaterial color="#8a5a3c" /></mesh>
     {[[-0.55, 0.05, -0.2], [0.5, 0.05, 0.25], [0.2, 0.04, -0.45]].map((p, i) => <Ball key={i} r={0.07 + i * 0.02} pos={p} color="#8a5a3c" ink={1.1} />)}
@@ -111,7 +111,7 @@ const shots = [
     const up = sstep((f - L(9) + 2) / 10), down = sstep((f - W(9, 'down') + 2) / 12);
     const y = -0.85 + 0.85 * up - 0.95 * down;
     return <Cam {...c}><World f={f}><TinyEarth f={f} flip />
-      {y > -0.84 && <Actor who="ZIB" vo={VO} t={t} pos={[0, y, 0]} expr={down > 0.01 || f > W(9, 'wait') ? 'shock' : 'happy'} armL={150} armR={f > W(9, 'wait') ? 150 : 40} seed={3} shadow={false} />}
+      {y > -0.84 && <Actor who="ZIB" vo={VO} t={t} pos={[0, y, 0]} expr={down > 0.01 || f > W(9, 'wait') ? 'shock' : 'happy'} armL={150} armR={40 + 110 * sstep((f - W(9, 'wait')) / 6)} seed={3} shadow={false} />}
       <mesh position={[0, 0.03, 0.22]} rotation={[-Math.PI / 2, 0, 0]}><planeGeometry args={[1.0, 0.45]} /><meshBasicMaterial color="#0b0b22" transparent opacity={0} /></mesh>
     </World></Cam>; }},
   // 10 BOLT: back and forth forever (SHM)
