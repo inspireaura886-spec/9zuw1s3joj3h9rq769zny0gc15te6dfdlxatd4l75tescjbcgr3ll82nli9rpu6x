@@ -64,8 +64,8 @@ const poseAt = (f) => {
   const fl = flashAt(f);
   // ---------- ZIB: hover, sidle up to the button, wind up, boop, bounce
   const [bx, bz] = zibBoopPos;
-  const zx = K([[0, bx - 0.10], [40, bx - 0.10], [100, bx - 0.05], [110, bx - 0.07], [118, bx], [124, bx], [160, bx - 0.03], [240, bx - 0.02]], f);
-  const zz = K([[0, bz - 0.02], [40, bz - 0.02], [100, bz + 0.03], [110, bz + 0.06], [118, bz], [124, bz], [160, bz + 0.05], [240, bz + 0.04]], f)
+  const zx = K([[0, bx - 0.10], [40, bx - 0.10], [100, bx - 0.05], [110, bx - 0.07], [118, bx], [124, bx], [175, bx - 0.06], [240, bx - 0.065]], f);
+  const zz = K([[0, bz - 0.02], [40, bz - 0.02], [100, bz + 0.03], [110, bz + 0.06], [118, bz], [124, bz], [175, bz + 0.33], [240, bz + 0.34]], f) // after the boop he floats up, proud, into the gap between the heads
     + 0.025 * Math.sin((2 * Math.PI * t) / 1.7) * (1 - ramp(f, 100, 112) + ramp(f, 140, 170));
   const zvx = (K([[0, 0], [40, 0], [100, 1], [240, 1]], f + 1) - K([[0, 0], [40, 0], [100, 1], [240, 1]], f)) * 30;
   const zArm = K([[0, 22], [40, 22], [96, 40], [110, 112], [117, 86], [124, 86], [150, 24], [240, 22]], f);
