@@ -52,7 +52,11 @@ export const useTex = (file) => {
     if (e.loaded) setTimeout(() => setOk(true)); else e.cbs.push(() => setOk(true));
     return e.t;
   }, [file]);
-  useEffect(() => { if (ok) { tex.needsUpdate = true; advance(performance.now()); requestAnimationFrame(() => { advance(performance.now()); continueRender(h); }); } }, [ok]);
+  // release the handle exactly once: on load, or on unmount (a remount would otherwise leak its first handle -> render timeout)
+  const done = useMemo(() => ({v: false}), []);
+  const release = () => { if (!done.v) { done.v = true; continueRender(h); } };
+  useEffect(() => () => release(), []);
+  useEffect(() => { if (ok) { tex.needsUpdate = true; advance(performance.now()); requestAnimationFrame(() => { advance(performance.now()); release(); }); } }, [ok]);
   return tex;
 };
 let _grad = null;
