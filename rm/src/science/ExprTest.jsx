@@ -24,9 +24,9 @@ export const ExprTest = () => {
           <Stars />
           <Planet file="science/earth_toon.png" r={7} pos={[2, 4, -40]} rotY={2.2} tilt={0.4} atmo="#7fc8ff" />
           <Deck />
-          <Char who="PIP" pos={[-0.5, 0, 0.05]} shrug={shrug} expr="happy" headTilt={-3 - 3 * shrug} blink={f > 94 && f < 99 ? 1 : 0} />
-          <Char who="BOLT" pos={[0.62, 0, -0.45]} narrow={narrow} look={boltLook} />
-          <Char who="ZIB" pos={[0.04, 0, 0.45]} squish={sq} expr={zibExpr} armR={40} armL={18} item="remote" glow={f >= 38 && f < 50 ? 1 : 0.5} />
+          <Char who="PIP" pos={[-0.5, 0.045, 0.05]} shrug={shrug} expr="happy" headTilt={-3 - 3 * shrug} blink={f > 94 && f < 99 ? 1 : 0} />
+          <Char who="BOLT" pos={[0.62, 0.045, -0.45]} narrow={narrow} look={boltLook} />
+          <Char who="ZIB" pos={[0.04, 0.045, 0.3]} h={1.19} squish={sq} expr={zibExpr} armR={40} armL={18} item="remote" glow={f >= 38 && f < 50 ? 1 : 0.5} />
         </Cam>
       </Stage>
     </AbsoluteFill>

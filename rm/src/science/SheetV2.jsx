@@ -40,11 +40,11 @@ export const SheetV2 = () => (
         <Lights />
         <Stars />
         <Planet file="science/earth_toon.png" r={7} pos={[2, 4, -40]} rotY={2.2} tilt={0.4} atmo="#7fc8ff" />
-        <Planet file="science/moon_toon.png" r={1.6} pos={[-7, 10, -42]} />
+        <Planet file="science/moon_toon.png" r={1.7} pos={[8.3, 16.2, -42]} />
         <Deck />
-        <Char who="PIP" pos={[-0.88, 0, 0.1]} expr="happy" armR={58} armL={8} headTilt={-4} />
-        <Char who="BOLT" pos={[0.9, 0, -0.45]} narrow={0.35} look={-0.6} />
-        <Char who="ZIB" pos={[0.22, 0, 0.12]} expr="happy" armR={45} armL={18} item="remote" />
+        <Char who="PIP" pos={[-0.88, 0.045, 0.1]} expr="happy" armR={24} foreR={96} armL={6} foreL={16} headTilt={-4} />
+        <Char who="BOLT" pos={[0.9, 0.045, -0.45]} narrow={0.35} look={-0.6} />
+        <Char who="ZIB" pos={[0.2, 0.045, -0.1]} h={1.19} expr="happy" armR={45} armL={18} item="remote" />
       </Cam>
     </Stage>
   </AbsoluteFill>

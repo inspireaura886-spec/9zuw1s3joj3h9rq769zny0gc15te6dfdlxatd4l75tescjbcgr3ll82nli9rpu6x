@@ -4,7 +4,7 @@
 // v1 rig (kid scientist / box robot / one-eyed alien) kept in cast_v1.js.
 // pose = {mouth 0..1, blink 0..1, expr: happy|shock|worry|deadpan|smug|narrow|meh, armL, armR (deg, 0 = down, + = out),
 //         look -1..1, glow 0..1, item: remote|spoon|shovel,
-//         Pip: hairColor ('#hex' or ['#a','#b',..] multi-tone, default ginger), shrug 0..1
+//         Pip: hairColor ('#hex' or ['#a','#b',..] multi-tone, default ginger), shrug 0..1, foreL / foreR (forearm deg; > 75 = open palm), headTilt
 //         Bolt: narrow 0..1 (eyes narrow further), hips 0..1 (hands on hips; default 1 when no arm angles given)
 //         Zib: squish -1..1 (+ = squashed down, - = stretched up)}
 export const INK = '#241726';
@@ -181,7 +181,8 @@ export function drawPip(g, p) {
   // ---- arms behind torso? no: back arm first (left), torso, then right arm on top
   const shrugA = (a) => a * (1 - s) + 22 * s, shrugF = (a) => a * (1 - s) + 112 * s;
   const fl = (a) => a + (a > 60 ? 18 : 8);
-  const hL = pipArm(g, 204, sh + 22, shrugA(armL), shrugF(fl(armL)), -1, s, plaid);
+  const fL = p.foreL ?? fl(armL), fR = p.foreR ?? fl(armR); // forearm angles (bend at the elbow)
+  const hL = pipArm(g, 204, sh + 22, shrugA(armL), shrugF(fL), -1, Math.max(s, fL > 75 ? 1 : 0), plaid);
   // ---- torso: faded sci-fi tee + open flannel, buttoned below the chest
   const tee = new Path2D(); tee.moveTo(206, sh + 4); tee.quadraticCurveTo(300, sh - 14, 394, sh + 4); tee.quadraticCurveTo(412, sh + 20, 410, sh + 60); tee.lineTo(410, 652); tee.quadraticCurveTo(300, 664, 190, 652); tee.lineTo(190, sh + 60); tee.quadraticCurveTo(188, sh + 20, 206, sh + 4); tee.closePath();
   paint(g, tee, { grad: [190, 0, 410, 0, '#3a4a72', '#2c3a5e', '#1f2a46'], line: '#141a2c', lw: 5 });
@@ -252,7 +253,7 @@ export function drawPip(g, p) {
   paint(g, cow, { fill: hairCs[Math.min(1, hairCs.length - 1)], line: dk(hairBase, 0.55), lw: 5, rw: 4 });
   g.restore();
   // front arm last
-  const hR = pipArm(g, 396, sh + 22, shrugA(armR), shrugF(fl(armR)), 1, s, plaid);
+  const hR = pipArm(g, 396, sh + 22, shrugA(armR), shrugF(fR), 1, Math.max(s, fR > 75 ? 1 : 0), plaid);
   prop(g, item, hR[0], hR[1] - 10);
 }
 
