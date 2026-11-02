@@ -62,10 +62,10 @@ for nm, c, sz, rx in (('SeatCushion', (0, 0.06, cz - 0.04), (0.52, 0.5, 0.09), 0
     I.bevel(o, 0.03, 3)
 
 # --- the red lights, ahead-left (where he turns), closing in ---
-r1 = Md.orb('Red1', (0, 0, 0), strength=700, power=1.5e6, radius=3.5, halo=2.5, pulse=0.08, f1=NF, seed=1)
-r2 = Md.orb('Red2', (0, 0, 0), strength=700, power=1.5e6, radius=3.5, halo=2.5, pulse=0.08, f1=NF, seed=2)
-Md.fly(r1, [(0, (-90, 1250, 70), None), (NF, (-60, 950, 52), None)], interp='LINEAR')
-Md.fly(r2, [(0, (-150, 1300, 50), None), (NF, (-110, 1000, 35), None)], interp='LINEAR')
+r1 = Md.orb('Red1', (0, 0, 0), strength=700, power=8e5, radius=3.5, halo=2.5, pulse=0.08, f1=NF, seed=1)
+r2 = Md.orb('Red2', (0, 0, 0), strength=700, power=8e5, radius=3.5, halo=2.5, pulse=0.08, f1=NF, seed=2)
+Md.fly(r1, [(0, (-200, 1250, 70), None), (NF, (-150, 950, 52), None)], interp='LINEAR')
+Md.fly(r2, [(0, (-265, 1300, 50), None), (NF, (-200, 1000, 35), None)], interp='LINEAR')
 
 # --- light on him: warm instrument glow from below the glareshield + faint cool moon spill from the panes ---
 Wd.area('GaugeGlow', (0.0, 0.75, -0.05), tuple(Vector(pl.joint(pose, 0, 'Head')) + Vector((0, 0, -0.1))),

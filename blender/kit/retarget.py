@@ -568,7 +568,9 @@ def seated(rig, clip_fn, frames, hips, grip_l=None, grip_r=None, floor_z=None, h
     overlay_local(p, mc('head_turn', head_t0, head_speed), ['Neck', 'Neck1', 'Head'], mode='replace')
     # upright pilot's back: spine from the standing idle (breathing included), then the whole torso leaned
     # `lean` degrees forward from vertical (the stool clip slouches)
-    overlay_local(p, mc('idle_stand', 1.0), ['LowerBack', 'Spine', 'Spine1'] if breathe else [], mode='replace')
+    idle = mc('idle_stand', 1.0)
+    overlay_local(p, idle, ['LowerBack', 'Spine', 'Spine1'] if breathe else [], mode='replace')
+    overlay_local(p, idle, ['LeftShoulder', 'RightShoulder'], mode='replace')  # relaxed clavicles (no shrug)
     lb, nk = p.bone('LowerBack'), p.bone('Neck')
     v = p.H[0, nk] - p.H[0, lb]
     want = np.array([0, -math.sin(math.radians(lean)), math.cos(math.radians(lean))])

@@ -11,7 +11,7 @@ import numpy as np
 a = core.args()
 sc = core.reset()
 NF = 90
-core.setup_render(sc, samples=20, look='AgX - Medium High Contrast', exposure=1.15, vol_step=8.0, vol_max_steps=32,
+core.setup_render(sc, samples=20, look='AgX - Medium High Contrast', exposure=0.8, vol_step=8.0, vol_max_steps=32,
                   bounces=4, clamp_ind=4.0)
 core.finish(sc, glare=0.6, glare_thr=1.0, glare_size=8, vignette=0.4, lift=(0.98, 1.0, 1.05), gain=(1.04, 1.0, 0.96),
             sat=0.95)
@@ -31,10 +31,10 @@ Wd.fog(center=(0, L / 2, 2.5), size=(220, L + 60, 5), density=0.012, anisotropy=
 # --- the witness ---
 W0 = Vector((-0.6, 44.0, 0.0))
 w = Hm.witness(loc=W0, yaw=180)              # faces +Y, down the road
-pose = w.mocap('point_sky', t0=0.95, frames=NF, speed=0.7)  # arm down at f0, rises ~f13, up to ~f80
+pose = w.mocap('point_sky', t0=1.05, frames=NF, speed=0.6)  # arm down at f0, rises f8-22, stays up to the end
 RT.foot_lock(pose)
 # where his right hand points at the top of the gesture -> put the lights there
-fpk = 57
+fpk = 66
 sh = w.joint(pose, fpk, 'RightArm')
 hd = w.joint(pose, fpk, 'RightHand')
 d = (hd - sh).normalized()
@@ -50,7 +50,7 @@ Md.fly(o1, [(0, tuple(o1p), None), (NF, tuple(o1p + Vector((3.0, 1.0, 0.8))), No
 Md.fly(o2, [(0, tuple(o2p), None), (NF, tuple(o2p + Vector((2.0, 0.5, -0.4))), None)], interp='LINEAR')
 # head follows the lights as the arm comes up (weight 0.2 -> 1)
 tgt = w.to_arm(o1p)
-RT.look_at(pose, tgt, weight=lambda f: 0.2 + 0.65 * Hm.ramp(f, 12, 45), max_deg=50)
+RT.look_at(pose, tgt, weight=lambda f: 0.15 + 0.45 * Hm.ramp(f, 8, 40), max_deg=40)
 RT.smooth_pose(pose, 1.0)
 w.apply(pose)
 os.makedirs(a.out, exist_ok=True)
@@ -66,11 +66,13 @@ Wd.area('WitnessFill', tuple(W0 + Vector((-3.0, -2.5, 2.5))), tuple(W0 + Vector(
 
 # --- camera: low behind-left, slow cruise push toward him with the lights in the upper frame ---
 chest0 = Vector(w.joint(pose, 0, 'Spine1'))
-look0 = chest0 + (o1p - chest0).normalized() * 2.4
-look1 = chest0 + (o1p - chest0).normalized() * 2.9
+c0, c1 = W0 + Vector((-2.6, -5.6, 1.05)), W0 + Vector((-2.35, -5.0, 1.1))
+def aim(c, k):  # frame both: the man (lower left-centre) and the lights (upper right), k = share toward the lights
+    return c + ((chest0 - c).normalized() * (1 - k) + (o1p - c).normalized() * k).normalized() * 6.0
 cam = C.Cam()
-cam.shot(0, NF, C.dolly(tuple(W0 + Vector((-2.6, -5.6, 1.05))), tuple(W0 + Vector((-2.35, -5.0, 1.1))), look=tuple(look0),
-                        look1=tuple(look1)), lens=(23, 24), fstop=4.0, focus=tuple(chest0))
+cam.shot(0, NF, C.dolly(tuple(c0), tuple(c1), look=tuple(aim(c0, 0.42)), look1=tuple(aim(c1, 0.44))), lens=(22, 23),
+         fstop=4.0, focus=tuple(chest0))
+print('IA3D orb', tuple(round(x, 1) for x in o1p), 'chest', tuple(round(x, 2) for x in chest0))
 cam.bake(0, NF - 1)
 sc.frame_start, sc.frame_end = 0, NF - 1
 core.render(a, sc)
