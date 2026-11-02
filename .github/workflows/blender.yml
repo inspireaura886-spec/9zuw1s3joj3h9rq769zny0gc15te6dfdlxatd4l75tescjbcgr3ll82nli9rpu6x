@@ -1,0 +1,111 @@
+name: ia-blender
+run-name: blender ${{ inputs.name }}
+# REAL3D plates: Blender 4.2 LTS (Cycles CPU + OpenImageDenoise) rendered in parallel parts, merged to an mp4 plate.
+# Scene contract: blender -b --factory-startup -P <scene.py> -- --start A --end B --out DIR --assets DIR [--stills a,b,c] [extra args]
+on:
+  workflow_dispatch:
+    inputs:
+      name: {required: true}
+      scene: {required: true, description: 'scene script path in repo, e.g. blender/scenes/manises/s1_airliner.py'}
+      frames: {required: true, description: 'total frames; renders 0..frames-1'}
+      parts: {default: '12'}
+      stills: {default: '', description: 'comma list of frames -> stills mode (PNGs + sheet, no plate)'}
+      args: {default: '', description: 'extra args for the scene script, e.g. --samples 24 --pct 50'}
+env:
+  BV: 4.2.9
+  BURL: https://download.blender.org/release/Blender4.2/blender-4.2.9-linux-x64.tar.xz
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {sparse-checkout: "blender\n.github"}
+      - id: cb
+        uses: actions/cache@v4
+        with: {path: ~/blender, key: 'blender-${{ env.BV }}'}
+      - if: steps.cb.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/blender && curl -sSL "$BURL" | tar -xJ -C ~/blender --strip-components=1
+          ~/blender/blender --version | head -1
+      - uses: actions/cache@v4
+        with: {path: ~/ia3d_assets, key: "assets-${{ hashFiles('blender/kit/assets.json') }}", restore-keys: 'assets-'}
+      - run: python3 blender/kit/fetch_assets.py ~/ia3d_assets
+      - id: m
+        run: |
+          python3 - >> $GITHUB_OUTPUT <<'PY'
+          import json
+          N=int('${{ inputs.parts }}'); T=int('${{ inputs.frames }}'); st='${{ inputs.stills }}'.strip()
+          if st:
+              fr=[int(x) for x in st.split(',') if x.strip()]; N=max(1,min(N,len(fr)))
+              inc=[{'i':i,'a':0,'b':0,'st':','.join(str(x) for x in fr[i::N])} for i in range(N)]
+          else:
+              s=-(-T//N); inc=[{'i':i,'a':i*s,'b':min(T,(i+1)*s)-1,'st':''} for i in range(N) if i*s<T]
+          print('matrix='+json.dumps({'include':inc}))
+          PY
+  part:
+    needs: plan
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      max-parallel: 20
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {sparse-checkout: "blender\n.github"}
+      - uses: actions/cache/restore@v4
+        with: {path: ~/blender, key: 'blender-${{ env.BV }}', fail-on-cache-miss: true}
+      - uses: actions/cache/restore@v4
+        with: {path: ~/ia3d_assets, key: "assets-${{ hashFiles('blender/kit/assets.json') }}", restore-keys: 'assets-'}
+      - run: |
+          sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y --no-install-recommends libxi6 libxxf86vm1 libxfixes3 libxrender1 libgl1 libegl1 libxkbcommon0 libsm6 libice6 ffmpeg >/dev/null
+          nproc; python3 blender/kit/fetch_assets.py ~/ia3d_assets
+      - name: render
+        run: |
+          ST="${{ matrix.st }}"; EX=""; [ -n "$ST" ] && EX="--stills $ST"
+          T0=$(date +%s)
+          ~/blender/blender -b --factory-startup -noaudio -P "${{ inputs.scene }}" -- --start ${{ matrix.a }} --end ${{ matrix.b }} --out $PWD/frames --assets ~/ia3d_assets $EX ${{ inputs.args }} 2>&1 | grep -v "^Fra:.*Sample\|Path Tracing" | tail -n 400
+          echo "wall $(( $(date +%s)-T0 ))s"; ls frames | head; ls frames | wc -l
+          test -n "$(ls frames/*.png 2>/dev/null)"
+      - name: encode
+        run: |
+          I=$(printf %02d ${{ matrix.i }}); mkdir -p out
+          cp frames/timing.json out/timing_$I.json 2>/dev/null || true
+          if [ -n "${{ matrix.st }}" ]; then cp frames/*.png out/; else
+            ffmpeg -v error -y -framerate 30 -start_number ${{ matrix.a }} -i frames/%05d.png -c:v libx264 -preset medium -crf 10 -pix_fmt yuv420p -r 30 out/part_$I.mp4
+            cp frames/$(printf %05d ${{ matrix.a }}).png out/first_$I.png; fi
+          ls -la out
+      - uses: actions/upload-artifact@v4
+        with: {name: 'part-${{ matrix.i }}', path: out/, retention-days: 1}
+  merge:
+    needs: part
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: {path: parts, pattern: 'part-*', merge-multiple: true}
+      - run: |
+          sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y --no-install-recommends ffmpeg imagemagick >/dev/null
+          mkdir -p plate
+          python3 - <<'PY'
+          import json,glob
+          t=[json.load(open(f)) for f in sorted(glob.glob('parts/timing_*.json'))]
+          fr=sum(x.get('frames',0) for x in t); rs=sum(x.get('render_s',0) for x in t)
+          r={'parts':len(t),'frames':fr,'render_s_total':round(rs,1),'s_per_frame':round(rs/max(fr,1),2),
+             'max_part_wall_s':max([x.get('wall_s',0) for x in t] or [0]),'per_part':t}
+          json.dump(r,open('plate/stats.json','w'),indent=1); print(json.dumps({k:v for k,v in r.items() if k!='per_part'}))
+          PY
+          if ls parts/part_*.mp4 >/dev/null 2>&1; then
+            ls parts/part_*.mp4 | sort | sed "s/^/file '/;s/$/'/" > list.txt
+            ffmpeg -v error -y -f concat -safe 0 -i list.txt -c copy plate/plate.mp4
+            N=$(ffprobe -v error -count_packets -select_streams v -show_entries stream=nb_read_packets -of csv=p=0 plate/plate.mp4)
+            S=$(( N/12 > 0 ? N/12 : 1 ))
+            ffmpeg -v error -y -i plate/plate.mp4 -vf "select='not(mod(n+$((S/2)),$S))',scale=270:-1,tile=6x2:padding=4" -frames:v 1 -vsync vfr plate/contact.jpg
+            echo "frames $N"
+          else
+            cp parts/*.png plate/
+            montage plate/*.png -geometry 360x640+4+4 -tile 6x plate/contact.jpg || true
+          fi
+          ls -la plate
+      - uses: actions/upload-artifact@v4
+        with: {name: plate, path: plate/, retention-days: 5}

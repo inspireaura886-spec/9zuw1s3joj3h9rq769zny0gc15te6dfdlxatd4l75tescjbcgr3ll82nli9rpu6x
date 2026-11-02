@@ -1,0 +1,22 @@
+{
+ "_note": "CC0 assets from Poly Haven (polyhaven.com, CC0, no credit required). fetch_assets.py downloads them into the cache dir. Add ids here; the GitHub cache key follows this file's hash.",
+ "hdris": [
+  {"id": "kloppenheim_02_puresky", "res": "2k"},
+  {"id": "qwantani_night", "res": "2k"},
+  {"id": "moonless_golf", "res": "2k"},
+  {"id": "narrow_moonlit_road", "res": "2k"}
+ ],
+ "textures": [
+  {"id": "asphalt_02", "res": "1k", "maps": ["Diffuse", "nor_gl", "Rough"]},
+  {"id": "forest_ground_04", "res": "1k", "maps": ["Diffuse", "nor_gl", "Rough"]},
+  {"id": "concrete_floor_worn_001", "res": "1k", "maps": ["Diffuse", "nor_gl", "Rough"]},
+  {"id": "metal_plate", "res": "1k", "maps": ["Diffuse", "nor_gl", "arm"]},
+  {"id": "rough_concrete", "res": "1k", "maps": ["Diffuse", "nor_gl", "arm"]}
+ ],
+ "models": [
+  {"id": "fir_tree_01", "res": "1k"},
+  {"id": "pine_tree_01", "res": "1k"},
+  {"id": "street_lamp_01", "res": "1k"},
+  {"id": "metal_office_desk", "res": "1k"}
+ ]
+}
