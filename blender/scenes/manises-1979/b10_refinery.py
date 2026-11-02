@@ -9,7 +9,7 @@ a = core.args()
 sc = core.reset()
 NF = 216
 setup(sc, exposure=0.95, vol=True, glare=0.75, vignette=0.42)
-Wd.hdri('qwantani_night', strength=0.3, bg_strength=0.7, rot=80, tint=(0.8, 0.88, 1.08))
+Wd.hdri('kloppenheim_02_puresky', strength=0.25, bg_strength=0.5, rot=80, tint=(0.75, 0.85, 1.1))
 Wd.moon(direction=(-0.5, -0.4, 0.25), strength=0.8, color=(0.62, 0.72, 1.0))
 Wd.sea_plane(size=60000, z=-0.5, color=(0.004, 0.007, 0.012), rough=0.55, wave=0.15, frames=NF)
 ground = Wd.box('Ground', (0, -2600, 0.0), (8000, 5000, 1.0))

@@ -414,11 +414,11 @@ def fighter(name='Fighter', loc=(0, 0, 0), burner=1.0, f1=900, lights=True, seed
     canopy = M.principled(name + '_canopy', base=(0.02, 0.025, 0.03), rough=0.05, coat=1.0, spec=0.8)
     # fuselage: circular-ish rings along Y, radius profile (nose cone -> cockpit hump -> constant -> nozzle)
     def prof(y):  # y in [-7.6, 7.7]: long pointed nose cone, slim body (F1: ~1.6 m wide incl. intakes)
-        if y > 3.2:
-            u = (7.7 - y) / 4.5
-            return 0.03 + 0.62 * math.sin(min(1.0, u) * math.pi / 2) ** 1.2
+        if y > 2.0:
+            u = (7.7 - y) / 5.7
+            return 0.02 + 0.58 * min(1.0, u) ** 0.75
         if y > -5.8:
-            return 0.65 + 0.05 * math.exp(-((y - 0.5) / 2.0) ** 2)
+            return 0.60 + 0.04 * math.exp(-((y - 0.0) / 2.0) ** 2)
         u = (y + 7.6) / 1.8
         return 0.50 + 0.15 * u
     rings = []
@@ -429,7 +429,7 @@ def fighter(name='Fighter', loc=(0, 0, 0), burner=1.0, f1=900, lights=True, seed
         ring = []
         for i in range(n):
             a = 2 * math.pi * i / n
-            ring.append((math.cos(a) * r * (1.25 if -5.0 < y < 2.6 else 1.0), y, math.sin(a) * r))  # intake cheeks widen the mid body
+            ring.append((math.cos(a) * r * (1.12 if -4.5 < y < 2.0 else 1.0), y, math.sin(a) * r * (0.92 if math.sin(a) < 0 else 1.0)))
         rings.append(ring)
     v, f = loft(rings, cap_start=True)
     body = mesh_obj(name + '_body', v, f, parent=root, mats=(skin,))
@@ -465,8 +465,8 @@ def fighter(name='Fighter', loc=(0, 0, 0), burner=1.0, f1=900, lights=True, seed
     can = bpy.data.objects.new(name + '_canopy', me)
     bpy.context.scene.collection.objects.link(can)
     can.parent = root
-    can.scale = (0.34, 1.25, 0.30)
-    can.location = (0, 3.0, 0.55)
+    can.scale = (0.27, 1.1, 0.24)
+    can.location = (0, 2.7, 0.50)
     me.materials.append(canopy)
     for p in me.polygons:
         p.use_smooth = True

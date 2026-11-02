@@ -24,10 +24,10 @@ for r in range(2):
         s = m.node_tree.nodes['Emission'].inputs['Strength']
         on = 6 + (r * 4 + c) % 3
         # on, then a slow steady pulse (period 20 f) - an alarm, not a strobe
-        keys = [(0, 0.0), (on, 0.0), (on + 2, 7.0)]
+        keys = [(0, 0.0), (on, 0.0), (on + 2, 2.4)]
         f = on + 2
         while f < NF:
-            keys += [(f + 10, 3.5), (f + 20, 7.0)]
+            keys += [(f + 10, 1.3), (f + 20, 2.4)]
             f += 20
         M.animate(s, 'default_value', keys)
 lamp_light = Wd.point('WarnGlow', (0, 0.95, 0.40), color=(1.0, 0.1, 0.04), power=0.0, radius=0.1)
