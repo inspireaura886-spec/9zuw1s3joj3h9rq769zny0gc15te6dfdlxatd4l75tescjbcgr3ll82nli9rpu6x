@@ -75,7 +75,7 @@ export const PaperCollage = ({images = [], headlines = [], dur = 105, paper = '#
 export const FoundFootage = ({images = [], headlines = [], hero, dur = 105, stamp = 'SEP 16 1890', cutAt}) => {
   const f = useCurrentFrame(); const c = cutAt ?? Math.round(dur * 0.5);
   const heroSrc = hero || images[0];
-  const shake = f >= c && f < c + 6 ? (h1(f, 2) - 0.5) * 40 : 0;
+  const shake = 0; // USER 2026-11-02: no frame shake
   return <AbsoluteFill style={{background: '#000'}}>
     {f < c ? <PaperCollage images={images} headlines={headlines} dur={dur} /> :
       <AbsoluteFill style={{transform: `translateX(${shake}px) scale(${1.04 + 0.06 * eio(ramp(f, c, dur))})`}}>

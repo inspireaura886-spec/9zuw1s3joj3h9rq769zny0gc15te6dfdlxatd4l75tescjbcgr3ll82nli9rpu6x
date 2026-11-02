@@ -7,7 +7,8 @@ import {easeInOut} from './noise.js';
  * Eased (cubic in-out) between keys. orbit: optional {center, radius, height, from, to (radians)} overrides pos.
  * shake: amplitude (world units) for impact beats.
  */
-export const CameraRig = ({keys, orbit, shake = 0, shakeFrom = 0, shakeLen = 20, drift = 0.18}) => {
+export const CameraRig = ({keys, orbit, shake: _shake = 0, shakeFrom = 0, shakeLen = 20, drift: _drift = 0}) => {
+  const shake = 0, drift = 0; // USER 2026-11-02: never shake or drift the frame (smooth eased moves only)
   const {camera} = useThree(); const f = useCurrentFrame();
   let pos, look, fov;
   if (orbit) {

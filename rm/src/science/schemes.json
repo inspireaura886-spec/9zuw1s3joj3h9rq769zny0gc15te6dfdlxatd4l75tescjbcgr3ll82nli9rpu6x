@@ -1,0 +1,48 @@
+{
+ "_rule": "one caption scheme per Short, picked from real3d/caption_schemes.json via tools/caption_next.py; never default yellow; TEST Shorts are not logged in CAPTION_LOG.csv",
+ "ep1": {
+  "text": "#F5F3EE",
+  "active": "#FF6A3D",
+  "font": "Montserrat",
+  "weight": 800,
+  "suits": [
+   "night",
+   "blue",
+   "navy",
+   "teal",
+   "green",
+   "sea"
+  ],
+  "name": "ember"
+ },
+ "ep2": {
+  "text": "#FFFFFF",
+  "active": "#8FE3FF",
+  "font": "Inter",
+  "weight": 800,
+  "suits": [
+   "fire",
+   "orange",
+   "red",
+   "brown",
+   "desert",
+   "sunset",
+   "warm"
+  ],
+  "name": "glacier"
+ },
+ "ep3": {
+  "text": "#FFFFFF",
+  "active": "#FF8FB1",
+  "font": "Inter",
+  "weight": 800,
+  "suits": [
+   "blue",
+   "grey",
+   "teal",
+   "snow",
+   "night"
+  ],
+  "name": "rose"
+ }
+}

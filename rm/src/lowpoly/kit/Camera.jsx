@@ -36,7 +36,8 @@ export const shotPose = (o, f) => {
   if (preset === 'track') { const off = o.offset || [6, 3, 6]; const p = LV(o.from || tg, o.to || tg, t); return {pos: [p[0] + off[0], p[1] + off[1], p[2] + off[2]], look: tg, fov: o.fov0 ?? 45}; }
   throw new Error('ShotCam: unknown preset ' + preset);
 };
-export const ShotCam = ({shake = 0, shakeFrom = 0, shakeLen = 18, drift = 0.12, ...o}) => {
+export const ShotCam = ({shake: _shake = 0, shakeFrom = 0, shakeLen = 18, drift: _drift = 0, ...o}) => {
+  const shake = 0, drift = 0; // USER 2026-11-02: never shake or drift the frame (smooth eased moves only)
   const {camera} = useThree(); const f = useCurrentFrame();
   let {pos, look, fov} = shotPose(o, f);
   if (shake && f >= shakeFrom && f < shakeFrom + shakeLen) { const k = shake * Math.pow(1 - (f - shakeFrom) / shakeLen, 2); pos = [pos[0] + Math.sin(f * 2.3) * k, pos[1] + Math.cos(f * 3.1) * k, pos[2] + Math.sin(f * 1.7) * k * 0.5]; }

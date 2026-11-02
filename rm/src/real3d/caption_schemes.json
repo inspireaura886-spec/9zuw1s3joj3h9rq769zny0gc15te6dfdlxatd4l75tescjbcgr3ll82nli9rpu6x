@@ -1,0 +1,11 @@
+{
+ "_rule": "User 2026-10-28 'the overscreen captions and text change their colour every video according to the background, not same yellow fixed up'; 2026-10-31 'what happened with my wish of making the captions appearing on screen different in each short???'; 2026-11-02 'when are you supposed to change caption colours, in this blender one also same colour'. Pick with tools/caption_next.py --bg <tags>; never the previous Short's scheme; log it in R/CAPTION_LOG.csv. Clean modern sans (Montserrat / Inter, OFL), no cartoon yellow.",
+ "ember":    {"text": "#F5F3EE", "active": "#FF6A3D", "font": "Montserrat", "weight": 800, "suits": ["night", "blue", "navy", "teal", "green", "sea"]},
+ "glacier":  {"text": "#FFFFFF", "active": "#8FE3FF", "font": "Inter", "weight": 800, "suits": ["fire", "orange", "red", "brown", "desert", "sunset", "warm"]},
+ "sodium":   {"text": "#FFF7E8", "active": "#FFB547", "font": "Montserrat", "weight": 800, "suits": ["blue", "purple", "teal", "night", "rain"]},
+ "phosphor": {"text": "#ECFFF4", "active": "#57F2A0", "font": "Inter", "weight": 800, "suits": ["red", "magenta", "brown", "radar", "dark"]},
+ "orchid":   {"text": "#FFFFFF", "active": "#D7A6FF", "font": "Montserrat", "weight": 800, "suits": ["green", "forest", "olive", "swamp"]},
+ "rose":     {"text": "#FFFFFF", "active": "#FF8FB1", "font": "Inter", "weight": 800, "suits": ["blue", "grey", "teal", "snow", "night"]},
+ "bone":     {"text": "#EDE6D6", "active": "#FFFFFF", "font": "Montserrat", "weight": 700, "suits": ["noir", "mono", "grey", "sepia", "paper"]},
+ "cobalt":   {"text": "#FFFFFF", "active": "#6FA8FF", "font": "Inter", "weight": 800, "suits": ["sand", "orange", "warm", "fire", "yellow"]}
+}
