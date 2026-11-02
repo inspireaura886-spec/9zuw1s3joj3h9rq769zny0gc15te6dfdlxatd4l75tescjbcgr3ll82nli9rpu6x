@@ -16,14 +16,14 @@ Wd.city_lights('Coast', center=(-6000, 5000, -2430), radius=300, count=900, seed
 plane = Md.airliner('Airliner', f1=NF, cabin_glow=2.4)
 Md.fly(plane, [(0, (0, 0, 0), (0, -14, 4)), (60, (-30, V_JET * 60, -10), (-2, -24, 10)),
                (NF, (-160, V_JET * NF * 0.95, -36), (-3, -26, 16))])
-r1, r2 = red_orbs(NF, parent=plane, radius=4.5)
+r1, r2 = red_orbs(NF, parent=plane, radius=3.5, power=8e3, strength=220, halo=1.2)
 Md.fly(r1, [(0, (-70, 120, 24), None), (NF, (-50, 90, 16), None)], interp='LINEAR')
 Md.fly(r2, [(0, (-84, 132, 8), None), (NF, (-60, 100, 4), None)], interp='LINEAR')
 cam = C.Cam(clip_end=90000)
-# shot A 0-65: front-right, low: the jet rolls into the turn, red lights beyond its left wing
-cam.shot(0, 66, C.track('Airliner', offset=(70, 150, -12), offset1=(62, 136, -10), look_offset=(-30, 40, 6)),
-         lens=(34, 36), fstop=8, focus='Airliner')
+# shot A 0-65: right side, slightly ahead: the jet rolls into the turn, red lights beyond its left wing
+cam.shot(0, 66, C.track('Airliner', offset=(62, 30, 6), offset1=(56, 18, 5), look_offset=(-26, 40, 4)),
+         lens=(30, 32), fstop=8, focus='Airliner')
 # shot B 66-131: chase from behind-above-right; jet lower frame, the lights off the left wing, city below
-cam.shot(66, NF, C.track('Airliner', offset=(40, -80, 20), offset1=(32, -66, 16), look_offset=(-30, 70, 4)),
+cam.shot(66, NF, C.track('Airliner', offset=(40, -80, 20), offset1=(32, -66, 16), look_offset=(-48, 80, 6)),
          lens=(30, 32), fstop=8, focus='Airliner')
 finish_cam(cam, NF, a, sc)

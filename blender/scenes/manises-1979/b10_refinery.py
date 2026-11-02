@@ -8,7 +8,7 @@ from common import *
 a = core.args()
 sc = core.reset()
 NF = 216
-setup(sc, exposure=1.15, vol=True, glare=0.75, vignette=0.4)
+setup(sc, exposure=0.95, vol=True, glare=0.75, vignette=0.42)
 Wd.hdri('qwantani_night', strength=0.3, bg_strength=0.7, rot=80, tint=(0.8, 0.88, 1.08))
 Wd.moon(direction=(-0.5, -0.4, 0.25), strength=0.8, color=(0.62, 0.72, 1.0))
 Wd.sea_plane(size=60000, z=-0.5, color=(0.004, 0.007, 0.012), rough=0.55, wave=0.15, frames=NF)
@@ -35,19 +35,19 @@ for i, (x, y, h) in enumerate([(220, -160, 85), (262, -205, 70), (190, -235, 95)
     fm = M.emission('Flare%d' % i, (1.0, 0.42, 0.1), 45)
     fl.data.materials.append(fm)
     fl.visible_shadow = False
-    L = Wd.point('FlareL%d' % i, (x, y, h + 6), color=(1.0, 0.5, 0.2), power=3e5, radius=3)
+    L = Wd.point('FlareL%d' % i, (x, y, h + 6), color=(1.0, 0.5, 0.2), power=4e4, radius=3)
     s = fm.node_tree.nodes['Emission'].inputs['Strength']
     M.animate(s, 'default_value', [(f, 45 * (1 + 0.18 * math.sin(f * 0.11 + i))) for f in range(0, NF + 1, 8)])
     flames.append((x, y, h))
 Wd.city_lights('Plant', center=(0, -350, 1.0), radius=500, count=1400, seed=71, strength=16, size=0.9,
                cluster=0.6, color=(1.0, 0.7, 0.35))
-Wd.fog(center=(0, 0, 60), size=(12000, 12000, 140), density=0.0006, color=(0.75, 0.75, 0.8), anisotropy=0.5,
+Wd.fog(center=(0, 0, 60), size=(12000, 12000, 140), density=0.00008, color=(0.75, 0.75, 0.8), anisotropy=0.5,
        height_falloff=0.01)
-planet = Md.orb('Planet', (4680, -54620, 9500), color=(1.0, 0.97, 0.9), strength=2000, power=0.0, radius=60, f1=NF)
+planet = Md.orb('Planet', (5200, -54000, 12000), color=(1.0, 0.97, 0.9), strength=2000, power=0.0, radius=60, f1=NF)
 cam = C.Cam(clip_end=200000)
 c = Vector((220, -200, 70))
 # shot A 0-109: far out over the sea, flares glowing on the horizon under the stars
-cam.shot(0, 110, C.dolly((-300, 5200, 40), (-260, 4300, 36), look=(150, -200, 140)), lens=(70, 76), fstop=11,
+cam.shot(0, 110, C.dolly((-200, 2300, 30), (-180, 1950, 28), look=(180, -200, 90)), lens=(60, 66), fstop=11,
          focus=c)
 # shot B 110-215: close slow orbit past the burning stacks, sky + planet above
 cam.shot(110, NF, C.orbit((200, -200, 0), r=420, a0=70, a1=95, h=(55, 70), look_h=80), lens=(32, 34), fstop=11,

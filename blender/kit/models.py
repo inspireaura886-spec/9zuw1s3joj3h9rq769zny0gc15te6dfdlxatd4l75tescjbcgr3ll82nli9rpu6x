@@ -413,14 +413,14 @@ def fighter(name='Fighter', loc=(0, 0, 0), burner=1.0, f1=900, lights=True, seed
     dark = M.principled(name + '_dark', base=(0.03, 0.03, 0.032), rough=0.35, metal=0.6)
     canopy = M.principled(name + '_canopy', base=(0.02, 0.025, 0.03), rough=0.05, coat=1.0, spec=0.8)
     # fuselage: circular-ish rings along Y, radius profile (nose cone -> cockpit hump -> constant -> nozzle)
-    def prof(y):  # y in [-7.6, 7.7]
-        if y > 4.6:
-            u = (7.7 - y) / 3.1
-            return 0.06 + 0.66 * math.sin(min(1.0, u) * math.pi / 2) ** 0.8
+    def prof(y):  # y in [-7.6, 7.7]: long pointed nose cone, slim body (F1: ~1.6 m wide incl. intakes)
+        if y > 3.2:
+            u = (7.7 - y) / 4.5
+            return 0.03 + 0.62 * math.sin(min(1.0, u) * math.pi / 2) ** 1.2
         if y > -5.8:
-            return 0.72 + 0.08 * math.exp(-((y - 1.0) / 2.2) ** 2)
+            return 0.65 + 0.05 * math.exp(-((y - 0.5) / 2.0) ** 2)
         u = (y + 7.6) / 1.8
-        return 0.52 + 0.20 * u
+        return 0.50 + 0.15 * u
     rings = []
     n = 20
     ys = [7.7 - i * 0.35 for i in range(45)]
@@ -429,7 +429,7 @@ def fighter(name='Fighter', loc=(0, 0, 0), burner=1.0, f1=900, lights=True, seed
         ring = []
         for i in range(n):
             a = 2 * math.pi * i / n
-            ring.append((math.cos(a) * r * 1.05, y, math.sin(a) * r * (0.95 if math.sin(a) < 0 else 1.0)))
+            ring.append((math.cos(a) * r * (1.25 if -5.0 < y < 2.6 else 1.0), y, math.sin(a) * r))  # intake cheeks widen the mid body
         rings.append(ring)
     v, f = loft(rings, cap_start=True)
     body = mesh_obj(name + '_body', v, f, parent=root, mats=(skin,))
@@ -465,22 +465,22 @@ def fighter(name='Fighter', loc=(0, 0, 0), burner=1.0, f1=900, lights=True, seed
     can = bpy.data.objects.new(name + '_canopy', me)
     bpy.context.scene.collection.objects.link(can)
     can.parent = root
-    can.scale = (0.48, 1.5, 0.42)
-    can.location = (0, 3.3, 0.62)
+    can.scale = (0.34, 1.25, 0.30)
+    can.location = (0, 3.0, 0.55)
     me.materials.append(canopy)
     for p in me.polygons:
         p.use_smooth = True
     # high swept wings, tail fin, stabilisers
     for s in (1, -1):
-        wing(name + ('_wR' if s > 0 else '_wL'), (s * 0.55, 0.6, 0.45), 3.7, 3.6, 1.2, 47, -6, t_r=0.06, t_t=0.05,
+        wing(name + ('_wR' if s > 0 else '_wL'), (s * 0.6, 1.2, 0.42), 3.6, 4.2, 1.3, 45, -6, t_r=0.06, t_t=0.05,
              side=s, parent=root, mats=(skin,))
         wing(name + ('_hR' if s > 0 else '_hL'), (s * 0.45, -5.4, 0.05), 2.0, 1.9, 0.7, 45, -4, t_r=0.06, t_t=0.05,
              side=s, parent=root, mats=(skin,))
     wing(name + '_fin', (0, -3.6, 0.6), 2.6, 3.6, 1.2, 50, 0, t_r=0.07, t_t=0.05, vertical=True, parent=root,
          mats=(skin,))
     if lights:
-        nav_light(name + '_navL', (-4.15, -3.9, 0.07), (1.0, 0.05, 0.03), root, power=6, strength=60)
-        nav_light(name + '_navR', (4.15, -3.9, 0.07), (0.1, 1.0, 0.25), root, power=6, strength=60)
+        nav_light(name + '_navL', (-4.15, -3.0, 0.05), (1.0, 0.05, 0.03), root, power=6, strength=60)
+        nav_light(name + '_navR', (4.15, -3.0, 0.05), (0.1, 1.0, 0.25), root, power=6, strength=60)
         nav_light(name + '_tail', (0, -7.0, 3.1), (1, 1, 1), root, power=4, strength=80,
                   blink_kw=dict(period_f=40, on_f=3, f1=f1, phase=seed))
     if gear:  # simple struts + wheels so a jet on the runway sits ON it (wheel bottoms at z = -1.3)

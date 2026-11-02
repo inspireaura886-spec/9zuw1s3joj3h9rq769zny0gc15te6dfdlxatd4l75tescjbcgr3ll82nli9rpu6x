@@ -18,7 +18,7 @@ Wd.city_lights('Sagunto', center=(-1400, 2600, -1480), radius=900, count=2200, s
 Wd.city_lights('CoastRoad', center=(-1700, 2000, -1480), radius=200, count=700, seed=62, strength=9, size=1.4,
                shape='line', length=12000)
 Wd.fog(center=(0, 3000, -900), size=(40000, 40000, 1400), density=0.00004, color=(0.7, 0.78, 0.95), anisotropy=0.3)
-disc = Md.orb('WhiteDisc', (-900, 2300, 80), color=(0.85, 0.92, 1.0), strength=500, power=2e7, radius=24, halo=1.6,
+disc = Md.orb('WhiteDisc', (-900, 2300, 80), color=(0.85, 0.92, 1.0), strength=60, power=3e6, radius=24, halo=1.6,
               pulse=0.05, f1=NF, seed=4)
 disc.scale = (1.0, 1.0, 0.32)
 jet = Md.fighter('Fighter', f1=NF, burner=0.5)
@@ -29,6 +29,6 @@ cam = C.Cam(clip_end=90000)
 cam.shot(0, 66, C.track('Fighter', offset=(10, -34, 6), offset1=(8, -28, 5), look_offset=(-90, 300, -10)),
          lens=(36, 40), fstop=8, focus='Fighter')
 # shot B 66-133: ahead-right, the fighter rolls into the turn and heads back toward camera, disc beyond it
-cam.shot(66, NF, C.follow('Fighter', (170, 260, 4), (190, 300, 6), look_offset=(0, 0, 2)),
-         lens=(40, 44), fstop=8, focus='Fighter')
+cam.shot(66, NF, C.follow('Fighter', (150, 450, 8), (200, 520, 10), look_offset=(0, 0, 2)),
+         lens=(48, 52), fstop=8, focus='Fighter')
 finish_cam(cam, NF, a, sc)

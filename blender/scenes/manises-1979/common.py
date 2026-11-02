@@ -36,10 +36,12 @@ def night_air(NF, moon_dir=(0.1, 0.9, 0.32), moon=2.6, clouds=True, coverage=0.4
            anisotropy=0.3)
 
 
-def red_orbs(NF, power=4e4, radius=5.0, halo=2.4, parent=None, color=(1.0, 0.07, 0.03)):
-    r1 = Md.orb('Red1', (0, 0, 0), color=color, strength=650, power=power, radius=radius, halo=halo, pulse=0.08,
+def red_orbs(NF, power=5e3, radius=3.0, halo=1.0, parent=None, color=(1.0, 0.07, 0.03), strength=60):
+    """Close-range red lights (60-300 m): low emission so the core stays RED (AgX clips bright red to white) and
+    low lamp power so the cloud deck is not washed pink."""
+    r1 = Md.orb('Red1', (0, 0, 0), color=color, strength=strength, power=power, radius=radius, halo=halo, pulse=0.08,
                 f1=NF, seed=1)
-    r2 = Md.orb('Red2', (0, 0, 0), color=color, strength=650, power=power, radius=radius, halo=halo, pulse=0.08,
+    r2 = Md.orb('Red2', (0, 0, 0), color=color, strength=strength, power=power, radius=radius, halo=halo, pulse=0.08,
                 f1=NF, seed=2)
     if parent is not None:
         r1.parent = parent

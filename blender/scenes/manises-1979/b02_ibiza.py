@@ -17,7 +17,7 @@ for i, (cx, cy, n, r) in enumerate([(600, 3000, 1200, 1500), (2600, 5400, 800, 1
                    cluster=0.8)
 plane = Md.airliner('Airliner', f1=NF, cabin_glow=2.4)
 Md.fly(plane, [(0, (0, 0, 0), (0, 0, 0)), (NF, (0, V_JET * NF, 0), (0.4, 0, 0))], interp='LINEAR')
-r1, r2 = red_orbs(NF, parent=plane, radius=5.0)
+r1, r2 = red_orbs(NF, parent=plane, radius=3.0)
 Md.fly(r1, [(0, (60, -260, 30), None), (NF, (48, -200, 22), None)], interp='LINEAR')
 Md.fly(r2, [(0, (78, -248, 14), None), (NF, (62, -190, 10), None)], interp='LINEAR')
 cam = C.Cam(clip_end=90000)
