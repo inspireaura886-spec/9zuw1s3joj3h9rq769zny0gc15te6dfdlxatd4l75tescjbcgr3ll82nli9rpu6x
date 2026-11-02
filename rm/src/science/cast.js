@@ -6,7 +6,8 @@
 //         look -1..1, glow 0..1, item: remote|spoon|shovel,
 //         Pip: hairColor ('#hex' or ['#a','#b',..] multi-tone, default ginger), shrug 0..1, foreL / foreR (forearm deg; > 75 = open palm), headTilt
 //         Bolt: narrow 0..1 (eyes narrow further), hips 0..1 (hands on hips; default 1 when no arm angles given)
-//         Zib: squish -1..1 (+ = squashed down, - = stretched up)}
+//         Zib: squish -1..1 (+ = squashed down, - = stretched up), wob -1..1 (antenna sway), scarf (deg, tail sway)
+//         Pip: hairBob (design units, hair bounce)  [secondary-motion params added 2026-11-02 look test; 0 = locked look]}
 export const INK = '#241726';
 const W = 600, H = 1000;
 const rad = (d) => (d * Math.PI) / 180;
@@ -209,8 +210,11 @@ export function drawPip(g, p) {
   // back hair mass
   const hairCs = Array.isArray(hairColor) ? hairColor : [hairColor];
   const hairBase = hairCs[0];
+  const hb = p.hairBob ?? 0; // secondary motion: hair lags/bounces (design units, + = down)
+  g.save(); g.translate(0, hb * 0.6);
   const back = new Path2D(); back.ellipse(300, 196, 118, 112, 0, Math.PI * 0.95, Math.PI * 2.05); back.lineTo(412, 260); back.quadraticCurveTo(300, 300, 188, 260); back.closePath();
   paint(g, back, { fill: hairFill(g, hairColor, 180, 420) || dk(hairBase, 0.15), rim: false, line: dk(hairBase, 0.6), lw: 5 });
+  g.restore();
   // ears
   for (const [x, d] of [[200, -1], [400, 1]]) paint(g, E(x, 238, 16, 24), { grad: [x - 16, 0, x + 16, 0, SKIN, SKIN_D], line: LINE_P, lw: 5, rw: 5 });
   // face
@@ -237,6 +241,7 @@ export function drawPip(g, p) {
   mouth(g, 302, 312, 58, mo, curve, { line: LINE_P, lw: 5, skew: expr === 'smug' || expr === 'happy' ? 4 : 0 });
   // ---- messy bedhead (front): clumpy tufts + fringe strands, any colour / multi-tone
   const tufts = [[196, 210], [186, 160], [214, 112], [250, 78], [292, 62], [338, 70], [378, 92], [412, 130], [420, 178], [406, 214]];
+  g.save(); g.translate(300, 236); g.scale(1, 1 - hb * 0.004); g.translate(-300, -236 + hb);
   const hp = new Path2D(); hp.moveTo(200, 236);
   hp.quadraticCurveTo(176, 196, 186, 160); hp.quadraticCurveTo(170, 128, 214, 112); hp.quadraticCurveTo(212, 70, 252, 80);
   hp.quadraticCurveTo(262, 40, 298, 60); hp.quadraticCurveTo(330, 30, 340, 72); hp.quadraticCurveTo(388, 54, 380, 94);
@@ -251,6 +256,7 @@ export function drawPip(g, p) {
   for (const [a, b, c, d] of [[250, 92, 262, 140], [300, 70, 302, 130], [345, 82, 352, 135], [390, 120, 386, 160], [212, 130, 226, 160]]) { g.beginPath(); g.moveTo(a, b); g.quadraticCurveTo((a + c) / 2 + 8, (b + d) / 2, c, d); g.stroke(); }
   const cow = new Path2D(); cow.moveTo(292, 64); cow.quadraticCurveTo(286, 22, 318, 14); cow.quadraticCurveTo(300, 34, 310, 62); cow.closePath();
   paint(g, cow, { fill: hairCs[Math.min(1, hairCs.length - 1)], line: dk(hairBase, 0.55), lw: 5, rw: 4 });
+  g.restore();
   g.restore();
   // front arm last
   const hR = pipArm(g, 396, sh + 22, shrugA(armR), shrugF(fR), 1, Math.max(s, fR > 75 ? 1 : 0), plaid);
@@ -357,7 +363,7 @@ export function drawZib(g, p) {
   g.save(); g.translate(300, 968); g.scale(0.84 * sx0, 0.84 * sy0); g.translate(-300, -968);
   // antennae (wobble a touch with squish), green stalks + pink-tipped bulbs
   for (const [bx, tx, d] of [[250, 196, -1], [350, 404, 1]]) {
-    const ty = 122 + 14 * sq, tx2 = tx + d * 10 * sq;
+    const wb = p.wob ?? 0; const ty = 122 + 14 * sq + Math.abs(wb) * 5, tx2 = tx + d * 10 * sq + wb * 26; // wob = antenna sway -1..1
     g.lineCap = 'round'; g.strokeStyle = GL; g.lineWidth = 26; g.beginPath(); g.moveTo(bx, 320); g.bezierCurveTo(bx + d * 6, 220, tx2 - d * 40, 150, tx2, ty); g.stroke();
     g.strokeStyle = G1; g.lineWidth = 16; g.stroke();
     g.strokeStyle = 'rgba(200,250,160,0.7)'; g.lineWidth = 5; g.beginPath(); g.moveTo(bx - 4, 310); g.bezierCurveTo(bx + d * 2, 220, tx2 - d * 44, 156, tx2 - 4, ty + 4); g.stroke();
@@ -394,8 +400,10 @@ export function drawZib(g, p) {
   const sc = new Path2D(); sc.moveTo(114, 650); sc.quadraticCurveTo(300, 712, 486, 650); sc.lineTo(492, 712); sc.quadraticCurveTo(300, 782, 110, 712); sc.closePath();
   const ribs = () => { g.strokeStyle = 'rgba(60,20,110,0.35)'; g.lineWidth = 4; for (let x = 120; x < 490; x += 20) { g.beginPath(); g.moveTo(x, 600); g.lineTo(x + 4, 780); g.stroke(); } };
   const tail = new Path2D(); tail.moveTo(352, 722); tail.quadraticCurveTo(392, 722, 416, 712); tail.lineTo(436, 842); tail.quadraticCurveTo(404, 854, 372, 848); tail.closePath();
+  g.save(); g.translate(384, 722); g.rotate(rad(p.scarf ?? 0)); g.translate(-384, -722); // scarf = tail sway (deg)
   paint(g, tail, { grad: [352, 0, 436, 0, '#a983ff', '#8b5cf6', '#6b3fd6'], line: '#3c1f7a', lw: 5, rw: 6, inner: ribs });
   g.strokeStyle = '#7a4be8'; g.lineWidth = 5; for (let x = 378; x <= 430; x += 10) { g.beginPath(); g.moveTo(x, 848); g.lineTo(x + 1, 868); g.stroke(); }
+  g.restore();
   paint(g, sc, { grad: [0, 628, 0, 760, '#b493ff', '#8b5cf6', '#6436d0'], line: '#3c1f7a', lw: 6, rw: 8, inner: ribs });
   paint(g, E(372, 724, 34, 26, -0.3), { grad: [338, 0, 406, 0, '#a983ff', '#7d4cf0'], line: '#3c1f7a', lw: 5, rw: 5 }); // knot
   // stubby nub arms
