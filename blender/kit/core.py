@@ -100,6 +100,21 @@ def setup_render(sc, samples=48, pct=100, motion_blur=True, shutter=0.5, look='A
     return sc
 
 
+def _set(node, names, value):
+    """Set a node input or property by any of several names (socket names moved between 4.x releases)."""
+    for n in names:
+        if n in node.inputs:
+            node.inputs[n].default_value = value
+            return True
+    for n in names:
+        p = n.lower()
+        if hasattr(node, p):
+            setattr(node, p, value)
+            return True
+    print('IA3D warn: no input', names, 'on', node.bl_idname, [i.name for i in node.inputs])
+    return False
+
+
 def finish(sc, glare=0.55, glare_thr=1.2, glare_size=8, vignette=0.35, lens_dist=-0.012, dispersion=0.006,
            lift=(1.0, 1.0, 1.04), gain=(1.03, 1.0, 0.96), sat=0.92, streaks=0.0):
     """Compositor 'lens' finish: fog-glow bloom on HDR highlights, optional streaks, light barrel distortion with
@@ -136,8 +151,8 @@ def finish(sc, glare=0.55, glare_thr=1.2, glare_size=8, vignette=0.35, lens_dist
     if lens_dist or dispersion:
         ld = N('CompositorNodeLensdist')
         ld.use_fit = True
-        ld.inputs['Distort'].default_value = lens_dist
-        ld.inputs['Dispersion'].default_value = dispersion
+        _set(ld, ('Distort', 'Distortion'), lens_dist)
+        _set(ld, ('Dispersion',), dispersion)
         L(cur, ld.inputs['Image'])
         cur = ld.outputs['Image']
     cb = N('CompositorNodeColorBalance')
@@ -147,7 +162,7 @@ def finish(sc, glare=0.55, glare_thr=1.2, glare_size=8, vignette=0.35, lens_dist
     L(cur, cb.inputs['Image'])
     cur = cb.outputs['Image']
     hs = N('CompositorNodeHueSat')
-    hs.inputs['Saturation'].default_value = sat
+    _set(hs, ('Saturation',), sat)
     L(cur, hs.inputs['Image'])
     cur = hs.outputs['Image']
     if vignette > 0:
