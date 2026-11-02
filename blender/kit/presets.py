@@ -70,11 +70,12 @@ def night_sky(hdri='qwantani_night', moon_dir=(-0.3, 0.8, 0.35), town=True, fog=
     Wd.hdri(hdri, strength=0.25, bg_strength=0.45, tint=(0.75, 0.85, 1.1), stars=0.2)
     Wd.moon(direction=moon_dir, strength=1.0)
     ground = M.texture_set('Ground', 'forest_ground_04', scale=0.08, tint=(0.35, 0.36, 0.32), box=True)
-    Wd.terrain('Hills', size=6000, res=160, height=90, scale=0.0016, center=(0, 2000, -2), seed=seed, mat=ground)
+    t = Wd.terrain('Hills', size=2400, res=240, height=60, scale=0.0022, center=(0, 900, -2), seed=seed, mat=ground)
+    Md.subsurf(t, 1, 2)
     if town:
         Wd.city_lights('Town', center=(600, 3200, 25), radius=500, count=700, seed=seed + 3, strength=12, size=0.9)
     if fog:
-        Wd.fog(center=(0, 1500, 15), size=(6000, 6000, 60), density=0.004, height_falloff=2.5, noise=0.5,
+        Wd.fog(center=(0, 900, 15), size=(2400, 2400, 60), density=0.0012, height_falloff=2.5, noise=0.5,
                noise_scale=0.004, color=(0.7, 0.75, 0.85))
     return {'horizon': Vector((0, 3000, 40)), 'sky': Vector((0, 1500, 300))}
 
@@ -82,8 +83,9 @@ def night_sky(hdri='qwantani_night', moon_dir=(-0.3, 0.8, 0.35), town=True, fog=
 def ocean_night(boat=True, moon_dir=(0.0, 1.0, 0.25), seed=0, frames=300):
     Wd.hdri('kloppenheim_02_puresky', strength=0.3, bg_strength=0.5, tint=(0.75, 0.85, 1.1), stars=0.2)
     Wd.moon(direction=moon_dir, strength=1.4)
-    o = Wd.ocean(center=(0, 0, 0), spatial=60, res=11, wave_scale=1.4, choppy=1.0, time_frames=frames, wind=14)
-    o.scale = (1, 1, 1)
+    o = Wd.ocean(center=(0, 0, 0), spatial=80, res=11, wave_scale=1.4, choppy=1.0, time_frames=frames, wind=14)
+    md = o.modifiers['Ocean']
+    md.repeat_x = md.repeat_y = 3
     Wd.sea_plane(size=60000, z=-0.4, rough=0.08, frames=frames)
     Wd.fog(center=(0, 2000, 40), size=(8000, 8000, 160), density=0.0006, color=(0.7, 0.78, 0.9))
     b = Md.boat('Boat', (0, 8, 0.1)) if boat else None

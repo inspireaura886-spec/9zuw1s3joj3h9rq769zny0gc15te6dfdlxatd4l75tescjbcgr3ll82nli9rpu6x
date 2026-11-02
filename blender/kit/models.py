@@ -391,11 +391,14 @@ def boat(name='Boat', loc=(0, 0, 0), length=9.0, cabin_light=True):
     deck = M.principled('Deck', base=(0.35, 0.28, 0.2), rough=0.8, grime=0.4, bump=0.3, bump_scale=30)
     wh = Wd.box(name + '_House', (0, -0.8, 1.35), (1.6, 1.8, 1.4))
     wh.parent = root
+    bv = wh.modifiers.new('Bev', 'BEVEL')
+    bv.width = 0.06
+    bv.segments = 3
     wh.data.materials.append(M.principled('House', base=(0.75, 0.74, 0.7), rough=0.7, grime=0.5))
     mast = Wd.box(name + '_Mast', (0, 0.6, 2.8), (0.08, 0.08, 4.0))
     mast.parent = root
     mast.data.materials.append(deck)
     if cabin_light:
-        nav_light(name + '_Lamp', (0, 0.6, 4.7), (1.0, 0.85, 0.6), root, power=60, strength=40)
+        nav_light(name + '_Lamp', (0, 0.6, 4.7), (1.0, 0.85, 0.6), root, power=40, strength=12)
         Wd.point(name + '_Cabin', (0, -0.8, 1.4), color=(1, 0.7, 0.4), power=30).parent = root
     return root
