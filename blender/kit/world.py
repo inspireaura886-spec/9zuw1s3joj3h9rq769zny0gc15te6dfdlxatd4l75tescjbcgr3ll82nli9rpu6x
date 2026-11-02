@@ -322,6 +322,7 @@ def city_lights(name='Town', center=(0, 0, 0), radius=600, count=1500, seed=1, c
     o.location = center
     bpy.context.scene.collection.objects.link(o)
     m, nb, b, out = M.new(name + 'Mat')
+    M.no_light(m)
     m.node_tree.nodes.remove(b)
     e = nb.n('ShaderNodeEmission', Strength=strength)
     # per-light colour/brightness variation from object-space noise

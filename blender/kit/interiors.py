@@ -115,6 +115,7 @@ def cockpit(panel_glow=1.2, seed=5):
             r = 0.05 if abs(col) > 2 else 0.058
             im = gauge_face('gauge%d' % k, kind=(col + row) % 4, seed=k)
             m, nb, b, out = M.new('Gauge%d' % k)
+            M.no_light(m)
             m.node_tree.nodes.remove(b)
             tx = nb.n('ShaderNodeTexImage')
             tx.image = im
@@ -169,6 +170,7 @@ def ppi_material(name='PPI', sweep_s=4.0, frames=200, blips=(), seed=0, glow=6.0
     """Animated radar scope on a UV disc. blips = [((x0,y0),(x1,y1), brightness)] in [-1,1] scope space over frames.
     Everything (rings, coast clutter, blips) is modulated by the phosphor afterglow behind the rotating beam."""
     m, nb, b, out = M.new(name)
+    M.no_light(m)
     nt = m.node_tree
     nt.nodes.remove(b)
     tc = nb.n('ShaderNodeTexCoord')
@@ -269,29 +271,30 @@ def radar_room(frames=120, blips=(), seed=2, haze=0.02, t0=0.0):
     dark = M.principled('Bezel', base=(0.02, 0.02, 0.022), rough=0.35, metal=0.7)
     floor = M.texture_set('Floor', 'concrete_floor_worn_001', scale=0.5, tint=(0.35, 0.35, 0.35))
     wall = M.texture_set('Wall', 'rough_concrete', scale=0.4, tint=(0.22, 0.24, 0.24))
-    # hero console: sloped desk with a round scope
-    body = Wd.box('ConsoleBody', (0, 0, 0.45), (1.3, 0.9, 0.9))
+    # hero console: body + sloped wedge top (18 deg) carrying the round scope
+    body = Wd.box('ConsoleBody', (0, 0, 0.42), (1.3, 0.9, 0.84))
     body.data.materials.append(console)
     bevel(body, 0.02)
-    top = Wd.box('ConsoleTop', (0, 0.05, 0.95), (1.3, 0.9, 0.12))
-    top.rotation_euler = (math.radians(-20), 0, 0)
-    top.data.materials.append(console)
-    bevel(top, 0.02)
-    tilt = math.radians(-20)
-    nrm = (0, -math.sin(-tilt), math.cos(tilt))
-    nrm = (0, -0.342, 0.94)
+    wv = [(-0.65, -0.45, 0.84), (0.65, -0.45, 0.84), (0.65, 0.45, 0.84), (-0.65, 0.45, 0.84),
+          (-0.65, -0.45, 0.88), (0.65, -0.45, 0.88), (0.65, 0.45, 1.18), (-0.65, 0.45, 1.18)]
+    wf = [(0, 3, 2, 1), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
+    wedge = Md.mesh_obj('ConsoleTop', wv, wf, smooth=False, mats=(console,))
+    bevel(wedge, 0.015)
+    sl = math.atan2(0.30, 0.90)
+    nrm = (0, -math.sin(sl), math.cos(sl))
+    zc = 0.88 + 0.30 * 0.5 + 0.004
     ppi = ppi_material('PPI_hero', frames=frames, blips=blips, seed=seed, t0=t0)
-    disc('Bezel', (0, 0.03, 1.025), nrm, 0.33, dark, n=48)
-    disc('Scope', (0, 0.028, 1.03), nrm, 0.29, ppi, n=64)
+    disc('Bezel', (0, 0.0, zc), nrm, 0.34, dark, n=48)
+    disc('Scope', (0, -0.002 * nrm[1], zc + 0.003), nrm, 0.30, ppi, n=64)
     # knobs / buttons row
     knob = M.principled('Knob', base=(0.03, 0.03, 0.03), rough=0.4)
     for i in range(7):
-        k = Wd.box('Knob%d' % i, (-0.45 + i * 0.15, -0.36, 0.86), (0.05, 0.05, 0.05))
+        k = Wd.box('Knob%d' % i, (-0.45 + i * 0.15, -0.40, 0.90), (0.05, 0.05, 0.04))
         k.data.materials.append(knob)
         bevel(k, 0.02)
     lamp_m = M.emission('Indicator', (1.0, 0.45, 0.1), 6)
     for i in range(5):
-        Md.mesh_obj('Ind%d' % i, [(-0.55 + i * 0.07, -0.42, 0.83), (-0.53 + i * 0.07, -0.42, 0.83), (-0.53 + i * 0.07, -0.41, 0.85), (-0.55 + i * 0.07, -0.41, 0.85)], [(0, 1, 2, 3)], mats=(lamp_m,))
+        Md.mesh_obj('Ind%d' % i, [(0.30 + i * 0.06, -0.456, 0.70), (0.33 + i * 0.06, -0.456, 0.70), (0.33 + i * 0.06, -0.456, 0.72), (0.30 + i * 0.06, -0.456, 0.72)], [(0, 1, 2, 3)], mats=(lamp_m,))
     # background consoles
     for j, (x, y) in enumerate(((-2.1, 2.6), (1.9, 3.2), (-0.2, 4.6))):
         bb = Wd.box('BgCon%d' % j, (x, y, 0.5), (1.2, 0.9, 1.0))
@@ -305,7 +308,7 @@ def radar_room(frames=120, blips=(), seed=2, haze=0.02, t0=0.0):
         o = Wd.box(nm, c, s)
         o.data.materials.append(wall)
     # green spill from the scope + a hooded desk lamp cone through the haze
-    Wd.area('ScopeSpill', (0, -0.05, 1.12), (0, -0.8, 1.6), color=(0.3, 1.0, 0.4), power=6, size=0.5)
+    Wd.area('ScopeSpill', (0, -0.1, 1.15), (0, -0.8, 1.7), color=(0.3, 1.0, 0.4), power=6, size=0.5)
     Wd.spot('DeskLamp', (0.9, -0.6, 2.4), (0.4, 0.1, 0.9), color=(1.0, 0.78, 0.5), power=260, size_deg=38, blend=0.6, radius=0.08)
     Wd.spot('BgLamp', (-2.4, 3.6, 3.2), (-2.1, 2.6, 0.5), color=(1.0, 0.8, 0.55), power=180, size_deg=30, blend=0.5)
     Wd.fog(center=(0, 1.5, 1.8), size=(10, 11, 3.8), density=haze, color=(0.85, 0.85, 0.82), anisotropy=0.45,

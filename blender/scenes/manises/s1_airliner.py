@@ -17,25 +17,26 @@ core.finish(sc, glare=0.6, glare_thr=1.0, glare_size=8, vignette=0.4, streaks=0.
             lift=(0.98, 1.0, 1.06), gain=(1.02, 1.0, 0.97), sat=0.95)
 
 # ---------------- world ----------------
-Wd.hdri('kloppenheim_02_puresky', strength=0.35, bg_strength=0.5, rot=140, tint=(0.75, 0.85, 1.1), stars=0.6)
+Wd.hdri('kloppenheim_02_puresky', strength=0.35, bg_strength=0.5, rot=140, tint=(0.75, 0.85, 1.1), stars=0.2)
 Wd.moon(direction=(-0.55, -0.35, 0.42), strength=1.6, color=(0.6, 0.7, 1.0), angle=0.55)
 V = 110.0 / 30  # m per frame (~110 m/s approach speed, reads as motion against the deck)
-Wd.clouds(center=(0, 600, -520), size=(16000, 16000, 340), density=0.05, scale=0.0011, coverage=0.5, detail=5,
+Wd.clouds(center=(0, 600, -520), size=(50000, 50000, 340), density=0.05, scale=0.0011, coverage=0.5, detail=4,
           color=(0.9, 0.93, 1.0), anisotropy=0.55, evolve=0.08, frames=NF, sharp=0.2)
 Wd.sea_plane(size=80000, z=-2600, color=(0.003, 0.006, 0.01), rough=0.05, frames=NF)
 # Ibiza: island glow + town lights below the gaps, far ahead/below
 land = Wd.terrain('Ibiza', size=14000, res=90, height=180, scale=0.00035, center=(2500, 5500, -2650), seed=4,
                   mat=M.principled('Land', base=(0.03, 0.035, 0.03), rough=0.9), island=1.0)
-for i, (cx, cy, n, r) in enumerate([(1200, 4200, 2200, 900), (3800, 6900, 1200, 600), (600, 7600, 700, 500),
-                                     (4200, 3300, 500, 400)]):
-    Wd.city_lights('Town%d' % i, center=(cx, cy, -2430), radius=r, count=n, seed=11 + i, strength=16, size=1.4)
+for i, (cx, cy, n, r) in enumerate([(1200, 4200, 900, 1600), (3800, 6900, 600, 1100), (600, 7600, 400, 900),
+                                     (4200, 3300, 300, 700)]):
+    Wd.city_lights('Town%d' % i, center=(cx, cy, -2430), radius=r, count=n, seed=11 + i, strength=7, size=1.1,
+                   cluster=0.8)
 # thin high haze for depth (aerial perspective)
 Wd.fog(center=(0, 2000, -300), size=(20000, 20000, 1200), density=0.00002, color=(0.7, 0.78, 0.95), anisotropy=0.3)
 
 # ---------------- actors ----------------
-plane = Md.airliner('Airliner', f1=NF)
-red1 = Md.orb('Red1', (0, 0, 0), strength=600, power=4e6, radius=4.0, halo=2.0, pulse=0.12, f1=NF, seed=1)
-red2 = Md.orb('Red2', (0, 0, 0), strength=600, power=4e6, radius=4.0, halo=2.0, pulse=0.12, f1=NF, seed=2)
+plane = Md.airliner('Airliner', f1=NF, cabin_glow=2.2)
+red1 = Md.orb('Red1', (0, 0, 0), strength=600, power=3e5 if variant == 'A' else 8e5, radius=4.0, halo=2.0, pulse=0.12, f1=NF, seed=1)
+red2 = Md.orb('Red2', (0, 0, 0), strength=600, power=3e5 if variant == 'A' else 8e5, radius=4.0, halo=2.0, pulse=0.12, f1=NF, seed=2)
 
 if variant == 'A':
     # straight and level, heading +Y
@@ -45,8 +46,8 @@ if variant == 'A':
     Md.fly(red2, [(0, (790, 2700, 120), None), (NF, (600, V * NF + 1580, 80), None)], interp='LINEAR')
     cam = C.Cam(clip_end=90000)
     # shot 1 (0-104): behind-left, low over the wing line, plane in the upper third, red lights tiny far right
-    cam.shot(0, 105, C.track('Airliner', offset=(-38, -70, 10), offset1=(-30, -52, 7), look_offset=(10, 25, -2)),
-             lens=(55, 62), fstop=5.6, focus='Airliner')
+    cam.shot(0, 105, C.track('Airliner', offset=(-27, -50, 7), offset1=(-21, -38, 5), look_offset=(12, 30, 0)),
+             lens=(48, 52), fstop=5.6, focus='Airliner')
     # shot 2 (105-174): close glide along the lit windows toward the nose ('a hundred and nine passengers')
     cam.shot(105, 175, C.track('Airliner', offset=(-5.5, -6, -0.2), offset1=(-5.0, 6.5, 0.2), look_offset=(0, 2, 0.3)),
              lens=(32, 30), fstop=2.2, focus=None, roll=(-4, -2))

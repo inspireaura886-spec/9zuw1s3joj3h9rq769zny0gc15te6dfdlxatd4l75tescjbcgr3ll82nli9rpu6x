@@ -9,7 +9,7 @@ sc = core.reset()
 NF = 92
 core.setup_render(sc, samples=48, look='AgX - Medium High Contrast', exposure=1.1, vol_step=6.0, vol_max_steps=64,
                   bounces=5, clamp_ind=5.0)
-core.finish(sc, glare=0.7, glare_thr=0.9, glare_size=9, vignette=0.45, streaks=0.25, lift=(0.99, 1.0, 1.05),
+core.finish(sc, glare=0.7, glare_thr=0.9, glare_size=9, vignette=0.45, streaks=0.12, lift=(0.99, 1.0, 1.05),
             gain=(1.03, 0.99, 0.96), sat=0.95)
 Wd.hdri('kloppenheim_02_puresky', strength=0.3, bg_strength=0.55, rot=60, tint=(0.75, 0.85, 1.1), stars=0.7)
 Wd.moon(direction=(0.5, 0.6, 0.35), strength=1.2, color=(0.6, 0.7, 1.0))
@@ -20,11 +20,11 @@ Wd.city_lights('Coast', center=(-1800, 9000, -2430), radius=1500, count=2000, se
 ck = I.cockpit(panel_glow=1.0)
 r1 = Md.orb('Red1', (0, 0, 0), strength=700, power=6e6, radius=3.5, halo=2.5, pulse=0.15, f1=NF, seed=1)
 r2 = Md.orb('Red2', (0, 0, 0), strength=700, power=6e6, radius=3.5, halo=2.5, pulse=0.15, f1=NF, seed=2)
-Md.fly(r1, [(0, (330, 2600, 120), None), (NF, (70, 420, 18), None)])
-Md.fly(r2, [(0, (420, 2650, 60), None), (NF, (125, 470, -10), None)])
+Md.fly(r1, [(0, (-60, 2600, 130), None), (NF, (-26, 420, 22), None)])
+Md.fly(r2, [(0, (60, 2650, 70), None), (NF, (22, 470, -4), None)])
 cam = C.Cam()
 eye = (-0.10, 0.0, 0.56)
-cam.shot(0, NF, C.dolly(eye, (-0.02, 0.30, 0.55), look=(0.62, 4.0, 0.42), look1=(0.55, 4.0, 0.40)),
+cam.shot(0, NF, C.dolly(eye, (-0.02, 0.30, 0.55), look=(0.02, 4.0, 0.45), look1=(-0.02, 4.0, 0.42)),
          lens=(30, 36), fstop=2.0, focus='Red1')
 cam.handheld(0.004)
 cam.kick(49, amp=0.12, decay=8, rot=0.6)

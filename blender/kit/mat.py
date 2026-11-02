@@ -106,8 +106,20 @@ def principled(name, base=(0.8, 0.8, 0.8), rough=0.5, metal=0.0, coat=0.0, coat_
     return m
 
 
-def emission(name, color=(1, 0.2, 0.1), strength=10.0):
+def no_light(m):
+    """Visual-only emitter: Cycles will not treat it as a light source (huge speed-up for windows, town lights,
+    bulbs, scopes and halos; real light comes from explicit lamps)."""
+    try:
+        m.cycles.emission_sampling = 'NONE'
+    except Exception:
+        pass
+    return m
+
+
+def emission(name, color=(1, 0.2, 0.1), strength=10.0, light=False):
     m, nb, b, out = new(name)
+    if not light:
+        no_light(m)
     m.node_tree.nodes.remove(b)
     e = nb.n('ShaderNodeEmission', Strength=strength)
     e.inputs['Color'].default_value = (*color, 1)

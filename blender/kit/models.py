@@ -319,6 +319,7 @@ def orb(name, loc, color=(1.0, 0.06, 0.02), strength=400.0, power=2.0e5, radius=
         h.parent = e
         hm = bpy.data.materials.new(name + '_haloV')
         hm.use_nodes = True
+        M.no_light(hm)
         nt = hm.node_tree
         nt.nodes.remove(nt.nodes['Principled BSDF'])
         nb = M.NB(nt)
