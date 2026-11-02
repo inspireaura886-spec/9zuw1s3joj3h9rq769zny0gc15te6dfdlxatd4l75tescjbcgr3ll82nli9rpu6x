@@ -17,12 +17,12 @@ core.finish(sc, glare=0.6, glare_thr=1.0, glare_size=8, vignette=0.4, streaks=0.
             lift=(0.98, 1.0, 1.06), gain=(1.02, 1.0, 0.97), sat=0.95)
 
 # ---------------- world ----------------
-Wd.hdri('kloppenheim_02_puresky', strength=0.35, bg_strength=0.5, rot=140, tint=(0.75, 0.85, 1.1), stars=0.08)
-Wd.moon(direction=(-0.55, -0.35, 0.42), strength=1.6, color=(0.6, 0.7, 1.0), angle=0.55)
+Wd.hdri('kloppenheim_02_puresky', strength=0.35, bg_strength=0.5, rot=140, tint=(0.75, 0.85, 1.1), stars=0.0)
+Wd.moon(direction=(0.35, 0.8, 0.38), strength=1.8, color=(0.6, 0.7, 1.0), angle=0.55)
 V = 110.0 / 30  # m per frame (~110 m/s approach speed, reads as motion against the deck)
 Wd.clouds(center=(0, 600, -520), size=(18000, 18000, 340), density=0.05, scale=0.0011, coverage=0.5, detail=4,
-          color=(0.9, 0.93, 1.0), anisotropy=0.55, evolve=0.08, frames=NF, sharp=0.2)
-Wd.cloud_deck_far(z=-390, hole=8600)
+          color=(0.9, 0.93, 1.0), anisotropy=0.4, evolve=0.08, frames=NF, sharp=0.2)
+Wd.cloud_deck_far(z=-400, hole=6800)
 Wd.sea_plane(size=80000, z=-2600, color=(0.003, 0.006, 0.01), rough=0.05, frames=NF)
 # Ibiza: island glow + town lights below the gaps, far ahead/below
 land = Wd.terrain('Ibiza', size=14000, res=90, height=180, scale=0.00035, center=(2500, 5500, -2650), seed=4,
@@ -63,7 +63,7 @@ else:
     # the lights pace the jet: parented to it, closing from far left-above
     for o, k in ((red1, 0), (red2, 1)):
         o.parent = plane
-        Md.fly(o, [(0, (-420 - 60 * k, 260 + 40 * k, 120 + 20 * k), None), (NF, (-150 - 30 * k, 60 + 25 * k, 55 + 15 * k), None)])
+        Md.fly(o, [(0, (-230 - 40 * k, 160 + 30 * k, 95 + 15 * k), None), (NF, (-70 - 18 * k, 45 + 20 * k, 38 + 10 * k), None)])
     cam = C.Cam(clip_end=90000)
     # shot 1 (0-74): low front-right, the jet rolls into the turn across frame ('the captain diverts')
     cam.shot(0, 75, C.follow('Airliner', (110, 330, -40), (95, 360, -42), look_offset=(-20, 10, 8)),

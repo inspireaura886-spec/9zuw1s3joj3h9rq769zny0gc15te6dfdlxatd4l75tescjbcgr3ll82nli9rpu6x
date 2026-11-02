@@ -230,7 +230,16 @@ def clouds(center=(0, 0, -400), size=(9000, 9000, 260), density=0.06, scale=0.00
     d = nb.math('SUBTRACT', nz.outputs['Fac'], th2.outputs[0])
     d2 = nb.math('DIVIDE', d.outputs[0], vb=sharp, clamp=True)
     d3 = nb.math('MULTIPLY', d2.outputs[0], prof.outputs[0])
-    dens = nb.math('MULTIPLY', d3.outputs[0], vb=density)
+    # fade out toward the box sides so the deck has no hard edge (cloud_deck_far continues it)
+    ax = nb.math('ABSOLUTE', sep.outputs['X'])
+    ay = nb.math('ABSOLUTE', sep.outputs['Y'])
+    mxy = nb.math('MAXIMUM', ax.outputs[0], ay.outputs[0])
+    edge = nb.n('ShaderNodeMapRange')
+    edge.inputs['From Min'].default_value = 1.0
+    edge.inputs['From Max'].default_value = 0.75
+    nt.links.new(mxy.outputs[0], edge.inputs['Value'])
+    d4 = nb.math('MULTIPLY', d3.outputs[0], edge.outputs['Result'])
+    dens = nb.math('MULTIPLY', d4.outputs[0], vb=density)
     pv = nb.n('ShaderNodeVolumePrincipled', Anisotropy=anisotropy)
     pv.inputs['Color'].default_value = (*color, 1)
     nb.l(dens, 0, pv, 'Density')
@@ -266,7 +275,7 @@ def ocean(size=4000, center=(0, 0, 0), scale=1.0, wave_scale=1.2, choppy=1.2, re
     return o
 
 
-def cloud_deck_far(z=-380, size=120000, hole=9000, color=(0.55, 0.6, 0.72), scale=0.00025, coverage=0.45):
+def cloud_deck_far(z=-380, size=120000, hole=9000, color=(0.6, 0.65, 0.78), scale=0.00025, coverage=0.36):
     """Cheap distant cloud tops (a lit, bumpy surface) that continue the volumetric deck out to the horizon.
     The middle (radius `hole`) is cut away so the real volume shows there."""
     me = bpy.data.meshes.new('FarDeck')
