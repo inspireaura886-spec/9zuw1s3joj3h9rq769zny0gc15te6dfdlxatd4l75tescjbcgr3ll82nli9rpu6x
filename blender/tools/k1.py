@@ -75,6 +75,9 @@ def find_cam():
 
 
 def subject_name(cam, fr):
+    o = opt('--k1-subject')
+    if o:
+        return o
     if cam:
         for s in cam.shots:
             if s['a'] <= fr < s['b'] and isinstance(s.get('focus'), str) and s['focus'] in bpy.data.objects:
@@ -89,8 +92,14 @@ def bbox2d(sc, name):
     """Pixel bbox (x0, y0, x1, y1, top-left origin, full 1080x1920 frame) of an object + all its mesh descendants."""
     from bpy_extras.object_utils import world_to_camera_view
     from mathutils import Vector
-    root = bpy.data.objects[name]
-    obs = [root] + list(root.children_recursive)
+    obs = []
+    for pat in name.split(','):
+        if pat.endswith('*'):
+            roots = [o for o in sc.objects if o.name.startswith(pat[:-1])]
+        else:
+            roots = [bpy.data.objects[pat]] if pat in bpy.data.objects else []
+        for r in roots:
+            obs += [r] + list(r.children_recursive)
     dg = bpy.context.evaluated_depsgraph_get()
     W, H = sc.render.resolution_x, sc.render.resolution_y
     xs, ys, zs = [], [], []
