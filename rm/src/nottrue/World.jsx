@@ -1,3 +1,4 @@
+import {PALETTES} from '../palette.js'; // HUMANE caption palette 2026-11-03
 // nottrue kit: camera, scenes, sets, props, captions, finishing (thick stick-man horror, 2026-10-28).
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Easing, staticFile} from 'remotion';
@@ -151,8 +152,11 @@ export const chunkWords = (words, max = 3) => {
   words.forEach((w, i) => { cur.push({w: w[0], a: w[1], b: w[2], i}); if (cur.length >= max || /[.,!?:;]$/.test(w[0])) { out.push(cur); cur = []; } });
   if (cur.length) out.push(cur); return out;
 };
+// HUMANE 2026-11-03: overlay captions + hook title use one muted palette per Short (by composition id), not the story's neon accent.
+export const NT_PAL = {NTBoothRules: 'sage', NTWishingWell: 'fog-blue', NTElevenCustomers: 'slate', NTFloorZero: 'clay', NTHollowLane: 'lavender', NTSecondVoice: 'sand', NTThirteenSteps: 'dusk-rose', NTRoom414: 'dusty-teal', NTTrailCam: 'stone', NTRouteNine: 'sage', NTVoicemail312: 'stone'};
+const ntPal = (id) => PALETTES[NT_PAL[id]] || PALETTES.stone;
 export const Captions = ({words, accent, y = 1330, size = 92, hideBefore = 0}) => {
-  const f = useCurrentFrame(); const {fps} = useVideoConfig(); const T = f / fps;
+  const f = useCurrentFrame(); const {fps, id} = useVideoConfig(); const T = f / fps; const P = ntPal(id); accent = P.active;
   const ch = React.useMemo(() => chunkWords(words), [words]);
   let k = -1; for (let i = 0; i < ch.length; i++) if (T >= ch[i][0].a - 0.04) k = i;
   if (k < 0 || T < hideBefore) return null; const c = ch[k];
@@ -160,19 +164,19 @@ export const Captions = ({words, accent, y = 1330, size = 92, hideBefore = 0}) =
   const pop = ramp(T, c[0].a - 0.04, c[0].a + 0.08, Easing.out(Easing.back(2)));
   return <div style={{position: 'absolute', top: y - size, left: 70, right: 70, textAlign: 'center', transform: `scale(${0.85 + 0.15 * pop})`}}>
     {c.map((w) => { const on = T >= w.a - 0.03; const act = T >= w.a - 0.03 && T < w.b + 0.05;
-      return <span key={w.i} style={{fontFamily: 'Lilita One', fontSize: size, lineHeight: 1.1, color: act ? accent : '#fbf8ef', opacity: on ? 1 : 0.0,
-        WebkitTextStroke: '14px #07080c', paintOrder: 'stroke fill', textTransform: 'uppercase', marginRight: 22, display: 'inline-block'}}>{w.w.replace(/[,.:;]$/, '')}</span>; })}
+      return <span key={w.i} style={{fontFamily: 'Lilita One', fontSize: size, lineHeight: 1.1, color: act ? accent : P.text, opacity: on ? 1 : 0.0,
+        WebkitTextStroke: `14px ${P.ink}`, paintOrder: 'stroke fill', textTransform: 'uppercase', marginRight: 22, display: 'inline-block'}}>{w.w.replace(/[,.:;]$/, '')}</span>; })}
   </div>;
 };
 
 export const HookTitle = ({lines, accent, until = 2.8, tag = 'A FICTIONAL STORY'}) => {
-  const f = useCurrentFrame(); const {fps} = useVideoConfig(); const T = f / fps;
+  const f = useCurrentFrame(); const {fps, id} = useVideoConfig(); const T = f / fps; const P = ntPal(id); accent = P.active;
   if (T > until + 0.3) return null;
   const out = ramp(T, until, until + 0.3);
   return <div style={{position: 'absolute', top: 200, left: 60, right: 60, textAlign: 'center', opacity: 1 - out, transform: `translateY(${-40 * out}px)`}}>
     <div style={{display: 'inline-block', marginBottom: 14, padding: '6px 20px', border: `4px solid ${accent}`, color: accent, fontFamily: 'Fredoka', fontWeight: 700, fontSize: 30, letterSpacing: 8, background: 'rgba(7,8,12,0.75)'}}>{tag}</div>
     {lines.map((l, i) => { const k = ramp(T, i * 0.12, i * 0.12 + 0.25, Easing.out(Easing.back(2.2)));
-      return <div key={i} style={{fontFamily: 'Lilita One', fontSize: l.size || 104, lineHeight: 1.02, color: l.accent ? accent : '#fbf8ef', WebkitTextStroke: '16px #07080c', paintOrder: 'stroke fill', transform: `scale(${0.72 + 0.28 * k})`}}>{l.txt}</div>; })}
+      return <div key={i} style={{fontFamily: 'Lilita One', fontSize: l.size || 104, lineHeight: 1.02, color: l.accent ? accent : P.text, WebkitTextStroke: `16px ${P.ink}`, paintOrder: 'stroke fill', transform: `scale(${0.72 + 0.28 * k})`}}>{l.txt}</div>; })}
   </div>;
 };
 
