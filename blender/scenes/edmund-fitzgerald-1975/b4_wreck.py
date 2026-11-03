@@ -22,9 +22,9 @@ bed.data.materials.append(M.principled('Mud', base=(0.09, 0.085, 0.07), rough=0.
 bpy.ops.object.shade_smooth()
 # bow section (y 27..111), upright, nosed down a little, heading 125 deg; stern section (y -111..-34) capsized
 bow = freighter('Bow', y_range=(27.0, L2), lights=False, ragged='aft', seed=3)
-bow.location = (0, 0, 6.0); bow.rotation_euler = (math.radians(-3.0), math.radians(2.0), math.radians(-35))
+bow.location = (0, 0, 6.0); bow.rotation_euler = (math.radians(-2.5), math.radians(2.0), 0)
 st = freighter('Stern', y_range=(-L2, -34.0), lights=False, ragged='fwd', seed=8)
-st.location = (-62.0, -38.0, 1.6); st.rotation_euler = (0, math.radians(178.0), math.radians(95))
+st.location = (-10.0, -10.0, 4.0); st.rotation_euler = (0, math.radians(178.0), math.radians(-90))
 # taconite + torn plates in the debris field between them
 pel = M.principled('Taconite', base=(0.05, 0.045, 0.045), rough=0.7, metal=0.2)
 for i in range(70):
@@ -45,6 +45,6 @@ for s in (-1, 1):
     L = Wd.spot('ROV%d' % s, (0, 0, 0), (0, 0, -1), color=(0.85, 0.95, 1.0), power=9000, size_deg=48, blend=0.6, radius=0.15)
     L.parent = cam.obj; L.location = (s * 1.2, -0.6, 0.3); L.rotation_euler = (0, 0, 0)
 h = int(NF * 0.5)
-cam.shot(0, h, C.dolly((14, 22, 13), (20, 42, 15), look=(2, 34, 7), look1=(-2, 62, 9)), lens=(22, 24), fstop=5.6)
-cam.shot(h, NF, C.dolly((-20, 30, 22), (-28, 20, 20), look=(-55, -30, 4), look1=(-62, -42, 4)), lens=(22, 24), fstop=5.6)
+cam.shot(0, h, C.dolly((17, 16, 12), (19, 44, 14), look=(0, 30, 6), look1=(0, 72, 8)), lens=(22, 24), fstop=5.6)
+cam.shot(h, NF, C.dolly((-8, 28, 21), (-18, 20, 19), look=(-55, -10, 6), look1=(-72, -10, 6)), lens=(22, 24), fstop=5.6)
 finish_cam(cam, NF, a, sc)
