@@ -5,7 +5,7 @@ import {PlateTrack, Real3DFinish, R3DTag, IAMark, R3DFonts, R3DCaption, R3DHead}
 import VO from './vo.json';
 
 export const M79_FRAMES = 1530;
-export const SCHEME = 'ember';
+export const SCHEME = 'clay'; // HUMANE 2026-11-03 (was ember)
 const P = 'real3d/manises-1979/';
 const plates = [
   {src: P + 'b01h.mp4', from: 0, dur: 132},

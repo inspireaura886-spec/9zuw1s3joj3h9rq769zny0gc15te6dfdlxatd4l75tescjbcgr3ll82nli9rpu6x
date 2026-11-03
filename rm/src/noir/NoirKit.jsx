@@ -1,3 +1,4 @@
+import {pal} from '../palette.js';
 // NOIR KIT (2026-10-30): shadow / silhouette look for IA Shorts. Remotion + three.js, every value a pure function of the frame.
 // Black rim-lit silhouettes, sodium-amber + cold-blue volumetric light, fog walls, rain, venetian-blind light sheets,
 // swinging bulbs, headlight sweeps, city blocks whose windows go dark. Re-uses lowpoly/kit (LightCone, FogLayer, Particles, Post).
@@ -286,11 +287,12 @@ export const NoirFinish = ({grain = 0.14, vignette = 0.78, flick = 0.06, scratch
 };
 
 /** Noir title card: white condensed caps + one red accent word, thin rules, typewriter sub-line. Words appear on their frames. */
-export const NoirTitle = ({lines = [], y = 260, size = 92, accent = NOIR.red, sub, subAt = 0}) => {
+export const NoirTitle = ({lines = [], y = 260, size = 92, accent, sub, subAt = 0}) => {
+  accent = accent || pal().alt; // HUMANE 2026-11-03: accent line from the muted palette, never NOIR.red
   const f = useCurrentFrame();
   return (<div style={{position: 'absolute', top: y, left: 0, width: '100%', textAlign: 'center'}}>
     {lines.map((l, i) => { const t = clamp01((f - (l.at || 0)) / 6); if (t <= 0) return null;
-      return <div key={i} style={{fontFamily: l.red ? 'DM Serif Display' : 'Lilita One', fontStyle: l.red ? 'italic' : 'normal', fontSize: (l.size || size) * (l.red ? 1.12 : 1), letterSpacing: l.red ? 1 : 4, lineHeight: 1.02, color: l.red ? accent : NOIR.white, opacity: t,
+      return <div key={i} style={{fontFamily: l.red ? 'DM Serif Display' : 'Lilita One', fontStyle: l.red ? 'italic' : 'normal', fontSize: (l.size || size) * (l.red ? 1.12 : 1), letterSpacing: l.red ? 1 : 4, lineHeight: 1.02, color: l.red ? accent : pal().text, opacity: t,
         transform: `translateY(${(1 - t) * 18}px) scale(${1 + (1 - t) * 0.08})`, textShadow: '0 0 24px rgba(0,0,0,0.9), 0 4px 0 rgba(0,0,0,0.6)'}}>{l.text}</div>; })}
     {sub && f >= subAt && <div style={{marginTop: 18, fontFamily: 'Special Elite', fontSize: 40, color: '#e8e2d2', letterSpacing: 2, textShadow: '0 0 12px #000'}}>{sub.slice(0, Math.max(0, Math.floor((f - subAt) * 1.2)))}</div>}
   </div>);

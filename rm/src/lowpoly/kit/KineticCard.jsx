@@ -1,10 +1,11 @@
+import {pal} from '../../palette.js';
 import {AbsoluteFill, spring, useCurrentFrame, useVideoConfig, interpolate} from 'remotion';
 // AYGRAMM TECHNIQUES 2026-10-23: kinetic typography card (heavy bold font + one serif-italic accent word + corner brackets).
 // Every word is CUED to the voice: it stays hidden (opacity 0, no start state applied early) until its own word plays.
 // words: vo.json words [[text, s, e], ...] for the whole video; lines: [[{w:'THE', start: 12.31}, {w:'dogs', start: 12.6, accent:true}], ...]
 // Build lines with cueLine(words, 'the dogs jumped', fromSec, accentWord) so start times come from the voice, never by hand.
 // y = top of the card (keep 230-620 for headlines). Stay up until hideAt (sec) or forever.
-const STROKE = (px, c = '#141414') => ({WebkitTextStroke: `${px}px ${c}`, paintOrder: 'stroke fill'});
+const STROKE = (px, c) => ({WebkitTextStroke: `${px}px ${c || pal().ink}`, paintOrder: 'stroke fill'});
 const norm = (t) => t.toLowerCase().replace(/[^a-z0-9]/g, '');
 export const cueLine = (words, text, fromSec = 0, accent = '') => {
   const toks = text.split(/\s+/); let i = words.findIndex((w) => w[1] >= fromSec - 0.05 && norm(w[0]) === norm(toks[0]));
@@ -12,7 +13,8 @@ export const cueLine = (words, text, fromSec = 0, accent = '') => {
   return toks.map((t, k) => { const w = words[i + k]; if (!w || norm(w[0]) !== norm(t)) throw new Error(`cueLine: "${t}" does not match the voice`);
     return {w: t, start: w[1], accent: norm(t) === norm(accent)}; });
 };
-export const KineticCard = ({lines, y = 260, size = 104, color = '#ffffff', accentColor = '#ffd93b', hideAt = null, brackets = true, offsetSec = 0}) => {
+export const KineticCard = ({lines, y = 260, size = 104, color, accentColor, hideAt = null, brackets = true, offsetSec = 0}) => {
+  color = color || pal().text; accentColor = accentColor || pal().active;
   const f = useCurrentFrame(); const {fps} = useVideoConfig(); const t = f / fps + offsetSec;
   const first = lines[0]?.[0]?.start ?? 0; if (t < first - 0.02) return null;
   const out = hideAt == null ? 1 : interpolate(t, [hideAt - 0.12, hideAt], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});

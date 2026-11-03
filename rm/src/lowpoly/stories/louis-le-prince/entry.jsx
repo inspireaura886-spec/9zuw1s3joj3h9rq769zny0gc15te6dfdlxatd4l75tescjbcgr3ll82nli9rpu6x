@@ -1,3 +1,4 @@
+import './palette.pick.js'; // FIRST import: sets the humane caption palette
 import {registerRoot, Composition} from 'remotion';
 import {LP, LP_FRAMES} from './Lp.jsx';
 const A = () => <LP hook="A" />; const B = () => <LP hook="B" />;

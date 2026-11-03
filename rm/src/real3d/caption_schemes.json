@@ -1,11 +1,12 @@
 {
- "_rule": "User 2026-10-28 'the overscreen captions and text change their colour every video according to the background, not same yellow fixed up'; 2026-10-31 'what happened with my wish of making the captions appearing on screen different in each short???'; 2026-11-02 'when are you supposed to change caption colours, in this blender one also same colour'. Pick with tools/caption_next.py --bg <tags>; never the previous Short's scheme; log it in R/CAPTION_LOG.csv. Clean modern sans (Montserrat / Inter, OFL), no cartoon yellow.",
- "ember":    {"text": "#F5F3EE", "active": "#FF6A3D", "font": "Montserrat", "weight": 800, "suits": ["night", "blue", "navy", "teal", "green", "sea"]},
- "glacier":  {"text": "#FFFFFF", "active": "#8FE3FF", "font": "Inter", "weight": 800, "suits": ["fire", "orange", "red", "brown", "desert", "sunset", "warm"]},
- "sodium":   {"text": "#FFF7E8", "active": "#FFB547", "font": "Montserrat", "weight": 800, "suits": ["blue", "purple", "teal", "night", "rain"]},
- "phosphor": {"text": "#ECFFF4", "active": "#57F2A0", "font": "Inter", "weight": 800, "suits": ["red", "magenta", "brown", "radar", "dark"]},
- "orchid":   {"text": "#FFFFFF", "active": "#D7A6FF", "font": "Montserrat", "weight": 800, "suits": ["green", "forest", "olive", "swamp"]},
- "rose":     {"text": "#FFFFFF", "active": "#FF8FB1", "font": "Inter", "weight": 800, "suits": ["blue", "grey", "teal", "snow", "night"]},
- "bone":     {"text": "#EDE6D6", "active": "#FFFFFF", "font": "Montserrat", "weight": 700, "suits": ["noir", "mono", "grey", "sepia", "paper"]},
- "cobalt":   {"text": "#FFFFFF", "active": "#6FA8FF", "font": "Inter", "weight": 800, "suits": ["sand", "orange", "warm", "fire", "yellow"]}
+ "_rule": "User 2026-11-03 (angry): captions AND on-screen text (word captions, tag chips, kinetic cards, labels) must look humane and editorial, NOT neon yellow/red AI-template colours. These 9 muted palettes are the ONLY allowed set. Every Short gets a different palette from its neighbours in posting order (tools/caption_next.py picks + logs in R/CAPTION_LOG.csv). Kit defaults read the active palette (src/palette.js); no component may fall back to yellow/red. prerender_check.py and shortqa fail on #FFD93B/#FFD21F/#FF5A4E/#D6302A/#FF3B2F-style template colours. Older neon schemes (ember, glacier, sodium, phosphor, orchid, rose, cobalt) are retired.",
+ "sage":      {"label": "Sage",          "text": "#F2EFE8", "active": "#B5C9AE", "alt": "#D9E3D3", "chip": "#3B4A3E", "chipText": "#F2EFE8", "ink": "#121512", "suits": ["night", "blue", "navy", "red", "brown", "radar"]},
+ "dusty-teal":{"label": "Dusty teal",    "text": "#F3F0EA", "active": "#98C2BF", "alt": "#CFE3E0", "chip": "#2D4746", "chipText": "#F3F0EA", "ink": "#0F1515", "suits": ["fire", "orange", "warm", "sepia", "brown", "night"]},
+ "slate":     {"label": "Slate blue",    "text": "#F3F1EC", "active": "#A9BAD2", "alt": "#D3DCE9", "chip": "#33404F", "chipText": "#F3F1EC", "ink": "#101318", "suits": ["sand", "desert", "warm", "noir", "mono", "grey"]},
+ "clay":      {"label": "Soft clay",     "text": "#F6F0E8", "active": "#D9AE98", "alt": "#EBD3C6", "chip": "#57392F", "chipText": "#F6F0E8", "ink": "#16100D", "suits": ["blue", "teal", "sea", "snow", "night", "green"]},
+ "lavender":  {"label": "Lavender grey", "text": "#F4F2F6", "active": "#BDB5D0", "alt": "#DEDAE8", "chip": "#433E57", "chipText": "#F4F2F6", "ink": "#121117", "suits": ["green", "forest", "olive", "swamp", "night", "noir"]},
+ "sand":      {"label": "Sand",          "text": "#F7F3EA", "active": "#D9CBAA", "alt": "#ECE3CF", "chip": "#4C4434", "chipText": "#F7F3EA", "ink": "#14120D", "suits": ["blue", "purple", "teal", "night", "rain", "grey"]},
+ "dusk-rose": {"label": "Dusk rose",     "text": "#F6F1EF", "active": "#D2AEB2", "alt": "#E9D6D8", "chip": "#523B40", "chipText": "#F6F1EF", "ink": "#151012", "suits": ["blue", "grey", "teal", "snow", "night", "green"]},
+ "fog-blue":  {"label": "Fog blue",      "text": "#F1F2F0", "active": "#A9C4CF", "alt": "#D5E3E8", "chip": "#2F4048", "chipText": "#F1F2F0", "ink": "#0F1416", "suits": ["fire", "red", "brown", "orange", "sunset", "warm"]},
+ "stone":     {"label": "Stone",         "text": "#EFEDE6", "active": "#C4BFB2", "alt": "#E0DDD4", "chip": "#45423B", "chipText": "#EFEDE6", "ink": "#121210", "suits": ["noir", "mono", "grey", "sepia", "paper", "dark"]}
 }

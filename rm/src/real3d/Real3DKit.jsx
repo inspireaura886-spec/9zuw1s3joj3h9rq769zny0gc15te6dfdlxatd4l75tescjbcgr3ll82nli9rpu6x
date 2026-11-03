@@ -50,7 +50,7 @@ export const R3DTitle = ({lines = [], y = 250, size = 92, out = 999999, sub}) =>
   return (<div style={{position: 'absolute', top: y, left: 0, width: '100%', textAlign: 'center', opacity: o}}>
     {lines.map((l, i) => { const t = clamp01((f - (l.at || 0)) / 5); if (t <= 0) return null;
       return <div key={i} style={{fontFamily: l.red ? 'DM Serif Display' : 'Lilita One', fontStyle: l.red ? 'italic' : 'normal', fontSize: (l.size || size) * (l.red ? 1.1 : 1),
-        letterSpacing: l.red ? 1 : 4, lineHeight: 1.04, color: l.red ? '#ff3b2f' : '#f4f1ea', transform: `translateY(${(1 - ease(t)) * 22}px) scale(${1 + (1 - t) * 0.1})`, opacity: t,
+        letterSpacing: l.red ? 1 : 4, lineHeight: 1.04, color: l.red ? pal().alt : pal().text, transform: `translateY(${(1 - ease(t)) * 22}px) scale(${1 + (1 - t) * 0.1})`, opacity: t,
         textShadow: '0 0 28px rgba(0,0,0,0.95), 0 4px 0 rgba(0,0,0,0.6)'}}>{l.text}</div>; })}
     {sub && <div style={{marginTop: 14, fontFamily: 'Special Elite', fontSize: 38, letterSpacing: 3, color: '#ddd6c6', textShadow: '0 0 14px #000', opacity: clamp01((f - (sub.at || 0)) / 6)}}>{sub.text}</div>}
   </div>);
@@ -78,14 +78,16 @@ export const R3DFonts = () => (<style>{`
 /* ---------- CAPTION SCHEMES (user 2026-10-28 / 10-31 / 11-02: caption + on-screen text colours change EVERY Short to
    suit its background, never the previous Short's scheme, never the fixed cartoon yellow). Pick with
    `python3 R/tools/caption_next.py --bg <tags>`, log with `... log <date> <slug> <scheme>` (R/CAPTION_LOG.csv). ---------- */
-import SCHEMES_RAW from './caption_schemes.json';
-export const SCHEMES = SCHEMES_RAW;
+import {PALETTES, pal} from '../palette.js';
+// HUMANE 2026-11-03: only the muted palettes exist; an unknown/retired scheme name (ember, glacier...) falls to the ACTIVE palette.
+export const SCHEMES = PALETTES;
+const scheme_ = (name) => ({font: 'Montserrat', weight: 800, ...(PALETTES[name] || pal())});
 
 /** Word-timed caption in 1-3 word phrases: each word appears exactly when spoken, the spoken word in the scheme's
  *  accent colour, the rest in its text colour. Calm entrance (fade + 10 px rise over 4 frames), no bounce, no pop. */
-export const R3DCaption = ({words, scheme = 'ember', y = 1240, size = 70, maxWords = 3, hold = 0.3, backing = false}) => {
+export const R3DCaption = ({words, scheme, y = 1240, size = 70, maxWords = 3, hold = 0.3, backing = false}) => {
   // backing: soft dark radial pad behind the phrase, for bright plates (glowing orbs, moon haze). Added 2026-11-02 manises-1979.
-  const f = useCurrentFrame(); const t = f / 30; const S = SCHEMES[scheme] || SCHEMES.ember;
+  const f = useCurrentFrame(); const t = f / 30; const S = scheme_(scheme);
   // phrase grouping: break after punctuation or every maxWords words
   const groups = []; let cur = [];
   words.forEach((w, i) => { cur.push(i); if (/[.,!?;:]$/.test(w[0]) || cur.length >= maxWords) { groups.push(cur); cur = []; } });
@@ -108,8 +110,8 @@ export const R3DCaption = ({words, scheme = 'ember', y = 1240, size = 70, maxWor
 };
 
 /** Headline in the scheme: line 1 text colour, line 2 accent (small caps-ish), clean sans, fades + rises in. */
-export const R3DHead = ({lines = [], scheme = 'ember', y = 250, size = 96, inF = 0, outF = 999999}) => {
-  const f = useCurrentFrame(); const S = SCHEMES[scheme] || SCHEMES.ember;
+export const R3DHead = ({lines = [], scheme, y = 250, size = 96, inF = 0, outF = 999999}) => {
+  const f = useCurrentFrame(); const S = scheme_(scheme);
   const o = clamp01((f - inF) / 4) * (1 - clamp01((f - outF) / 6)); if (o <= 0) return null;
   return (<div style={{position: 'absolute', top: y, left: 60, width: 960, textAlign: 'center', opacity: o}}>
     {lines.map((l, i) => { const a = clamp01((f - inF - i * 4) / 5); return <div key={i} style={{fontFamily: S.font, fontWeight: i === 0 ? 900 : 700,

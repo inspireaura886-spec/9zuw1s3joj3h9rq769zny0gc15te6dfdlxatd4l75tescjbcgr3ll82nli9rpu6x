@@ -1,3 +1,4 @@
+import {pal} from '../../../palette.js';
 // "The News Went Silent" (Southern TV hijack, 26 Nov 1977) - NOIR look (remotion/src/noir/NoirKit.jsx), 27 scenes on cues.json cuts.
 // Facts on screen come from sources.txt only (S1 Wikipedia, S2 The Independent). No invented quotes, no invented body copy.
 import {useMemo} from 'react';
@@ -116,7 +117,7 @@ const Typed = ({lines, x = 120, y = 700, w = 840, size = 44, f = 0, start = 0, c
   let n = Math.max(0, Math.floor((f - start) * cps * 2)); const out = [];
   lines.forEach((l) => { out.push(l.slice(0, Math.max(0, n))); n -= l.length; });
   return <div style={{position: 'absolute', left: x, top: y, width: w, padding: '34px 40px', background: bg, transform: `rotate(${rot}deg)`, boxShadow: '0 18px 50px rgba(0,0,0,0.85)', opacity: Math.min(1, (f - start + 3) / 4)}}>
-    {head && <div style={{fontFamily: 'Special Elite', fontSize: size * 0.62, color: '#6a1a14', letterSpacing: 3, marginBottom: 16, borderBottom: '2px solid #6a1a14', paddingBottom: 8}}>{head}</div>}
+    {head && <div style={{fontFamily: 'Special Elite', fontSize: size * 0.62, color: pal().chip, letterSpacing: 3, marginBottom: 16, borderBottom: `2px solid ${pal().chip}`, paddingBottom: 8}}>{head}</div>}
     {out.map((l, i) => <div key={i} style={{fontFamily: 'Special Elite', fontSize: size, color, lineHeight: 1.18, minHeight: size * 1.18}}>{l}</div>)}
   </div>;
 };
