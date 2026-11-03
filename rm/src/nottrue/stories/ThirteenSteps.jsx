@@ -5,7 +5,7 @@ import {ThickStickMan} from '../ThickStickMan.jsx';
 import {Scenes, Fog, Glow, Cone, Captions, HookTitle, ScreenFlash, Finish, FontFaces, ramp, clamp, rnd} from '../World.jsx';
 import VO from '../data/thirteen-steps.vo.json';
 
-const A = '#ff4f8b';
+const A = '#D98A9E'; // humane muted rose (was #ff4f8b neon pink-red; 2026-11-03)
 const SOFT = '#7a2a45';
 const DAD = '#b9c2dd';
 const SX = 100, SY = 560, RUN = 52, RISE = 50;
