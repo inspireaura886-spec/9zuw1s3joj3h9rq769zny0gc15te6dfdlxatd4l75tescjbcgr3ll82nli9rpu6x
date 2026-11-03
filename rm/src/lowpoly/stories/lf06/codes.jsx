@@ -41,7 +41,7 @@ const Curve = ({s, loops, dir}) => {
   </g>;
 };
 
-export const CipherShot = ({big, pill, startSec, endSec, kind = 'zodiac', cols = 17, rows = 20, head = 'ILLUSTRATIVE STAND-IN SYMBOLS', foot, color = '#ffd93b', scanAt = null, scanDur = 4, solvedAt = null, solvedText = [], hot = null, noteStamp, stampAt = null, size = 34, dim = 0.6, bg = 'radial-gradient(ellipse at 50% 45%, #2a2418 0%, #090806 88%)', tint = '#e8dcb8'}) => {
+export const CipherShot = ({big, pill, startSec, endSec, kind = 'zodiac', cols = 17, rows = 20, head = 'ILLUSTRATIVE STAND-IN SYMBOLS', foot, color = pal().active, scanAt = null, scanDur = 4, solvedAt = null, solvedText = [], hot = null, noteStamp, stampAt = null, size = 34, dim = 0.6, bg = 'radial-gradient(ellipse at 50% 45%, #2a2418 0%, #090806 88%)', tint = '#e8dcb8'}) => {
   const f = useCurrentFrame(); const {fps} = useVideoConfig(); const {VO} = useCh();
   const sF = cue(VO, scanAt, startSec); const vF = cue(VO, solvedAt, startSec); const tF = cue(VO, stampAt, startSec);
   const gw = cols * size * 1.12; const gh = rows * size * 1.18; const x0 = 960 - gw / 2; const y0 = 600 - gh / 2;
