@@ -4,7 +4,7 @@ from common import *
 import bpy, math
 a = core.args(); sc = core.reset(); NF = 235
 setup(sc, exposure=1.0, vol=True, glare=0.25)
-dusk_sea(NF, hdri_rot=60)
+dusk_sea(NF, hdri_rot=60, sea_center=(0, 100, 0), sea_half=5000.0)
 j1 = Md.fighter('F1', f1=NF, burner=0.0); j2 = Md.fighter('F2', f1=NF, burner=0.0, seed=9)
 Md.fly(j1, [(0, (0, -400, 900), (0, 0, 0)), (NF, (0, 600, 900), (0, 0, 0))], interp='LINEAR')
 Md.fly(j2, [(0, (90, -440, 920), (0, 0, 0)), (NF, (90, 560, 920), (0, 0, 0))], interp='LINEAR')

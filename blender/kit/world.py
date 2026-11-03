@@ -275,6 +275,63 @@ def ocean(size=4000, center=(0, 0, 0), scale=1.0, wave_scale=1.2, choppy=1.2, re
     return o
 
 
+def ocean_wide(center=(0, 0, 0), half=4000.0, inner=300.0, d0=0.75, grow=0.012, smax=25.0, scale=1.0,
+               wave_scale=1.2, choppy=1.0, res=11, time_frames=900, speed=1.0, color=(0.004, 0.008, 0.012),
+               rough=0.06, spatial=90.0, wind=12.0):
+    """Ocean that reaches past the camera frustum (2026-11-03, fixes the hard edge of the old 3x3 ocean tile, which
+    let the flat sea plane show beside it). One graded grid: d0-metre cells within `inner` m of the centre (= FFT cell
+    of res 11 / spatial 90), then cells grow by `grow` m per m out to `smax`, to +-`half` m. The Ocean modifier runs in
+    DISPLACE mode, which samples the same periodic FFT patch at every vertex, so the waves continue seamlessly with
+    no tile edge. ~2-2.6 M verts for half 3000-5000. Same water material as ocean()."""
+    def axis():
+        xs, x = [0.0], 0.0
+        while x < half:
+            x += d0 if x < inner else min(smax, d0 + (x - inner) * grow)
+            xs.append(min(x, half))
+        return [-v for v in xs[:0:-1]] + xs
+    import numpy as np
+    ax = np.array(axis(), dtype=np.float32); n = len(ax)
+    gx, gy = np.meshgrid(ax, ax)
+    co = np.stack([gx.ravel(), gy.ravel(), np.zeros(n * n, np.float32)], 1).ravel()
+    i, j = np.meshgrid(np.arange(n - 1), np.arange(n - 1))
+    a0 = (j * n + i).ravel()
+    quads = np.stack([a0, a0 + 1, a0 + n + 1, a0 + n], 1).ravel().astype(np.int32)
+    nf = (n - 1) * (n - 1)
+    me = bpy.data.meshes.new('OceanWide')
+    me.vertices.add(n * n); me.vertices.foreach_set('co', co)
+    me.loops.add(nf * 4); me.loops.foreach_set('vertex_index', quads)
+    me.polygons.add(nf)
+    me.polygons.foreach_set('loop_start', np.arange(0, nf * 4, 4, dtype=np.int32))
+    me.polygons.foreach_set('loop_total', np.full(nf, 4, np.int32))
+    me.polygons.foreach_set('use_smooth', np.ones(nf, bool))
+    me.update(calc_edges=True)
+    me.validate()
+    verts = range(n * n)
+    o = bpy.data.objects.new('Ocean', me)
+    o.location = center
+    bpy.context.scene.collection.objects.link(o)
+    md = o.modifiers.new('Ocean', 'OCEAN')
+    md.geometry_mode = 'DISPLACE'
+    md.size = scale
+    md.spatial_size = int(spatial)
+    md.resolution = res
+    if hasattr(md, 'viewport_resolution'):
+        md.viewport_resolution = min(res, 7)
+    md.wave_scale = wave_scale
+    md.choppiness = choppy
+    md.wind_velocity = wind
+    md.use_normals = False
+    md.time = 0
+    md.keyframe_insert('time', frame=0)
+    md.time = time_frames / 30.0 * speed
+    md.keyframe_insert('time', frame=time_frames)
+    M.set_interp(o, 'LINEAR')
+    m = M.principled('Water', base=color, rough=rough, spec=0.6, ior=1.33)
+    o.data.materials.append(m)
+    print('ocean_wide verts', len(verts), 'half', half)
+    return o
+
+
 def cloud_deck_far(z=-380, size=120000, hole=9000, color=(0.6, 0.65, 0.78), scale=0.00025, coverage=0.36):
     """Cheap distant cloud tops (a lit, bumpy surface) that continue the volumetric deck out to the horizon.
     The middle (radius `hole`) is cut away so the real volume shows there."""

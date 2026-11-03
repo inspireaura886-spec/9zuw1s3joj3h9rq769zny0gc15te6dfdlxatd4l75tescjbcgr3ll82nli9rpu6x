@@ -1,4 +1,4 @@
-"""Shared helpers for the manises-1979 REAL3D Short (first production Short on the REAL3D kit, 2026-11-02).
+"""Shared helpers for the nimitz-tictac-2004 REAL3D plates (copied from the manises-1979 helpers, 2026-11-02).
 Rules baked in: NO shake/kicks/handheld (user 2026-11-02), cruise-eased camera moves (kit default), orbs never
 jitter (smooth breathing only), visible red lights stay IN frame, no moon glint on the sea (rough sea), exteriors
 bright enough to read (exposure >= 1.0, moon in front of camera)."""
@@ -105,12 +105,16 @@ def runway(length=3200, width=45, y0=-400):
     return rw
 
 
-def dusk_sea(NF, hdri_rot=100, moon_dir=(0.5, 0.8, 0.35), moon=2.2, sea_z=-0.4, ocean=True, wave_scale=1.2, wind=10):
-    """Dusk Pacific shared by the nimitz plates (same light as b04)."""
+def dusk_sea(NF, hdri_rot=100, moon_dir=(0.5, 0.8, 0.35), moon=2.2, sea_z=-0.4, ocean=True, wave_scale=1.2, wind=10,
+             sea_center=(0, 0, 0), sea_half=4000.0):
+    """Dusk Pacific shared by the nimitz plates (same light as b04).
+    2026-11-03 edge fix: the old 3x3 FFT tile (270 m) ended inside the frame and the flat sea plane showed beside it
+    (hard ocean edge). Now Wd.ocean_wide: same FFT (spatial 90, res 11, same waves/wind) displaced over a graded grid
+    out to +-sea_half m, past the camera frustum; the far plane beyond it uses the same water colour/roughness."""
     Wd.hdri('kloppenheim_02_puresky', strength=0.9, bg_strength=1.1, rot=hdri_rot, tint=(1.0, 0.92, 0.85))
     Wd.moon(direction=moon_dir, strength=moon, color=(1.0, 0.9, 0.8), angle=1.0)
     if ocean:
-        o = Wd.ocean(center=(0, 0, 0), spatial=90, res=11, wave_scale=wave_scale, choppy=1.0, time_frames=NF, wind=wind)
-        o.modifiers['Ocean'].repeat_x = o.modifiers['Ocean'].repeat_y = 3
-    Wd.sea_plane(size=60000, z=sea_z, rough=0.12, frames=NF)
+        Wd.ocean_wide(center=sea_center, half=sea_half, spatial=90, res=11, wave_scale=wave_scale, choppy=1.0,
+                      time_frames=NF, wind=wind)
+    Wd.sea_plane(size=60000, z=sea_z, color=(0.004, 0.008, 0.012), rough=0.08, frames=NF)
     Wd.fog(center=(0, 400, 20), size=(8000, 8000, 160), density=0.0004, color=(0.8, 0.85, 0.95))
