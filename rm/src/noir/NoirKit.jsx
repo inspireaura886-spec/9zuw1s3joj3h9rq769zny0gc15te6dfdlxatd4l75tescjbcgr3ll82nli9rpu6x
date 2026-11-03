@@ -21,8 +21,9 @@ export const flicker = (frame, seed = 1, depth = 0.25, dropout = 0) => {
 };
 
 /** One noir shot: dark CSS backdrop + ThreeCanvas (exp fog, faint cold ambient) + DOM overlay. Gate weave of 1-2 px like a projector. */
-export const NoirStage = ({children, overlay, fogColor = NOIR.fog, density = 0.035, bg, weave = 1.2, shadows = false, ambient = 0.14}) => {
+export const NoirStage = ({children, overlay, fogColor = NOIR.fog, density = 0.035, bg, weave: _weave = 0, shadows = false, ambient = 0.14}) => {
   const {width, height} = useVideoConfig(); const f = useCurrentFrame();
+  const weave = 0; // USER 2026-11-02 NO SHAKE: projector gate weave forced off (no per-frame jitter)
   const wx = (hash2(f, 3, 1) - 0.5) * weave, wy = (hash2(f, 5, 2) - 0.5) * weave;
   return (
     <AbsoluteFill style={{background: '#000'}}>
