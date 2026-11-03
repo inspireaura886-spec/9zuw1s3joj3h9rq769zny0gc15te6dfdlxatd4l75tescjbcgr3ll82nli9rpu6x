@@ -6,7 +6,7 @@ import {Scenes, Glow, Fog, NightSky, Captions, HookTitle, ScreenFlash, Finish, F
 import VO from '../data/replacement-1.vo.json';
 
 const A = '#8fb8ff';
-const GOLD = '#ffd45a';
+const GOLD = '#C9A86A'; // humane muted brass (was #ffd45a template yellow; 2026-11-03)
 const GY = 1500; // ground
 
 const House = ({x, h = 420, w = 300, lit = false, id}) => <g transform={`translate(${x} ${GY})`}>
