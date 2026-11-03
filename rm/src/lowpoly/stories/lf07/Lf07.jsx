@@ -1,3 +1,4 @@
+import {pal} from '../../../palette.js'; // HUMANE caption palette 2026-11-03
 // LF06 FILE 007 "If You Ever Find a Message Nobody Can Read... STOP GUESSING" - 1920x1080 @ 24 fps, one composition per chapter.
 // Shots are data: a..b = voice line indices (b exclusive; null = to the end); optional from/to = word cues {l,w,o} to split a long line.
 import {AbsoluteFill, Sequence, staticFile, useCurrentFrame, useVideoConfig, spring} from 'remotion';
@@ -38,35 +39,35 @@ export const SHOTS = {
   COLD: [
     {a: 0, b: 1, T: 'screen', cam: SCREEN_WIDE, big: [{l: 0, w: 'sound', lines: [{text: 'A SOUND', color: 'white'}, {text: 'NOBODY CAN NAME', color: 'red'}], y: 80, size: 120}, {l: 0, w: 'keep', lines: [{text: 'KEEP LISTENING', color: 'yellow'}], y: 130, size: 150}]},
     {a: 1, to: {l: 1, w: 'loud'}, T: 'stat', text: 'SUMMER 1997', label: 'UNDERWATER MICROPHONES · PACIFIC', sub: 'A SOUND RISES FOR ABOUT A MINUTE', rings: true, color: '#7fe3ff'},
-    {from: {l: 1, w: 'loud'}, b: 2, T: 'stat', number: 5000, label: 'KM APART · SENSORS HEARD IT', sub: 'SOURCE: NOAA PMEL', rings: true, color: '#ff5a4e'},
+    {from: {l: 1, w: 'loud'}, b: 2, T: 'stat', number: 5000, label: 'KM APART · SENSORS HEARD IT', sub: 'SOURCE: NOAA PMEL', rings: true, color: pal().alt},
     {a: 2, b: 3, T: 'quote', head: 'THE QUESTION', lines: ['WHAT ANIMAL', 'MAKES THAT?', 'NOAA: NOT AN ANIMAL'], hi: [2], size: 80},
     {a: 3, to: {l: 3, w: 'and'}, T: 'stat', text: '7 SOUNDS · 7 RULES', label: 'BLOOP · SLOW DOWN · TRAIN · JULIA · WHISTLE · UPSWEEP · 52 HZ', rings: true},
-    {from: {l: 3, w: 'and'}, b: 4, T: 'stat', text: 'SINCE 1991', label: 'STILL NO CONFIRMED SOURCE', rings: true, color: '#ffd93b'},
+    {from: {l: 3, w: 'and'}, b: 4, T: 'stat', text: 'SINCE 1991', label: 'STILL NO CONFIRMED SOURCE', rings: true, color: pal().active},
     {a: 4, b: null, T: 'screen', cam: SCREEN_HIGH, big: [{l: 4, w: 'end', lines: [{text: 'STAY TO THE END', color: 'yellow'}], y: 90, size: 120}]},
   ],
   CH1: [
     {a: 0, b: 1, T: 'screen', cam: SCREEN_PUSH, big: [{l: 0, w: 'sofar', lines: [{text: 'THE SOFAR CHANNEL', color: 'yellow'}], y: 80, size: 120}]},
     {a: 1, b: 2, T: 'quote', head: 'FOUND INDEPENDENTLY · 1940s', lines: ['MAURICE EWING + LAMAR WORZEL · USA', 'LEONID BREKHOVSKIKH · USSR'], hi: [0, 1], size: 56},
     {a: 2, to: {l: 2, w: 'second'}, T: 'stat', text: '1944 · SALUDA', label: 'A MICROPHONE HUNG FROM A SAILING SHIP', rings: true, color: '#7fe3ff'},
-    {from: {l: 2, w: 'second'}, b: 3, T: 'stat', number: 1700, label: 'KM AWAY · THE CHARGE WAS HEARD', sub: '900 NAUTICAL MILES', rings: true, color: '#ffd93b'},
-    {a: 3, b: 4, T: 'stat', text: '9,200 KM', label: 'HEARD ISLAND TO ASCENSION ISLAND', sub: 'ARRIVED ~1 H 44 MIN LATER', rings: true, color: '#ff5a4e'},
+    {from: {l: 2, w: 'second'}, b: 3, T: 'stat', number: 1700, label: 'KM AWAY · THE CHARGE WAS HEARD', sub: '900 NAUTICAL MILES', rings: true, color: pal().active},
+    {a: 3, b: 4, T: 'stat', text: '9,200 KM', label: 'HEARD ISLAND TO ASCENSION ISLAND', sub: 'ARRIVED ~1 H 44 MIN LATER', rings: true, color: pal().alt},
     {a: 4, b: null, T: 'quote', head: 'RULE 1', lines: ['IN THE OCEAN', 'A SOUND CAN COME', 'FROM MUCH FARTHER', 'AWAY THAN YOU THINK.'], hi: [3], size: 82},
   ],
   CH2: [
     {a: 0, b: 1, T: 'screen', cam: SCREEN_LOW, big: [{l: 0, w: 'united', lines: [{text: 'WHO WAS LISTENING?', color: 'white'}, {text: 'THE US NAVY', color: 'yellow'}], y: 80, size: 110}]},
     {a: 1, b: 2, T: 'quote', head: 'SOSUS · SOUND SURVEILLANCE SYSTEM', lines: ['CHAIN OF UNDERWATER MICROPHONES', 'TO TRACK SOVIET SUBMARINES', 'COVER NAME: PROJECT CAESAR'], hi: [2], size: 56},
     {a: 2, to: {l: 2, w: 'by'}, T: 'stat', text: '1951', label: 'FIRST ARRAY · ELEUTHERA, BAHAMAS', rings: true, color: '#7fe3ff'},
-    {from: {l: 2, w: 'by'}, b: 3, T: 'stat', text: '6 JULY 1962', label: 'FIRST DETECTION OF A SOVIET NUCLEAR SUBMARINE', sub: '40 HYDROPHONES BY 1952', rings: true, color: '#ff5a4e'},
-    {a: 3, b: 4, T: 'stat', text: '1991', label: 'DECLASSIFIED · NOAA PMEL BEGINS RECORDING', sub: 'AUGUST 1991 · OPENED TO SCIENTISTS 1992', rings: true, color: '#ffd93b'},
+    {from: {l: 2, w: 'by'}, b: 3, T: 'stat', text: '6 JULY 1962', label: 'FIRST DETECTION OF A SOVIET NUCLEAR SUBMARINE', sub: '40 HYDROPHONES BY 1952', rings: true, color: pal().alt},
+    {a: 3, b: 4, T: 'stat', text: '1991', label: 'DECLASSIFIED · NOAA PMEL BEGINS RECORDING', sub: 'AUGUST 1991 · OPENED TO SCIENTISTS 1992', rings: true, color: pal().active},
     {a: 4, b: null, T: 'quote', head: 'RULE 2', lines: ['EARS BUILT FOR WAR', 'CAN BECOME', 'EARS FOR SCIENCE.'], hi: [2], size: 90},
   ],
   CH3: [
     {a: 0, b: 1, T: 'screen', cam: SCREEN_WIDE, big: [{l: 0, w: 'bloop', lines: [{text: 'THE BLOOP', color: 'red'}], y: 90, size: 170}]},
     {a: 1, to: {l: 1, w: 'it'}, T: 'stat', text: 'SUMMER 1997', label: 'ULTRA-LOW-FREQUENCY · HIGH-AMPLITUDE', sub: 'RISES IN FREQUENCY FOR ~1 MINUTE', rings: true, color: '#7fe3ff'},
-    {from: {l: 1, w: 'it'}, b: 2, T: 'stat', text: '50°S · 100°W', label: 'TRIANGULATED · SOUTH PACIFIC', sub: 'HEARD >5,000 KM APART', rings: true, color: '#ffd93b'},
+    {from: {l: 1, w: 'it'}, b: 2, T: 'stat', text: '50°S · 100°W', label: 'TRIANGULATED · SOUTH PACIFIC', sub: 'HEARD >5,000 KM APART', rings: true, color: pal().active},
     {a: 2, to: {l: 2, w: 'then'}, T: 'quote', head: '2001 · CHRISTOPHER FOX · NOAA', lines: ['TOLD CNN:', 'ICE CALVING IN ANTARCTICA'], hi: [1], size: 70},
     {from: {l: 2, w: 'then'}, b: 3, T: 'quote', head: '2002 · NEW SCIENTIST', lines: ['RESEMBLES A LIVING CREATURE', 'BUT FAR MORE POWERFUL', 'THAN ANY ANIMAL ON EARTH'], hi: [2], size: 60},
-    {a: 3, b: 4, T: 'stat', text: 'THE NAME STUCK', label: 'AND SO DID THE MONSTER', rings: true, color: '#ff5a4e'},
+    {a: 3, b: 4, T: 'stat', text: 'THE NAME STUCK', label: 'AND SO DID THE MONSTER', rings: true, color: pal().alt},
     {a: 4, b: null, T: 'quote', head: 'RULE 3', lines: ['A NICKNAME', 'IS NOT A DIAGNOSIS.'], hi: [1], size: 100},
   ],
   CH4: [
@@ -80,9 +81,9 @@ export const SHOTS = {
   CH5: [
     {a: 0, b: 1, T: 'check', title: 'A FAMILY OF NICKNAMES', rows: [{name: 'SLOW DOWN', what: 'ICEBERG', l: 0, w: 'slow'}, {name: 'TRAIN', what: 'ICEBERG', l: 0, w: 'train'}, {name: 'JULIA', what: 'ICEBERG', l: 0, w: 'julia'}, {name: 'WHISTLE', what: 'UNLOCATED', l: 0, w: 'whistle'}]},
     {a: 1, b: 2, T: 'stat', text: 'SLOW DOWN', label: '19 MAY 1997 · ~62°S · PITCH FALLS FOR ~7 MIN', sub: 'NOAA: A DRIFTING ICEBERG GROUNDING', rings: true, color: '#7fe3ff'},
-    {a: 2, b: 3, T: 'stat', text: 'TRAIN', label: '4 MARCH 1997 · ~32-35 HZ TONE', sub: 'ICEBERG GROUNDED NEAR CAPE ADARE, ROSS SEA', rings: true, color: '#ffd93b'},
+    {a: 2, b: 3, T: 'stat', text: 'TRAIN', label: '4 MARCH 1997 · ~32-35 HZ TONE', sub: 'ICEBERG GROUNDED NEAR CAPE ADARE, ROSS SEA', rings: true, color: pal().active},
     {a: 3, b: 4, T: 'stat', text: 'JULIA', label: '1 MARCH 1999', sub: 'MOST LIKELY A LARGE ICEBERG AGROUND OFF ANTARCTICA', rings: true, color: '#9be15d'},
-    {a: 4, b: 5, T: 'stat', text: 'WHISTLE', label: '7 JULY 1997 · HEARD BY ONE INSTRUMENT', sub: 'LOCATING A SOURCE TAKES THREE', rings: true, color: '#ff5a4e'},
+    {a: 4, b: 5, T: 'stat', text: 'WHISTLE', label: '7 JULY 1997 · HEARD BY ONE INSTRUMENT', sub: 'LOCATING A SOURCE TAKES THREE', rings: true, color: pal().alt},
     {a: 5, b: null, T: 'quote', head: 'RULE 5', lines: ['READ THE SHAPE.', 'THEN ADMIT', 'WHEN YOU ONLY', 'HAVE ONE EAR.'], hi: [3], size: 82},
   ],
   CH6: [
@@ -96,7 +97,7 @@ export const SHOTS = {
     {a: 0, b: 1, T: 'screen', cam: SCREEN_LOW, big: [{l: 0, w: 'two', lines: [{text: 'TWO SOUNDS', color: 'white'}, {text: 'LEFT', color: 'red'}], y: 80, size: 130}]},
     {a: 1, to: {l: 1, w: 'it'}, T: 'stat', text: 'UPSWEEP', label: 'UPWARD SWEEPS · ~3 S EACH · ~54°S 140°W', sub: 'THERE WHEN NOAA BEGAN RECORDING · AUG 1991', rings: true, color: '#7fe3ff'},
     {from: {l: 1, w: 'it'}, b: 2, T: 'quote', head: 'NOAA ON UPSWEEP', lines: ['ORIGIN: UNRESOLVED', 'PEAKS IN SPRING AND AUTUMN', 'QUIETER SINCE 1991'], hi: [0], size: 66},
-    {a: 2, to: {l: 2, w: 'blue'}, T: 'stat', text: '52 HERTZ', label: 'NORTH PACIFIC · WOODS HOLE · 1989', sub: 'TRACKED EVERY YEAR THROUGH AT LEAST 2014', rings: true, color: '#ffd93b'},
+    {a: 2, to: {l: 2, w: 'blue'}, T: 'stat', text: '52 HERTZ', label: 'NORTH PACIFIC · WOODS HOLE · 1989', sub: 'TRACKED EVERY YEAR THROUGH AT LEAST 2014', rings: true, color: pal().active},
     {from: {l: 2, w: 'blue'}, b: 3, T: 'quote', head: 'THE ANIMAL', lines: ['BLUE WHALES: 10-39 HZ', 'FIN WHALES: ~20 HZ', 'NEVER CONFIRMED BY SIGHT'], hi: [2], size: 62},
     {a: 3, b: 4, T: 'quote', head: '2021 · A DOCUMENTARY', lines: ['A POSSIBLE ANSWER:', 'A BLUE-FIN WHALE HYBRID', 'A POSSIBILITY. NOT A FACT.'], hi: [2], size: 62},
     {a: 4, b: null, T: 'quote', head: 'RULE 7', lines: ['SAY “UNRESOLVED”', 'OUT LOUD.', 'THAT IS HOW THE NEXT PERSON', 'KNOWS WHERE TO LISTEN.'], hi: [1], size: 82},
@@ -112,13 +113,13 @@ const RuleHud = ({id}) => {
   if (!n) return null;
   const k = spring({frame: f, fps, config: {damping: 12, stiffness: 150}}); const out = Math.min(1, Math.max(0, (f - FR(3.0)) / 8));
   return <>
-    {f < FR(3.4) && <div style={{position: 'absolute', left: 0, right: 0, top: 360, height: 300, background: 'rgba(4,6,12,0.88)', borderTop: '6px solid #ffd93b', borderBottom: '6px solid #ffd93b', opacity: 1 - out, transform: `scaleY(${0.2 + 0.8 * Math.min(1, k)})`, textAlign: 'center'}}>
-      <div style={{fontFamily: 'Lilita One', fontSize: 56, color: '#ffd93b', letterSpacing: 8, marginTop: 28, ...STROKE(8)}}>FILE 007 · RULE {n}</div>
+    {f < FR(3.4) && <div style={{position: 'absolute', left: 0, right: 0, top: 360, height: 300, background: 'rgba(4,6,12,0.88)', borderTop: `6px solid ${pal().active}`, borderBottom: `6px solid ${pal().active}`, opacity: 1 - out, transform: `scaleY(${0.2 + 0.8 * Math.min(1, k)})`, textAlign: 'center'}}>
+      <div style={{fontFamily: 'Lilita One', fontSize: 56, color: pal().active, letterSpacing: 8, marginTop: 28, ...STROKE(8)}}>FILE 007 · RULE {n}</div>
       <div style={{fontFamily: 'Lilita One', fontSize: RULES[id].length > 30 ? 66 : 118, color: '#fff', marginTop: 12, lineHeight: 1.05, padding: '0 80px', ...STROKE(14)}}>{RULES[id]}</div>
     </div>}
     <div style={{position: 'absolute', right: 96, top: 52, textAlign: 'right'}}>
-      <div style={{fontFamily: 'Lilita One', fontSize: 30, color: '#ffd93b', letterSpacing: 5, ...STROKE(6)}}>FILE 007</div>
-      <div style={{display: 'flex', gap: 8, marginTop: 6, justifyContent: 'flex-end'}}>{Array.from({length: 7}, (_, i) => <div key={i} style={{width: 40, height: 40, borderRadius: 8, border: '4px solid #141414', background: i + 1 === n ? '#ffd93b' : i + 1 < n ? '#8a7a30' : '#2a2f40', color: i + 1 === n ? '#141414' : '#cfd6e6', fontFamily: 'Lilita One', fontSize: 26, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{i + 1}</div>)}</div>
+      <div style={{fontFamily: 'Lilita One', fontSize: 30, color: pal().active, letterSpacing: 5, ...STROKE(6)}}>FILE 007</div>
+      <div style={{display: 'flex', gap: 8, marginTop: 6, justifyContent: 'flex-end'}}>{Array.from({length: 7}, (_, i) => <div key={i} style={{width: 40, height: 40, borderRadius: 8, border: '4px solid #141414', background: i + 1 === n ? pal().active : i + 1 < n ? '#8a7a30' : '#2a2f40', color: i + 1 === n ? '#141414' : '#cfd6e6', fontFamily: 'Lilita One', fontSize: 26, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{i + 1}</div>)}</div>
     </div>
   </>;
 };
