@@ -53,7 +53,7 @@ jobs:
       matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
-        with: {sparse-checkout: "blender\n.github"}
+        with: {sparse-checkout: "blender\n.github\nvendor"}
       - uses: actions/cache/restore@v4
         with: {path: ~/blender, key: 'blender-${{ env.BV }}', fail-on-cache-miss: true}
       - uses: actions/cache/restore@v4
@@ -61,6 +61,10 @@ jobs:
       - run: |
           sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y --no-install-recommends libxi6 libxxf86vm1 libxfixes3 libxrender1 libgl1 libegl1 libxkbcommon0 libsm6 libice6 ffmpeg >/dev/null
           nproc; python3 blender/kit/fetch_assets.py ~/ia3d_assets
+      - name: ext
+        run: |
+          # vendored GPL extension (loop/safe-area/wedge checks used by blender/tools/k1.py); never fatal for renders
+          if [ -f vendor/ext/k1.zip ]; then ~/blender/blender --command extension install-file -r user_default -e vendor/ext/k1.zip 2>&1 | tail -n 5 || true; fi
       - name: render
         run: |
           ST="${{ matrix.st }}"; EX=""; [ -n "$ST" ] && EX="--stills $ST"
