@@ -1,6 +1,7 @@
 """nimitz plate b06 (256 f): it leaves; infrared-style gimbal view of a pale capsule on a grey sky, then a text-free hold"""
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
+import bpy, math
 a = core.args(); sc = core.reset(); NF = 256
 setup(sc, exposure=1.1, vol=False, glare=0.4, sat=0.0)
 Wd.hdri('kloppenheim_02_puresky', strength=0.8, bg_strength=1.0, rot=40, tint=(0.9, 0.9, 0.9))

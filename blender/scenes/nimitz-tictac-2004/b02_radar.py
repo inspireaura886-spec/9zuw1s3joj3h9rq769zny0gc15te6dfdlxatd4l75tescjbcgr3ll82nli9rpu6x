@@ -1,6 +1,7 @@
 """nimitz plate b02 (256 f): USS Princeton radar week: dark CIC radar scope, blips dropping fast"""
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
+import bpy, math
 a = core.args(); sc = core.reset(); NF = 256
 setup(sc, exposure=0.95, vol=False, glare=0.6, vignette=0.45)
 Wd.hdri('moonless_golf', strength=0.02)

@@ -1,6 +1,7 @@
 """nimitz plate b03 (263 f): two fighters circle a patch of whitewater on the dusk sea"""
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
+import bpy, math
 a = core.args(); sc = core.reset(); NF = 263
 setup(sc, exposure=1.2, vol=True, glare=0.5)
 dusk_sea(NF, hdri_rot=120, wave_scale=1.5, wind=14)

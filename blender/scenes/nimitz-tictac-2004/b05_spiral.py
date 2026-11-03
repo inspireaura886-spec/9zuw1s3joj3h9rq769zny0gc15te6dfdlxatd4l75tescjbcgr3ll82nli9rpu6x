@@ -1,6 +1,7 @@
 """nimitz plate b05 (183 f): Fravor's jet spirals down toward the tic-tac; the object turns and rises to meet it"""
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
+import bpy, math
 a = core.args(); sc = core.reset(); NF = 183
 setup(sc, exposure=1.2, vol=True, glare=0.5)
 dusk_sea(NF, hdri_rot=100)

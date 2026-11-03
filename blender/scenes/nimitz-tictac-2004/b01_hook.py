@@ -1,6 +1,7 @@
 """nimitz plate b01 (235 f): hook: Nov 14 2004, Pacific dusk, fighter pair banks over the sea (frame 0 = strongest image: tic-tac glint far below)"""
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
+import bpy, math
 a = core.args(); sc = core.reset(); NF = 235
 setup(sc, exposure=1.2, vol=True, glare=0.6)
 dusk_sea(NF, hdri_rot=60)

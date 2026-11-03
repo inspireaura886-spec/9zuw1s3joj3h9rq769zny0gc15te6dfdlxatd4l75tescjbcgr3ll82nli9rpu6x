@@ -1,6 +1,7 @@
 """nimitz plate b08 (92 f): four trained flyers watched for five minutes: cockpit glow close on a pilot-view horizon"""
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
+import bpy, math
 a = core.args(); sc = core.reset(); NF = 92
 setup(sc, exposure=1.1, vol=True, glare=0.5)
 dusk_sea(NF, hdri_rot=100)

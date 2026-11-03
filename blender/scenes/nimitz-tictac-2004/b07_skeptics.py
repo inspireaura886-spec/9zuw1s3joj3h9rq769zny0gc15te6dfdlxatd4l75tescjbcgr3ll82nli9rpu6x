@@ -1,6 +1,7 @@
 """nimitz plate b07 (110 f): skeptics: three small glow sources (glare / parallax / sensor) as soft bokeh on a dark sea horizon"""
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
+import bpy, math
 a = core.args(); sc = core.reset(); NF = 110
 setup(sc, exposure=1.15, vol=True, glare=0.9)
 dusk_sea(NF, hdri_rot=140)
