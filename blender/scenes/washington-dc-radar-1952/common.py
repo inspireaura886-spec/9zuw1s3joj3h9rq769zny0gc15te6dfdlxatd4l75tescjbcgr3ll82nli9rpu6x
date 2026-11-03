@@ -41,19 +41,21 @@ def finish_cam(cam, NF, a, sc):
     core.render(a, sc)
 
 
-def night_city(NF, exposure=1.1):
-    """Washington at night from ~1 km: moonlit haze, warm city grid below, dark river band."""
+def night_city(NF, exposure=1.0):
+    """Washington at night from ~1 km: dark moonlit sky, warm city grid spreading to the horizon, thin haze.
+    (look r2: darker sky, fewer stars, city to the horizon, no hard fog/terrain edge)"""
     sc = core.reset()
-    setup(sc, exposure=exposure, vol=True, glare=0.7, vignette=0.4)
-    Wd.hdri('kloppenheim_02_puresky', strength=0.3, bg_strength=0.55, rot=160, tint=(0.75, 0.85, 1.1))
-    Wd.moon(direction=(0.25, 0.9, 0.3), strength=1.6, color=(0.62, 0.72, 1.0))
-    Wd.terrain('Land', size=40000, res=80, height=40, scale=0.0003, center=(0, 8000, -1010), seed=4,
-               mat=M.principled('LandDC', base=(0.03, 0.032, 0.03), rough=0.9))
-    Wd.city_lights('DC', center=(0, 6500, -985), radius=5000, count=12000, seed=52, strength=7, size=1.4, cluster=0.8)
-    Wd.city_lights('DCcore', center=(300, 7000, -985), radius=1400, count=5000, seed=53, strength=10, size=1.2,
+    setup(sc, exposure=exposure, vol=True, glare=0.7, vignette=0.42)
+    Wd.hdri('kloppenheim_02_puresky', strength=0.12, bg_strength=0.16, rot=160, tint=(0.7, 0.8, 1.05))
+    Wd.moon(direction=(0.25, 0.9, 0.3), strength=0.9, color=(0.62, 0.72, 1.0))
+    Wd.terrain('Land', size=160000, res=120, height=40, scale=0.00015, center=(0, 20000, -1010), seed=4,
+               mat=M.principled('LandDC', base=(0.012, 0.013, 0.014), rough=0.95))
+    Wd.city_lights('DCfar', center=(0, 16000, -985), radius=16000, count=40000, seed=51, strength=6, size=3.0, cluster=0.75)
+    Wd.city_lights('DC', center=(0, 6000, -985), radius=6000, count=22000, seed=52, strength=7, size=1.6, cluster=0.8)
+    Wd.city_lights('DCcore', center=(300, 7000, -985), radius=1500, count=6000, seed=53, strength=10, size=1.3,
                    cluster=0.6, color=(1.0, 0.75, 0.45))
-    Wd.city_lights('Avenue', center=(-600, 6000, -984), radius=30, count=500, seed=54, strength=16, size=1.6,
-                   shape='line', length=6000, color=(1.0, 0.82, 0.55))
-    Wd.fog(center=(0, 6000, -500), size=(40000, 40000, 1200), density=0.00005, color=(0.72, 0.78, 0.95),
+    Wd.city_lights('Avenue', center=(-600, 6000, -984), radius=30, count=600, seed=54, strength=16, size=1.6,
+                   shape='line', length=9000, color=(1.0, 0.82, 0.55))
+    Wd.fog(center=(0, 20000, -300), size=(160000, 160000, 2600), density=0.000035, color=(0.72, 0.78, 0.95),
            anisotropy=0.3)
     return sc

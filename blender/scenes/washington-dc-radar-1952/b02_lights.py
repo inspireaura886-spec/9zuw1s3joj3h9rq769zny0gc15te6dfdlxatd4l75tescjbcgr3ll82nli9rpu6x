@@ -11,6 +11,6 @@ for i, (x, y, z) in enumerate([(-260, 2600, 60), (120, 2900, 120), (420, 3300, 2
     Md.fly(o, [(0, (x, y, z), None), (NF, (x + 40 * (1 if i % 2 else -1), y + 120, z + 15), None)], interp='LINEAR')
 cam = C.Cam(clip_end=90000)
 v = 4.0  # m per frame (~430 km/h)
-cam.shot(0, NF, C.dolly((0, 0, 30), (0, v * NF, 26), look=(40, 3000, 20), look1=(60, 3000 + v * NF, 30)),
+cam.shot(0, NF, C.dolly((0, 0, 30), (0, v * NF, 26), look=(40, 3000, -60), look1=(60, 3000 + v * NF, -50)),
          lens=(38, 42), roll=(-2.0, -1.0), fstop=8, focus=(0, 2900, 60))
 finish_cam(cam, NF, a, sc)
