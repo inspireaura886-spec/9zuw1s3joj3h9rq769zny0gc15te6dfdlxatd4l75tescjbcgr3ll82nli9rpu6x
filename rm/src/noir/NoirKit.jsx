@@ -288,7 +288,7 @@ export const NoirFinish = ({grain = 0.14, vignette = 0.78, flick = 0.06, scratch
 
 /** Noir title card: white condensed caps + one red accent word, thin rules, typewriter sub-line. Words appear on their frames. */
 export const NoirTitle = ({lines = [], y = 260, size = 92, accent, sub, subAt = 0}) => {
-  accent = accent || pal().alt; // HUMANE 2026-11-03: accent line from the muted palette, never NOIR.red
+  accent = accent || pal().active; // HUMANE 2026-11-03: accent line from the muted palette, never NOIR.red
   const f = useCurrentFrame();
   return (<div style={{position: 'absolute', top: y, left: 0, width: '100%', textAlign: 'center'}}>
     {lines.map((l, i) => { const t = clamp01((f - (l.at || 0)) / 6); if (t <= 0) return null;

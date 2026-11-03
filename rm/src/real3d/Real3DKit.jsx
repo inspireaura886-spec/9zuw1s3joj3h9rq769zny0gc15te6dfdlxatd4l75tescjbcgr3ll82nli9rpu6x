@@ -50,7 +50,7 @@ export const R3DTitle = ({lines = [], y = 250, size = 92, out = 999999, sub}) =>
   return (<div style={{position: 'absolute', top: y, left: 0, width: '100%', textAlign: 'center', opacity: o}}>
     {lines.map((l, i) => { const t = clamp01((f - (l.at || 0)) / 5); if (t <= 0) return null;
       return <div key={i} style={{fontFamily: l.red ? 'DM Serif Display' : 'Lilita One', fontStyle: l.red ? 'italic' : 'normal', fontSize: (l.size || size) * (l.red ? 1.1 : 1),
-        letterSpacing: l.red ? 1 : 4, lineHeight: 1.04, color: l.red ? pal().alt : pal().text, transform: `translateY(${(1 - ease(t)) * 22}px) scale(${1 + (1 - t) * 0.1})`, opacity: t,
+        letterSpacing: l.red ? 1 : 4, lineHeight: 1.04, color: l.red ? pal().active : pal().text, transform: `translateY(${(1 - ease(t)) * 22}px) scale(${1 + (1 - t) * 0.1})`, opacity: t,
         textShadow: '0 0 28px rgba(0,0,0,0.95), 0 4px 0 rgba(0,0,0,0.6)'}}>{l.text}</div>; })}
     {sub && <div style={{marginTop: 14, fontFamily: 'Special Elite', fontSize: 38, letterSpacing: 3, color: '#ddd6c6', textShadow: '0 0 14px #000', opacity: clamp01((f - (sub.at || 0)) / 6)}}>{sub.text}</div>}
   </div>);
