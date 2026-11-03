@@ -1,3 +1,4 @@
+import {pal} from '../../../palette.js'; // HUMANE caption palette 2026-11-03
 // LF01 shot components (1920x1080, 24 fps). Overlays: Pill (top-left tag), Big (2-line headline), Sub (word-highlighted subtitles).
 import * as THREE from 'three';
 import {createContext, useContext, useMemo} from 'react';
@@ -12,7 +13,7 @@ export const FR = (s) => Math.round(s * FPS);
 export const ChCtx = createContext(null);
 const norm = (t) => t.toLowerCase().replace(/[^a-z0-9']/g, '');
 export const STROKE = (px, c = '#141414') => ({WebkitTextStroke: `${px}px ${c}`, paintOrder: 'stroke fill'});
-export const COL = {white: '#ffffff', yellow: '#ffd93b', red: '#ff5a4e', cyan: '#7fe3ff', green: '#9be15d'};
+export const COL = {white: '#ffffff', get yellow() { return pal().active; }, get red() { return pal().alt; }, cyan: '#7fe3ff', green: '#9be15d'};
 
 // ------------------------------------------------------------- palettes
 const base = {rimPos: [-30, 15, -40]};
@@ -48,7 +49,7 @@ export const Pill = ({text, variant = 'yellow', delay = 0, x = 96, y = 64, size 
   const slide = legacy ? 200 : 36; // legacy = style of chunks rendered before 2026-10-25 16:15 IST (COLD, CH1 after shot 0, CH2)
   const f = useCurrentFrame() - delay; const {fps} = useVideoConfig(); const s = spring({frame: f, fps, config: {damping: 14, stiffness: 170}});
   if (f < 0) return null;
-  const bg = {yellow: '#ffd93b', white: '#f4f4f4', red: '#d6302a', dark: '#141414', cyan: '#7fe3ff'}[variant]; const fg = ['red', 'dark'].includes(variant) ? '#fff' : '#141414';
+  const bg = {yellow: pal().active, white: '#f4f4f4', red: pal().chip, dark: '#141414', cyan: '#7fe3ff'}[variant]; const fg = ['red', 'dark'].includes(variant) ? '#fff' : '#141414';
   return <div style={{position: 'absolute', top: y, [right ? 'right' : 'left']: x, padding: '8px 26px 10px', background: bg, color: fg, border: '4px solid #141414', borderRadius: 12, fontFamily: 'Lilita One', fontSize: size, letterSpacing: 2,
     boxShadow: '0 8px 0 rgba(0,0,0,0.35)', transform: `translateX(${(1 - s) * (right ? slide : -slide)}px)`, opacity: clamp01(s * (legacy ? 2 : 1.4))}}>{text}</div>;
 };
@@ -82,7 +83,7 @@ export const Sub = () => {
   return <AbsoluteFill style={{pointerEvents: 'none'}}><div style={{position: 'absolute', bottom: 64, width: '100%', textAlign: 'center', padding: '0 160px', boxSizing: 'border-box'}}>
     <span style={{display: 'inline-block', background: 'rgba(8,10,18,0.55)', borderRadius: 14, padding: '10px 28px 14px'}}>
       {ch.map((w, i) => { const active = t >= w[1] - 0.01 && t <= w[2] + 0.12; const past = t > w[2] + 0.12;
-        return <span key={i} style={{fontFamily: 'Fredoka', fontWeight: 600, fontSize: 52, color: active ? '#ffd93b' : past ? '#ffffff' : 'rgba(255,255,255,0.42)', marginRight: 14, ...STROKE(active ? 9 : 7, '#0a0a12'), display: 'inline-block', transform: active ? 'scale(1.07)' : 'none'}}>{w[0]}</span>; })}
+        return <span key={i} style={{fontFamily: 'Fredoka', fontWeight: 600, fontSize: 52, color: active ? pal().active : past ? '#ffffff' : 'rgba(255,255,255,0.42)', marginRight: 14, ...STROKE(active ? 9 : 7, '#0a0a12'), display: 'inline-block', transform: active ? 'scale(1.07)' : 'none'}}>{w[0]}</span>; })}
     </span></div></AbsoluteFill>;
 };
 
@@ -183,13 +184,13 @@ export const MapShot = ({id, route = [], marks = [], show = [], startSec, endSec
         {Array.from({length: 13}, (_, i) => <line key={'v' + i} x1={i * 160} y1={0} x2={i * 160} y2={1080} stroke="#1e4366" strokeWidth={1} opacity={0.5} />)}
         {Array.from({length: 8}, (_, i) => <line key={'h' + i} x1={0} y1={i * 160} x2={1920} y2={i * 160} stroke="#1e4366" strokeWidth={1} opacity={0.5} />)}
         <path d={M.d} fill="#27465c" stroke="#7fc0dd" strokeWidth={2.5} strokeLinejoin="round" />
-        {drawn.length > 1 && <polyline points={drawn.map((p) => p.join(',')).join(' ')} fill="none" stroke="#ffd93b" strokeWidth={8} strokeDasharray="22 14" strokeLinecap="round" />}
-        {show.map((n) => { const p = M.pts[n]; return <g key={n}><circle cx={p[0]} cy={p[1]} r={13} fill="#ffd93b" stroke="#141414" strokeWidth={4} />
+        {drawn.length > 1 && <polyline points={drawn.map((p) => p.join(',')).join(' ')} fill="none" stroke={pal().active} strokeWidth={8} strokeDasharray="22 14" strokeLinecap="round" />}
+        {show.map((n) => { const p = M.pts[n]; return <g key={n}><circle cx={p[0]} cy={p[1]} r={13} fill={pal().active} stroke="#141414" strokeWidth={4} />
           <text x={p[0] + 24} y={p[1] + 10} fontFamily="Lilita One" fontSize={38} fill="#fff" stroke="#141414" strokeWidth={9} paintOrder="stroke" letterSpacing={2}>{n}</text></g>; })}
         {marks.map((m, i) => { const p = P(m.at); const t = relF(VO, m, startSec); if (f < t) return null; const k = spring({frame: f - t, fps, config: {damping: 10, stiffness: 160}});
-          return <g key={i} transform={`translate(${p[0]},${p[1]}) scale(${k})`}><circle r={m.r ?? 46} fill="none" stroke={m.color ?? '#ff5a4e'} strokeWidth={8} />{m.cross && <><line x1={-26} y1={-26} x2={26} y2={26} stroke={m.color ?? '#ff5a4e'} strokeWidth={9} /><line x1={26} y1={-26} x2={-26} y2={26} stroke={m.color ?? '#ff5a4e'} strokeWidth={9} /></>}
-            {m.text && <text x={m.dx ?? 0} y={m.dy ?? -70} textAnchor="middle" fontFamily="Lilita One" fontSize={m.size ?? 40} fill={m.color ?? '#ff5a4e'} stroke="#141414" strokeWidth={9} paintOrder="stroke" letterSpacing={2}>{m.text}</text>}</g>; })}
-        {head && drawn.length > 1 && <circle cx={head[0]} cy={head[1]} r={15} fill="#ff5a4e" stroke="#fff" strokeWidth={5} />}
+          return <g key={i} transform={`translate(${p[0]},${p[1]}) scale(${k})`}><circle r={m.r ?? 46} fill="none" stroke={m.color ?? pal().alt} strokeWidth={8} />{m.cross && <><line x1={-26} y1={-26} x2={26} y2={26} stroke={m.color ?? pal().alt} strokeWidth={9} /><line x1={26} y1={-26} x2={-26} y2={26} stroke={m.color ?? pal().alt} strokeWidth={9} /></>}
+            {m.text && <text x={m.dx ?? 0} y={m.dy ?? -70} textAnchor="middle" fontFamily="Lilita One" fontSize={m.size ?? 40} fill={m.color ?? pal().alt} stroke="#141414" strokeWidth={9} paintOrder="stroke" letterSpacing={2}>{m.text}</text>}</g>; })}
+        {head && drawn.length > 1 && <circle cx={head[0]} cy={head[1]} r={15} fill={pal().alt} stroke="#fff" strokeWidth={5} />}
       </svg>
     </AbsoluteFill>
     <TimedOverlays ents={big && big.map((e) => ({...e, kind: 'big'}))} startSec={startSec} endSec={endSec} C={BigE} />
@@ -224,7 +225,7 @@ export const QuoteShot = ({head, lines, source, stamp, startSec, endSec, big, pi
       {lines.map((l, i) => { const vis = l.slice(0, Math.max(0, shown - used)); used += l.length + 1; return <div key={i} style={{fontFamily: 'Special Elite', fontSize: size, lineHeight: 1.22, color: hi.includes(i) ? '#9a1d14' : '#2a2116', minHeight: size * 1.22}}>{vis}</div>; })}
       {source && <div style={{marginTop: 20, fontFamily: 'Fredoka', fontWeight: 600, fontSize: 28, color: '#5a4a30', letterSpacing: 1}}>{source}</div>}
     </div>
-    {ss > 0 && <div style={{position: 'absolute', right: 230, bottom: 170, transform: `rotate(-9deg) scale(${ss})`, border: '10px solid #d6302a', color: '#d6302a', fontFamily: 'Lilita One', fontSize: 110, padding: '2px 34px', borderRadius: 14, background: 'rgba(255,255,255,0.12)', letterSpacing: 4}}>{stamp}</div>}
+    {ss > 0 && <div style={{position: 'absolute', right: 230, bottom: 170, transform: `rotate(-9deg) scale(${ss})`, border: `10px solid ${pal().chip}`, color: pal().chip, fontFamily: 'Lilita One', fontSize: 110, padding: '2px 34px', borderRadius: 14, background: 'rgba(255,255,255,0.12)', letterSpacing: 4}}>{stamp}</div>}
     <TimedOverlays ents={big && big.map((e) => ({...e, kind: 'big'}))} startSec={startSec} endSec={endSec} C={BigE} />
     <TimedOverlays ents={pill && pill.map((e) => ({...e, kind: 'pill'}))} startSec={startSec} endSec={endSec} C={PillE} />
   </AbsoluteFill>;
@@ -234,13 +235,13 @@ export const QuoteShot = ({head, lines, source, stamp, startSec, endSec, big, pi
 export const CheckShot = ({title, rows, startSec, endSec, big, pill}) => {
   const {VO} = useCh(); const f = useCurrentFrame(); const {fps} = useVideoConfig();
   return <AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 40%, #1a2a44 0%, #060a14 85%)'}}>
-    <div style={{position: 'absolute', top: 120, width: '100%', textAlign: 'center', fontFamily: 'Lilita One', fontSize: 78, color: '#ffd93b', ...STROKE(12), letterSpacing: 3}}>{title}</div>
+    <div style={{position: 'absolute', top: 120, width: '100%', textAlign: 'center', fontFamily: 'Lilita One', fontSize: 78, color: pal().active, ...STROKE(12), letterSpacing: 3}}>{title}</div>
     {rows.map((r, i) => { const t = Math.max(0, relF(VO, r, startSec)); if (f < t) return null; const s = spring({frame: f - t, fps, config: {damping: 12, stiffness: 170}});
       return <div key={i} style={{position: 'absolute', top: 290 + i * 190, left: 280, width: 1360, height: 150, background: '#f3ead2', border: '6px solid #141414', borderRadius: 18, display: 'flex', alignItems: 'center', padding: '0 46px', boxSizing: 'border-box',
         transform: `translateX(${(1 - s) * -900}px)`, boxShadow: '0 10px 0 rgba(0,0,0,0.4)'}}>
         <div style={{fontFamily: 'Lilita One', fontSize: 64, color: '#141414', flex: 1, letterSpacing: 2}}>{r.name}</div>
         <div style={{fontFamily: 'Fredoka', fontWeight: 600, fontSize: 36, color: '#5a4a30', marginRight: 36}}>{r.what}</div>
-        <div style={{fontFamily: 'Lilita One', fontSize: 100, color: '#d6302a', transform: `scale(${spring({frame: f - t - 8, fps, config: {damping: 8, stiffness: 220}, from: 2, to: 1})})`, opacity: f - t > 8 ? 1 : 0}}>✗</div>
+        <div style={{fontFamily: 'Lilita One', fontSize: 100, color: pal().chip, transform: `scale(${spring({frame: f - t - 8, fps, config: {damping: 8, stiffness: 220}, from: 2, to: 1})})`, opacity: f - t > 8 ? 1 : 0}}>✗</div>
       </div>; })}
     <TimedOverlays ents={big && big.map((e) => ({...e, kind: 'big'}))} startSec={startSec} endSec={endSec} C={BigE} />
     <TimedOverlays ents={pill && pill.map((e) => ({...e, kind: 'pill'}))} startSec={startSec} endSec={endSec} C={PillE} />
@@ -254,9 +255,9 @@ export const TeaserShot = ({startSec, endSec, number = 1746, label = 'PEOPLE KIL
   return <AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 45%, #1e3a2a 0%, #060c0a 85%)'}}>
     <div style={{position: 'absolute', top: 110, width: '100%', textAlign: 'center', fontFamily: 'Lilita One', fontSize: 62, color: '#9be15d', ...STROKE(10), letterSpacing: 4}}>NEXT TIME · LF02</div>
     <div style={{position: 'absolute', top: 210, width: '100%', textAlign: 'center', fontFamily: 'Lilita One', fontSize: 330, color: '#fff', ...STROKE(18), lineHeight: 1}}>{n.toLocaleString('en-US')}</div>
-    <div style={{position: 'absolute', top: 560, width: '100%', textAlign: 'center', fontFamily: 'Lilita One', fontSize: 78, color: '#ffd93b', ...STROKE(12), letterSpacing: 3}}>{label}</div>
+    <div style={{position: 'absolute', top: 560, width: '100%', textAlign: 'center', fontFamily: 'Lilita One', fontSize: 78, color: pal().active, ...STROKE(12), letterSpacing: 3}}>{label}</div>
     {sub && <div style={{position: 'absolute', top: 680, width: '100%', textAlign: 'center', fontFamily: 'Fredoka', fontWeight: 600, fontSize: 44, color: '#d8e6dc', ...STROKE(8)}}>{sub}</div>}
-    {sp > 0 && <div style={{position: 'absolute', left: 660, top: 770, width: 600, height: 120, background: '#d6302a', border: '6px solid #141414', borderRadius: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Lilita One', fontSize: 62, color: '#fff', letterSpacing: 3, transform: `scale(${sp})`}}>▶ SUBSCRIBE</div>}
+    {sp > 0 && <div style={{position: 'absolute', left: 660, top: 770, width: 600, height: 120, background: pal().chip, border: '6px solid #141414', borderRadius: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Lilita One', fontSize: 62, color: '#fff', letterSpacing: 3, transform: `scale(${sp})`}}>▶ SUBSCRIBE</div>}
     <TimedOverlays ents={pill && pill.map((e) => ({...e, kind: 'pill'}))} startSec={startSec} endSec={endSec} C={PillE} />
   </AbsoluteFill>;
 };

@@ -1,3 +1,4 @@
+import {pal} from '../../../palette.js'; // HUMANE caption palette 2026-11-03
 // LF02 "Signals From Nowhere" shot components (1920x1080 @ 24 fps). Same overlay system as shots.jsx (big/pill with {l,w} word cues).
 import * as THREE from 'three';
 import {useMemo} from 'react';
@@ -126,10 +127,10 @@ export const WowBarsShot = ({big, pill, startSec, endSec, seq = ['6', 'E', 'Q', 
       {Array.from({length: 6}, (_, i) => <line key={i} x1={300} x2={1620} y1={760 - i * 90} y2={760 - i * 90} stroke="#24366a" strokeWidth={2} />)}
       {seq.map((c, i) => { const t = Math.round(FR(0.5) + i * FR(0.55)); const k = spring({frame: f - t, fps, config: {damping: 11, stiffness: 120}}); const h = Math.max(0, k) * (idx[i] / 30) * 480 + 20 * Math.max(0, k); const x = 400 + i * 190;
         const hot = c === 'U' && cs !== null && f >= cs - 2;
-        return <g key={i} opacity={f >= t ? 1 : 0}><rect x={x} y={760 - h} width={120} height={h} rx={10} fill={c === 'U' ? '#ffd93b' : '#4fa8ff'} stroke="#0a0f22" strokeWidth={5} />
-          <text x={x + 60} y={800 + 70} textAnchor="middle" fontFamily="Special Elite" fontSize={86} fill={hot ? '#ffd93b' : '#fff'}>{c}</text></g>; })}
-      {cs !== null && f >= cs && <ellipse cx={960} cy={870} rx={640 * Math.min(1, (f - cs) / 8 + 0.2)} ry={92} fill="none" stroke="#ff5a4e" strokeWidth={9} />}
-      {cs !== null && f >= cs + 6 && <text x={1500} y={960} fontFamily="Special Elite" fontSize={130} fill="#ff5a4e" transform={`rotate(-8 1500 960)`}>Wow!</text>}
+        return <g key={i} opacity={f >= t ? 1 : 0}><rect x={x} y={760 - h} width={120} height={h} rx={10} fill={c === 'U' ? pal().active : '#4fa8ff'} stroke="#0a0f22" strokeWidth={5} />
+          <text x={x + 60} y={800 + 70} textAnchor="middle" fontFamily="Special Elite" fontSize={86} fill={hot ? pal().active : '#fff'}>{c}</text></g>; })}
+      {cs !== null && f >= cs && <ellipse cx={960} cy={870} rx={640 * Math.min(1, (f - cs) / 8 + 0.2)} ry={92} fill="none" stroke={pal().alt} strokeWidth={9} />}
+      {cs !== null && f >= cs + 6 && <text x={1500} y={960} fontFamily="Special Elite" fontSize={130} fill={pal().alt} transform={`rotate(-8 1500 960)`}>Wow!</text>}
     </svg>
     <Ov big={big} pill={pill} startSec={startSec} endSec={endSec} />
   </AbsoluteFill>;
@@ -142,8 +143,8 @@ export const PrintoutShot = ({big, pill, startSec, endSec, circleAt, rows = 16, 
   return <AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 50%, #3a3226 0%, #120e0a 85%)'}}>
     <div style={{position: 'absolute', left: 520, top: -80 - sc * 60, width: 880, padding: '70px 60px', background: 'repeating-linear-gradient(0deg,#e9f1e0 0 62px,#d2e4c6 62px 124px)', transform: 'rotate(-2deg)', boxShadow: '0 40px 80px rgba(0,0,0,0.7)', borderLeft: '40px dotted #b9ccae', borderRight: '40px dotted #b9ccae', boxSizing: 'border-box'}}>
       {lines.map((l, i) => <div key={i} style={{fontFamily: 'Special Elite', fontSize: 52, height: 62, lineHeight: '62px', color: i === Math.floor(rows / 2) ? '#1a2a3a' : '#2a3a2a', letterSpacing: 8, textAlign: 'center'}}>{l}</div>)}
-      {cs !== null && f >= cs && <div style={{position: 'absolute', left: 150, top: 70 + Math.floor(rows / 2) * 62 - 6, width: 580 * Math.min(1, (f - cs) / 8 + 0.2), height: 72, border: '8px solid #d6302a', borderRadius: 40}} />}
-      {cs !== null && f >= cs + 6 && <div style={{position: 'absolute', left: 700, top: 70 + Math.floor(rows / 2) * 62 - 36, fontFamily: 'Special Elite', fontSize: 100, color: '#d6302a', transform: 'rotate(-10deg)'}}>Wow!</div>}
+      {cs !== null && f >= cs && <div style={{position: 'absolute', left: 150, top: 70 + Math.floor(rows / 2) * 62 - 6, width: 580 * Math.min(1, (f - cs) / 8 + 0.2), height: 72, border: `8px solid ${pal().chip}`, borderRadius: 40}} />}
+      {cs !== null && f >= cs + 6 && <div style={{position: 'absolute', left: 700, top: 70 + Math.floor(rows / 2) * 62 - 36, fontFamily: 'Special Elite', fontSize: 100, color: pal().chip, transform: 'rotate(-10deg)'}}>Wow!</div>}
     </div>
     <Ov big={big} pill={pill} startSec={startSec} endSec={endSec} />
   </AbsoluteFill>;
@@ -155,9 +156,9 @@ export const BuzzShot = ({big, pill, startSec, endSec, freq = '4625', unit = 'kH
   const per = 60 / rate * FPS; const pts = []; for (let x = 0; x <= 1920; x += 6) { const t = (x / 6 + f * 1.4); const ph = (t % (per / 1.4)) / (per / 1.4); const amp = quiet || (ms !== null && f >= ms) ? 4 : (ph < 0.5 ? 150 : 4); pts.push(`${x},${660 - amp * (0.5 + 0.5 * Math.sin(x * 0.9 + f))}`); }
   return <AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 45%, #1a2e24 0%, #050a08 85%)'}}>
     <div style={{position: 'absolute', top: 250, width: '100%', textAlign: 'center', ...Lilita, fontSize: 40, color: '#9be15d', letterSpacing: 8, ...STROKE(8)}}>{label}</div>
-    <div style={{position: 'absolute', top: 310, width: '100%', textAlign: 'center', ...Lilita, fontSize: 250, color: '#fff', ...STROKE(16), lineHeight: 1}}>{freq}<span style={{fontSize: 90, color: '#ffd93b'}}> {unit}</span></div>
+    <div style={{position: 'absolute', top: 310, width: '100%', textAlign: 'center', ...Lilita, fontSize: 250, color: '#fff', ...STROKE(16), lineHeight: 1}}>{freq}<span style={{fontSize: 90, color: pal().active}}> {unit}</span></div>
     <svg width="1920" height="1080" style={{position: 'absolute', inset: 0}}><polyline points={pts.join(' ')} fill="none" stroke="#9be15d" strokeWidth={6} strokeLinejoin="round" /><line x1={0} x2={1920} y1={660} y2={660} stroke="#24442e" strokeWidth={2} /></svg>
-    {ms !== null && f >= ms && <div style={{position: 'absolute', top: 700, width: '100%', textAlign: 'center', fontFamily: 'Special Elite', fontSize: 70, color: '#ffd93b', letterSpacing: 6}}>{msg.map((m, i) => <div key={i} style={{opacity: f >= ms + i * 10 ? 1 : 0}}>{m}</div>)}</div>}
+    {ms !== null && f >= ms && <div style={{position: 'absolute', top: 700, width: '100%', textAlign: 'center', fontFamily: 'Special Elite', fontSize: 70, color: pal().active, letterSpacing: 6}}>{msg.map((m, i) => <div key={i} style={{opacity: f >= ms + i * 10 ? 1 : 0}}>{m}</div>)}</div>}
     <Ov big={big} pill={pill} startSec={startSec} endSec={endSec} />
   </AbsoluteFill>;
 };
@@ -169,13 +170,13 @@ export const DigitsShot = ({big, pill, startSec, endSec, groups = ['0 2 5 8 8', 
       <div style={{...Lilita, fontSize: 32, letterSpacing: 3, color: '#7a2a20', marginBottom: 14}}>{head}</div>
       {groups.map((g, i) => { const t = FR(0.4 + i * 0.7); const shown = Math.floor(clamp01((f - t) / 12) * g.length); return <div key={i} style={{fontFamily: 'Special Elite', fontSize: 98, letterSpacing: 14, color: '#2a2116', height: 112}}>{f >= t ? g.slice(0, shown) : ''}</div>; })}
     </div>
-    {st !== null && f >= st && <div style={{position: 'absolute', right: 230, bottom: 150, transform: `rotate(-9deg) scale(${spring({frame: f - st, fps, config: {damping: 8, stiffness: 220}, from: 2.2, to: 1})})`, border: '10px solid #d6302a', color: '#d6302a', ...Lilita, fontSize: 84, padding: '2px 30px', borderRadius: 14, background: 'rgba(255,255,255,0.12)', letterSpacing: 4}}>{stamp}</div>}
+    {st !== null && f >= st && <div style={{position: 'absolute', right: 230, bottom: 150, transform: `rotate(-9deg) scale(${spring({frame: f - st, fps, config: {damping: 8, stiffness: 220}, from: 2.2, to: 1})})`, border: `10px solid ${pal().chip}`, color: pal().chip, ...Lilita, fontSize: 84, padding: '2px 30px', borderRadius: 14, background: 'rgba(255,255,255,0.12)', letterSpacing: 4}}>{stamp}</div>}
     <Ov big={big} pill={pill} startSec={startSec} endSec={endSec} />
   </AbsoluteFill>;
 };
 
 // ------------------------------------------------------------------ 2D: big stat card
-export const StatShot = ({big, pill, startSec, endSec, number = 22000, text, label, sub, color = '#ffd93b', bg = 'radial-gradient(ellipse at 50% 45%, #1a2850 0%, #060814 85%)', rings = false, decimals = 0, suffix = ''}) => {
+export const StatShot = ({big, pill, startSec, endSec, number = 22000, text, label, sub, color = pal().active, bg = 'radial-gradient(ellipse at 50% 45%, #1a2850 0%, #060814 85%)', rings = false, decimals = 0, suffix = ''}) => {
   const f = useCurrentFrame(); const d = FR(endSec - startSec); const n = number * easeOut(clamp01(f / (d * 0.5)));
   return <AbsoluteFill style={{background: bg}}>
     {rings && <svg width="1920" height="1080" style={{position: 'absolute', inset: 0}}>{Array.from({length: 6}, (_, i) => { const t = ((f * 0.012 + i / 6) % 1); return <circle key={i} cx={960} cy={560} r={80 + t * 700} fill="none" stroke="#7fe3ff" strokeWidth={5} opacity={(1 - t) * 0.5} />; })}</svg>}
@@ -206,7 +207,7 @@ const Figure = ({f, soda = false}) => { const sway = Math.sin(f * 0.18) * 26; re
   <rect x={-250} y={520} width={500} height={300} fill="#1a2030" /><rect x={-70} y={470} width={140} height={90} fill="#c9a98a" />
   <ellipse cx={0} cy={330} rx={150} ry={190} fill="#d4dde6" stroke="#0a0f1a" strokeWidth={8} /><path d="M-155,300 Q0,90 155,300 Q130,220 0,200 Q-130,220 -155,300Z" fill="#e8c860" stroke="#0a0f1a" strokeWidth={6} />
   <rect x={-130} y={300} width={260} height={56} rx={10} fill="#10141c" /><rect x={-24} y={400} width={48} height={24} fill="#8a6a5a" /><path d="M-70,470 Q0,520 70,470" fill="none" stroke="#10141c" strokeWidth={10} />
-  {soda && <g transform="translate(210,440)"><rect width={64} height={110} rx={10} fill="#d6302a" stroke="#fff" strokeWidth={5} /></g>}</g>; };
+  {soda && <g transform="translate(210,440)"><rect width={64} height={110} rx={10} fill={pal().chip} stroke="#fff" strokeWidth={5} /></g>}</g>; };
 export const TvShot = ({big, pill, startSec, endSec, states = [{s: 0, t: 'static'}]}) => {
   const f = useCurrentFrame(); const {VO} = useCh(); const ss = states.map((e) => ({...e, f: Math.max(0, relF(VO, e, startSec))})).sort((a, b) => a.f - b.f); let cur = ss[0]; ss.forEach((e) => { if (f >= e.f) cur = e; });
   const noise = useMemo(() => null, []);
@@ -251,7 +252,7 @@ export const EndCardShot = ({big, pill, startSec, endSec, subscribeAt, title = '
     <svg width="1920" height="1080" style={{position: 'absolute', inset: 0}}>{Array.from({length: 5}, (_, i) => { const t = ((f * 0.01 + i / 5) % 1); return <circle key={i} cx={960} cy={440} r={60 + t * 620} fill="none" stroke="#7fe3ff" strokeWidth={4} opacity={(1 - t) * 0.35} />; })}</svg>
     <div style={{position: 'absolute', top: 150, width: '100%', textAlign: 'center', ...Lilita, fontSize: 56, color: '#9be15d', ...STROKE(10), letterSpacing: 6}}>{sub}</div>
     <div style={{position: 'absolute', top: 250, width: '100%', textAlign: 'center', ...Lilita, fontSize: 130, color: '#fff', ...STROKE(16), lineHeight: 1.05}}>{title}</div>
-    {sp > 0 && <div style={{position: 'absolute', left: 560, top: 640, width: 800, height: 130, transform: `scale(${sp})`, background: '#d6302a', border: '6px solid #141414', borderRadius: 66, display: 'flex', alignItems: 'center', justifyContent: 'center', ...Lilita, fontSize: 66, color: '#fff', letterSpacing: 3}}>SUBSCRIBE · IA UNFOLDS</div>}
+    {sp > 0 && <div style={{position: 'absolute', left: 560, top: 640, width: 800, height: 130, transform: `scale(${sp})`, background: pal().chip, border: '6px solid #141414', borderRadius: 66, display: 'flex', alignItems: 'center', justifyContent: 'center', ...Lilita, fontSize: 66, color: '#fff', letterSpacing: 3}}>SUBSCRIBE · IA UNFOLDS</div>}
     <Ov big={big} pill={pill} startSec={startSec} endSec={endSec} />
   </AbsoluteFill>;
 };
@@ -261,7 +262,7 @@ export const StingShot = () => {
   const f = useCurrentFrame(); const {fps} = useVideoConfig(); const s = spring({frame: f, fps, config: {damping: 9, stiffness: 140}}); const out = clamp01((f - 38) / 10);
   return <AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 50%, #12204a 0%, #04060e 85%)', opacity: 1 - out}}>
     <svg width="1920" height="1080" style={{position: 'absolute', inset: 0}}>{Array.from({length: 4}, (_, i) => { const t = clamp01((f - i * 5) / 30); return <circle key={i} cx={960} cy={540} r={40 + t * 760} fill="none" stroke="#7fe3ff" strokeWidth={6} opacity={(1 - t) * 0.7} />; })}</svg>
-    <div style={{position: 'absolute', top: 410, width: '100%', textAlign: 'center', ...Lilita, fontSize: 190, color: '#fff', ...STROKE(18), letterSpacing: 8, transform: `scale(${0.7 + 0.3 * s})`, opacity: clamp01(s * 1.5)}}>IA <span style={{color: '#ffd93b'}}>UNFOLDS</span></div>
+    <div style={{position: 'absolute', top: 410, width: '100%', textAlign: 'center', ...Lilita, fontSize: 190, color: '#fff', ...STROKE(18), letterSpacing: 8, transform: `scale(${0.7 + 0.3 * s})`, opacity: clamp01(s * 1.5)}}>IA <span style={{color: pal().active}}>UNFOLDS</span></div>
     <div style={{position: 'absolute', top: 640, width: '100%', textAlign: 'center', fontFamily: 'Fredoka', fontWeight: 600, fontSize: 44, color: '#9be15d', letterSpacing: 10, ...STROKE(8), opacity: clamp01((f - 10) / 8)}}>TRUE MYSTERIES · UNFOLDED</div>
   </AbsoluteFill>;
 };

@@ -1,3 +1,4 @@
+import {pal} from '../../../palette.js'; // HUMANE caption palette 2026-11-03
 // LF06 FILE 006 "If You Ever Find a Message Nobody Can Read... STOP GUESSING" - 1920x1080 @ 24 fps, one composition per chapter.
 // Shots are data: a..b = voice line indices (b exclusive; null = to the end); optional from/to = word cues {l,w,o} to split a long line.
 import {AbsoluteFill, Sequence, staticFile, useCurrentFrame, useVideoConfig, spring} from 'remotion';
@@ -40,18 +41,18 @@ export const SHOTS = {
       big: [{l: 0, w: 'message', lines: [{text: 'A MESSAGE', color: 'white'}, {text: 'NOBODY CAN READ', color: 'red'}], y: 80, size: 120}, {l: 0, w: 'stop', lines: [{text: 'STOP GUESSING', color: 'yellow'}], y: 130, size: 150}]},
     {a: 1, to: {l: 1, w: 'stays'}, T: 'cipher', cols: 17, rows: 20, head: 'Z340 · STAND-IN SYMBOLS · NOT THE REAL CIPHER', pill: [{l: 1, text: 'NOVEMBER 1969 · SAN FRANCISCO', v: 'yellow'}, {l: 1, w: 'killer', text: 'THE ZODIAC KILLER · 340 CHARACTERS', v: 'red'}],
       big: [{l: 1, w: 'three', lines: [{text: '340 CHARACTERS', color: 'white'}], y: 130, size: 130}]},
-    {from: {l: 1, w: 'stays'}, b: 2, T: 'stat', number: 51, label: 'YEARS UNBROKEN', sub: 'UNTIL THREE STRANGERS READ IT', rings: true, color: '#ff5a4e'},
+    {from: {l: 1, w: 'stays'}, b: 2, T: 'stat', number: 51, label: 'YEARS UNBROKEN', sub: 'UNTIL THREE STRANGERS READ IT', rings: true, color: pal().alt},
     {a: 2, to: {l: 2, w: 'shorter'}, T: 'stat', text: '3 STRANGERS', label: 'THREE DIFFERENT CONTINENTS', sub: 'DECEMBER 2020', rings: true, color: '#7fe3ff'},
     {from: {l: 2, w: 'shorter'}, b: 3, T: 'cipher', kind: 'zodiac', cols: 13, rows: 1, size: 70, head: 'THE SHORTER CODES · 13 AND 32 CHARACTERS · STAND-IN SYMBOLS', noteStamp: 'STILL UNREAD', stampAt: {l: 2, w: 'still'}},
     {a: 3, to: {l: 3, w: 'sold'}, T: 'stat', text: '7 CODES · 7 RULES', label: 'ZODIAC · VOYNICH · DORABELLA · KRYPTOS · BEALE · SOMERTON · PHAISTOS', rings: true},
-    {from: {l: 3, w: 'sold'}, b: 4, T: 'stat', text: '$962,500', label: 'THE KRYPTOS ARCHIVE · AUCTIONED', sub: 'WITH THE ANSWER TO K4 · NOV 2025', rings: true, color: '#ffd93b'},
+    {from: {l: 3, w: 'sold'}, b: 4, T: 'stat', text: '$962,500', label: 'THE KRYPTOS ARCHIVE · AUCTIONED', sub: 'WITH THE ANSWER TO K4 · NOV 2025', rings: true, color: pal().active},
     {a: 4, b: null, T: 'screen', cam: SCREEN_WIDE, big: [{l: 4, w: 'stay', lines: [{text: 'ONE MESSAGE', color: 'white'}, {text: 'IS STILL WAITING', color: 'yellow'}], y: 80, size: 110}]},
   ],
   CH1: [
     {a: 0, to: {l: 0, w: 'inside'}, T: 'cipher', cols: 17, rows: 20, head: 'Z340 · STAND-IN SYMBOLS', pill: [{l: 0, text: '8 NOV 1969 · A CARD TO THE SAN FRANCISCO CHRONICLE', v: 'yellow'}, {l: 0, w: 'zodiac', text: 'THE ZODIAC KILLER', v: 'red'}],
       big: [{l: 0, w: 'start', lines: [{text: 'THE CODE', color: 'white'}, {text: 'THAT FELL', color: 'yellow'}], y: 80, size: 120}]},
     {from: {l: 0, w: 'inside'}, b: 1, T: 'cipher', cols: 17, rows: 20, scanAt: {l: 0, w: 'inside'}, scanDur: 6, head: 'Z340 · 340 CHARACTERS', big: [{l: 0, w: 'three', lines: [{text: '340 CHARACTERS', color: 'white'}], y: 130, size: 130}]},
-    {a: 1, b: 2, T: 'stat', number: 51, label: 'YEARS WITHOUT AN ANSWER', rings: true, color: '#ff5a4e'},
+    {a: 1, b: 2, T: 'stat', number: 51, label: 'YEARS WITHOUT AN ANSWER', rings: true, color: pal().alt},
     {a: 2, to: {l: 2, w: 'by'}, T: 'stat', text: '5 DEC 2020', label: 'Z340 IS READ', rings: true, color: '#9be15d'},
     {from: {l: 2, w: 'by'}, to: {l: 2, w: 'three'}, T: 'quote', head: 'THREE PRIVATE CITIZENS', lines: ['DAVID ORANCHAK · USA · ENGINEER', 'SAM BLAKE · AUSTRALIA · MATHS', 'JARL VAN EYCKE · BELGIUM · CODER'], hi: [2], size: 54},
     {from: {l: 2, w: 'three'}, b: 3, T: 'cipher', cols: 17, rows: 20, scanAt: {l: 2, w: 'using'}, scanDur: 5, solvedAt: {l: 2, w: 'called'}, solvedText: ['SOLVED', 'WITH A PROGRAM CALLED AZDECRYPT'], head: 'Z340 · STAND-IN SYMBOLS'},
@@ -75,7 +76,7 @@ export const SHOTS = {
     {a: 0, b: 1, T: 'check', title: 'WHO TRIED THE VOYNICH', rows: [{name: 'PRESCOTT CURRIER', what: 'NOT DEMONSTRABLY SOLVED', l: 0, w: 'prescott'}, {name: 'WILLIAM FRIEDMAN', what: 'NOT DEMONSTRABLY SOLVED', l: 0, w: 'william'}, {name: 'ELIZEBETH FRIEDMAN', what: 'NOT DEMONSTRABLY SOLVED', l: 0, w: 'elizebeth'}, {name: 'JOHN TILTMAN', what: 'NOT DEMONSTRABLY SOLVED', l: 0, w: 'john'}]},
     {a: 1, to: {l: 1, w: 'on'}, T: 'quote', head: 'JULY 1897 · EDWARD ELGAR', lines: ['A NOTE SLIPPED INTO A LETTER', 'TO A YOUNG WOMAN,', 'DORA PENNY'], hi: [2], size: 62},
     {from: {l: 1, w: 'on'}, b: 2, T: 'cipher', kind: 'dora', cols: 29, rows: 3, size: 52, head: 'DORABELLA · 87 CHARACTERS · 3 LINES · STAND-IN CURVES', foot: '24 SYMBOLS · 1-3 CURVES · 8 DIRECTIONS', scanAt: {l: 1, w: 'built'}, scanDur: 6},
-    {a: 2, to: {l: 2, w: 'until'}, T: 'stat', text: '40 YEARS', label: 'IN A DRAWER · UNREAD', rings: true, color: '#ffd93b'},
+    {a: 2, to: {l: 2, w: 'until'}, T: 'stat', text: '40 YEARS', label: 'IN A DRAWER · UNREAD', rings: true, color: pal().active},
     {from: {l: 2, w: 'until'}, b: 3, T: 'quote', head: 'AFTER THE DRAWER', lines: ['1937 · DORA PRINTS IT IN HER MEMOIR', '1899 · ELGAR DEDICATES AN ENIGMA', 'VARIATION TO HER', 'ITS MEANING: STILL UNKNOWN'], hi: [3], size: 52},
     {a: 3, to: {l: 3, w: 'not'}, T: 'cipher', cols: 17, rows: 20, scanAt: {l: 3, w: 'finally'}, solvedAt: {l: 3, w: 'broke'}, solvedText: ['Z340', 'BROKEN IN 2020'], head: 'WHAT FINALLY BROKE Z340'},
     {from: {l: 3, w: 'not'}, to: {l: 3, w: 'and'}, T: 'stat', text: '3 STRANGERS', label: 'NOT ONE EXPERT · SHARING TOOLS', rings: true, color: '#9be15d'},
@@ -87,18 +88,18 @@ export const SHOTS = {
     {from: {l: 0, w: 'kryptos'}, b: 1, T: 'screen', cam: SCREEN_PUSH, pill: [{l: 0, w: 'kryptos', text: 'KRYPTOS · JIM SANBORN', v: 'yellow'}, {l: 0, w: 'dedicated', text: 'DEDICATED 3 NOV 1990', v: 'cyan'}, {l: 0, w: 'a', text: 'CURVED COPPER SCREEN · 4 MESSAGES', v: 'cyan'}]},
     {a: 1, to: {l: 1, w: 'the'}, T: 'stat', text: '3 OF 4 FELL', label: 'K1 · K2 · K3', rings: true, color: '#9be15d'},
     {from: {l: 1, w: 'the'}, b: 2, T: 'quote', head: 'WHO SOLVED THEM FIRST?', lines: ['1999 · JIM GILLOGLY', 'THE FIRST PUBLIC SOLVER', '1998 · DAVID STEIN (CIA)', 'PENCIL AND PAPER · CIA SAYS'], hi: [3], size: 54},
-    {a: 2, b: 3, T: 'stat', number: 97, label: 'CHARACTERS IN K4', sub: 'NEVER PUBLICLY SOLVED', rings: true, color: '#ff5a4e'},
+    {a: 2, b: 3, T: 'stat', number: 97, label: 'CHARACTERS IN K4', sub: 'NEVER PUBLICLY SOLVED', rings: true, color: pal().alt},
     {a: 3, to: {l: 3, w: 'in'}, T: 'screen', cam: SCREEN_LOW, clueAt: {l: 3, w: 'then'}, pill: [{l: 3, text: 'THEN SANBORN STARTED GIVING CLUES', v: 'yellow'}]},
     {from: {l: 3, w: 'in'}, b: 4, T: 'quote', head: 'THE CLUES', lines: ['2010 · SIX LETTERS: BERLIN', '2014 · FIVE MORE: CLOCK', 'FOUR CLUES IN TOTAL'], hi: [1], size: 62},
     {a: 4, b: 5, T: 'screen', cam: SCREEN_HIGH, clueAt: {l: 4, w: 'and'}, big: [{l: 4, w: 'a', lines: [{text: 'A CLUE NARROWS', color: 'white'}, {text: 'THE SEARCH.', color: 'yellow'}], y: 80, size: 110}, {l: 4, w: 'it', lines: [{text: 'IT DOES NOT FINISH IT.', color: 'red'}], y: 130, size: 90}]},
     {a: 5, to: {l: 5, w: 'on'}, T: 'quote', head: 'THE ARCHIVE', lines: ['2025 · SANBORN PUTS HIS ARCHIVE', 'UP FOR AUCTION', 'WITH THE ANSWER TO K4'], hi: [2], size: 58},
-    {from: {l: 5, w: 'on'}, to: {l: 5, w: 'in'}, T: 'stat', text: '$962,500', label: 'SOLD · 20 NOVEMBER', rings: true, color: '#ffd93b'},
+    {from: {l: 5, w: 'on'}, to: {l: 5, w: 'in'}, T: 'stat', text: '$962,500', label: 'SOLD · 20 NOVEMBER', rings: true, color: pal().active},
     {from: {l: 5, w: 'in'}, b: 6, T: 'quote', head: 'JUNE 2026', lines: ['THE BUYER, A FIRM CALLED PARADIGM,', 'STEPPED FORWARD.', 'THE SOLUTION: NOT PUBLISHED', 'AS FAR AS I CAN FIND.'], hi: [2], size: 50},
     {a: 6, b: null, T: 'quote', head: 'RULE 4', lines: ['A CLUE IS NOT AN ANSWER.', 'PROVE THE', 'WHOLE MESSAGE.'], hi: [2], size: 90},
   ],
   CH5: [
     {a: 0, b: 1, T: 'hill', cam: HILL_WIDE, big: [{l: 0, w: 'sometimes', lines: [{text: 'SOMETIMES THE PROBLEM', color: 'white'}, {text: 'ISN’T THE CODE', color: 'yellow'}], y: 80, size: 100}]},
-    {a: 1, to: {l: 1, w: 'one'}, T: 'stat', text: '3 PAGES', label: 'THE BEALE CIPHERS', rings: true, color: '#ffd93b'},
+    {a: 1, to: {l: 1, w: 'one'}, T: 'stat', text: '3 PAGES', label: 'THE BEALE CIPHERS', rings: true, color: pal().active},
     {from: {l: 1, w: 'one'}, b: 2, T: 'hill', cam: HILL_BOX, digAt: {l: 1, w: 'gold'}, pill: [{l: 1, text: 'SAID TO POINT TO BURIED TREASURE', v: 'yellow'}, {l: 1, w: 'estimated', text: 'ESTIMATED: OVER $60 MILLION', v: 'red'}]},
     {a: 2, to: {l: 2, w: 'a'}, T: 'quote', head: 'WHERE THE STORY COMES FROM', lines: ['A PAMPHLET · 1885', '“THE BEALE PAPERS”'], hi: [1], size: 80},
     {from: {l: 2, w: 'a'}, to: {l: 2, w: 'he'}, T: 'hill', cam: HILL_WIDE, pill: [{l: 2, w: 'thomas', text: 'THOMAS BEALE · ~1820 · BEDFORD COUNTY, VIRGINIA', v: 'yellow'}]},
@@ -107,7 +108,7 @@ export const SHOTS = {
     {from: {l: 3, w: 'the'}, b: 4, T: 'quote', head: 'STILL UNSOLVED', lines: ['PAGE 1 · THE LOCATION', 'PAGE 3 · THE OWNERS'], hi: [0, 1], size: 80},
     {a: 4, to: {l: 4, w: 'in'}, T: 'quote', head: '1980 · JIM GILLOGLY', lines: ['AN ARTICLE CALLED', '“A DISSENTING OPINION”'], hi: [1], size: 76},
     {from: {l: 4, w: 'in'}, b: 5, T: 'quote', head: '1982 · JOE NICKELL', lines: ['WORDS LIKE “STAMPEDING”', 'SEEM TOO MODERN', 'DOUBTED THOMAS BEALE', 'EVER EXISTED'], hi: [3], size: 60},
-    {a: 5, b: 6, T: 'stat', text: 'NO TREASURE', label: 'HAS EVER BEEN FOUND', rings: true, color: '#ff5a4e'},
+    {a: 5, b: 6, T: 'stat', text: 'NO TREASURE', label: 'HAS EVER BEEN FOUND', rings: true, color: pal().alt},
     {a: 6, b: null, T: 'quote', head: 'RULE 5', lines: ['BEFORE YOU DECODE', 'THE MESSAGE, ASK:', 'IS THE STORY', 'THE PUZZLE?'], hi: [3], size: 82},
   ],
   CH6: [
@@ -125,12 +126,12 @@ export const SHOTS = {
   CH7: [
     {a: 0, b: 1, T: 'disc', cam: DISC_FRONT, label: 'THE PHAISTOS DISC · STAND-IN SIGNS', big: [{l: 0, w: 'one', lines: [{text: 'ONE LAST FILE', color: 'white'}, {text: 'SILENCE FROM THE BRONZE AGE', color: 'yellow'}], y: 80, size: 100}]},
     {a: 1, to: {l: 1, w: 'both'}, T: 'disc', cam: DISC_SIDE, pill: [{l: 1, text: '1908 · CRETE · LUIGI PERNIER', v: 'yellow'}, {l: 1, w: 'disc', text: 'FIRED CLAY · 16 CM · PALACE OF PHAISTOS', v: 'cyan'}]},
-    {from: {l: 1, w: 'both'}, b: 2, T: 'stat', text: '242 SIGNS', label: '45 DIFFERENT SIGNS · PRESSED INTO SOFT CLAY', sub: 'A SPIRAL ON BOTH SIDES', rings: true, color: '#ffd93b'},
+    {from: {l: 1, w: 'both'}, b: 2, T: 'stat', text: '242 SIGNS', label: '45 DIFFERENT SIGNS · PRESSED INTO SOFT CLAY', sub: 'A SPIRAL ON BOTH SIDES', rings: true, color: pal().active},
     {a: 2, to: {l: 2, w: 'today'}, T: 'quote', head: 'AT FIRST', lines: ['SOME SCHOLARS SUSPECTED', 'A FORGERY'], hi: [1], size: 80},
     {from: {l: 2, w: 'today'}, b: 3, T: 'disc', cam: DISC_FRONT, pill: [{l: 2, w: 'today', text: 'TODAY: GENERALLY ACCEPTED AS AUTHENTIC', v: 'green'}, {l: 2, w: 'and', text: 'UNREAD · NOT EVEN SURE IT IS WRITING', v: 'red'}]},
     {a: 3, to: {l: 3, w: 'thirteen'}, T: 'cipher', cols: 13, rows: 3, size: 62, head: 'BACK IN CALIFORNIA · 1970 · ZODIAC · STAND-IN SYMBOLS', pill: [{l: 3, w: 'sent', text: 'TWO SHORTER CODES', v: 'yellow'}]},
     {from: {l: 3, w: 'thirteen'}, b: 4, T: 'quote', head: 'THE SHORT ZODIAC CODES', lines: ['13 CHARACTERS · 32 CHARACTERS', 'HUNDREDS OF PROPOSED SOLUTIONS', 'ORANCHAK: PRACTICALLY IMPOSSIBLE', 'TO TELL IF ANY IS CORRECT'], hi: [2], size: 50},
-    {a: 4, b: 5, T: 'kpu', rows: [{name: 'KNOWN', color: '#9be15d', what: 'Z340 · 3 KRYPTOS MESSAGES · BEALE PAGE 2', l: 4, w: 'known'}, {name: 'PROPOSED', color: '#ffd93b', what: 'WEBB (SOMERTON MAN) · A HOAX (BEALE)', l: 4, w: 'proposed'}, {name: 'UNSOLVED', color: '#ff5a4e', what: 'VOYNICH · DORABELLA · K4 · PHAISTOS · 2 SHORT ZODIAC CODES', l: 4, w: 'unsolved'}]},
+    {a: 4, b: 5, T: 'kpu', rows: [{name: 'KNOWN', color: '#9be15d', what: 'Z340 · 3 KRYPTOS MESSAGES · BEALE PAGE 2', l: 4, w: 'known'}, {name: 'PROPOSED', color: pal().active, what: 'WEBB (SOMERTON MAN) · A HOAX (BEALE)', l: 4, w: 'proposed'}, {name: 'UNSOLVED', color: pal().alt, what: 'VOYNICH · DORABELLA · K4 · PHAISTOS · 2 SHORT ZODIAC CODES', l: 4, w: 'unsolved'}]},
     {a: 5, b: null, T: 'quote', head: 'RULE 7', lines: ['SAY “UNKNOWN”', 'OUT LOUD.', 'THAT IS HOW THE NEXT PERSON', 'KNOWS WHERE TO LOOK.'], hi: [1], size: 82},
   ],
   OUTRO: [
@@ -144,13 +145,13 @@ const RuleHud = ({id}) => {
   if (!n) return null;
   const k = spring({frame: f, fps, config: {damping: 12, stiffness: 150}}); const out = Math.min(1, Math.max(0, (f - FR(3.0)) / 8));
   return <>
-    {f < FR(3.4) && <div style={{position: 'absolute', left: 0, right: 0, top: 360, height: 300, background: 'rgba(4,6,12,0.88)', borderTop: '6px solid #ffd93b', borderBottom: '6px solid #ffd93b', opacity: 1 - out, transform: `scaleY(${0.2 + 0.8 * Math.min(1, k)})`, textAlign: 'center'}}>
-      <div style={{fontFamily: 'Lilita One', fontSize: 56, color: '#ffd93b', letterSpacing: 8, marginTop: 28, ...STROKE(8)}}>FILE 006 · RULE {n}</div>
+    {f < FR(3.4) && <div style={{position: 'absolute', left: 0, right: 0, top: 360, height: 300, background: 'rgba(4,6,12,0.88)', borderTop: `6px solid ${pal().active}`, borderBottom: `6px solid ${pal().active}`, opacity: 1 - out, transform: `scaleY(${0.2 + 0.8 * Math.min(1, k)})`, textAlign: 'center'}}>
+      <div style={{fontFamily: 'Lilita One', fontSize: 56, color: pal().active, letterSpacing: 8, marginTop: 28, ...STROKE(8)}}>FILE 006 · RULE {n}</div>
       <div style={{fontFamily: 'Lilita One', fontSize: RULES[id].length > 30 ? 66 : 118, color: '#fff', marginTop: 12, lineHeight: 1.05, padding: '0 80px', ...STROKE(14)}}>{RULES[id]}</div>
     </div>}
     <div style={{position: 'absolute', right: 96, top: 52, textAlign: 'right'}}>
-      <div style={{fontFamily: 'Lilita One', fontSize: 30, color: '#ffd93b', letterSpacing: 5, ...STROKE(6)}}>FILE 006</div>
-      <div style={{display: 'flex', gap: 8, marginTop: 6, justifyContent: 'flex-end'}}>{Array.from({length: 7}, (_, i) => <div key={i} style={{width: 40, height: 40, borderRadius: 8, border: '4px solid #141414', background: i + 1 === n ? '#ffd93b' : i + 1 < n ? '#8a7a30' : '#2a2f40', color: i + 1 === n ? '#141414' : '#cfd6e6', fontFamily: 'Lilita One', fontSize: 26, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{i + 1}</div>)}</div>
+      <div style={{fontFamily: 'Lilita One', fontSize: 30, color: pal().active, letterSpacing: 5, ...STROKE(6)}}>FILE 006</div>
+      <div style={{display: 'flex', gap: 8, marginTop: 6, justifyContent: 'flex-end'}}>{Array.from({length: 7}, (_, i) => <div key={i} style={{width: 40, height: 40, borderRadius: 8, border: '4px solid #141414', background: i + 1 === n ? pal().active : i + 1 < n ? '#8a7a30' : '#2a2f40', color: i + 1 === n ? '#141414' : '#cfd6e6', fontFamily: 'Lilita One', fontSize: 26, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{i + 1}</div>)}</div>
     </div>
   </>;
 };

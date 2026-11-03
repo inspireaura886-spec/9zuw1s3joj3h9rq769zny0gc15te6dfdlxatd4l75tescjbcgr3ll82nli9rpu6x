@@ -1,3 +1,4 @@
+import {pal} from '../../../palette.js'; // HUMANE caption palette 2026-11-03
 // LF05 FILE 005 "If You Ever Find Bodies With No Wounds... CHECK THE AIR" - 1920x1080 @ 24 fps, one composition per chapter.
 // Shot lists are data (a..b = voice line indices within the chapter, b exclusive; b null = to the end).
 import {AbsoluteFill, Sequence, staticFile, useCurrentFrame, useVideoConfig, spring} from 'remotion';
@@ -56,14 +57,14 @@ export const SHOTS = {
       big: [{l: 0, w: 'bodies', lines: [{text: 'BODIES WITH', color: 'white'}, {text: 'NO WOUNDS', color: 'red'}], y: 80, size: 120}, {l: 0, w: 'check', lines: [{text: 'CHECK THE AIR', color: 'yellow'}], y: 130, size: 150}]},
     {a: 1, b: 2, T: 'lake', lakeR: 12, dead: true, villageLit: 0.4, cam: LAKE_WIDE, pill: [{l: 1, text: 'LAKE MONOUN · CAMEROON · AUGUST 1984', v: 'yellow'}, {l: 1, w: 'terrorism', text: 'TERRORISM SUSPECTED', v: 'red'}],
       big: [{l: 1, w: 'thirty', lines: [{text: '37 DEAD', color: 'white'}, {text: 'NOBODY COULD EXPLAIN IT', color: 'yellow'}], y: 80, size: 120}]},
-    {a: 2, b: 3, T: 'stat', number: 1746, label: 'LAKE NYOS · AUGUST 1986', sub: 'THE CAUSE WAS SOMETHING NOBODY COULD SEE', rings: true, color: '#ff5a4e'},
+    {a: 2, b: 3, T: 'stat', number: 1746, label: 'LAKE NYOS · AUGUST 1986', sub: 'THE CAUSE WAS SOMETHING NOBODY COULD SEE', rings: true, color: pal().alt},
     {a: 3, b: 4, T: 'stat', text: '4 CASES · 7 RULES', label: 'MONOUN + NYOS · DYATLOV PASS · ROOPKUND · SLEEPY SICKNESS', sub: 'FOUR MASS DEATHS', rings: true},
     {a: 4, b: null, T: 'ward', patients: 10, cam: WARD_DOWN, big: [{l: 4, w: 'stay', lines: [{text: 'ONE MYSTERY', color: 'white'}, {text: 'IS STILL OPEN', color: 'yellow'}], y: 80, size: 110}]},
   ],
   CH1: [
     {a: 0, b: 1, T: 'lake', lakeR: 12, villageLit: 0.7, cam: LAKE_WIDE, pill: [{l: 0, text: '15 AUG 1984 · ~10:30 PM · LAKE MONOUN', v: 'yellow'}, {l: 0, w: 'between', text: '~3 AM TO DAWN', v: 'cyan'}],
       big: [{l: 0, w: 'loud', lines: [{text: 'A LOUD NOISE', color: 'white'}], y: 130, size: 120}, {l: 0, w: 'thirty', lines: [{text: '37 PEOPLE DIED', color: 'red'}, {text: 'IN THE LOW GROUND', color: 'white'}], y: 80, size: 110}]},
-    {a: 1, b: 2, T: 'stat', text: 'SKIN DAMAGE', label: 'SOME VICTIMS · STILL NOT FULLY EXPLAINED', rings: true, color: '#ff5a4e'},
+    {a: 1, b: 2, T: 'stat', text: 'SKIN DAMAGE', label: 'SOME VICTIMS · STILL NOT FULLY EXPLAINED', rings: true, color: pal().alt},
     {a: 2, b: 3, T: 'quote', head: 'AT THE TIME', lines: ['A MYSTERY.', 'TERRORISM', 'WAS SUSPECTED.'], hi: [2], size: 86},
     {a: 3, b: 4, T: 'lake', bubbles: true, cam: LAKE_HIGH, pill: [{l: 3, text: 'LAKE NYOS · NORTH-WEST CAMEROON', v: 'yellow'}, {l: 3, w: 'under', text: 'MAGMA LEAKS CO2 INTO THE WATER', v: 'cyan'}],
       big: [{l: 3, w: 'deep', lines: [{text: 'A DEEP CRATER LAKE', color: 'white'}, {text: 'ON AN INACTIVE VOLCANO', color: 'yellow'}], y: 80, size: 100}]},
@@ -109,21 +110,21 @@ export const SHOTS = {
     {a: 4, b: 5, T: 'quote', head: '1950s · ANTHROPOLOGICAL SURVEY OF INDIA', lines: ['HEAD INJURIES FROM', 'ROUND OBJECTS FALLING', 'OXFORD DATE: ~850 CE', 'IT FIT THE LEGEND.'], hi: [3], size: 62},
     {a: 5, b: 6, T: 'quote', head: 'THEN CAME THE DNA', lines: ['38 INDIVIDUALS', 'RADIOCARBON DATING', '+ GENOME-WIDE ANALYSIS'], hi: [0], size: 80},
     {a: 6, b: 7, T: 'two', cues: {a: {l: 6, w: 'twenty'}, b: {l: 6, w: 'fourteen'}, c: {l: 6, w: 'southeast'}, d: {l: 7, o: 0.2}}},
-    {a: 7, b: 8, T: 'stat', text: '2 EVENTS', label: 'A THOUSAND YEARS APART', sub: 'NOT ONE CATASTROPHE', rings: true, color: '#ff5a4e'},
+    {a: 7, b: 8, T: 'stat', text: '2 EVENTS', label: 'A THOUSAND YEARS APART', sub: 'NOT ONE CATASTROPHE', rings: true, color: pal().alt},
     {a: 8, b: null, T: 'quote', head: 'RULE 4', lines: ['CHECK THE DATE.', 'CHECK THE DNA.', 'BEFORE YOU TRUST', 'A PERFECT STORY.'], hi: [3], size: 80},
   ],
   CH5: [
     {a: 0, b: 1, T: 'lake', redAt: {s: 0.0}, fountain: true, gasAt: {s: 0.0}, gasDur: 12, cam: FOUNT_SIDE, pill: [{l: 0, text: 'KNOWN', v: 'green'}, {l: 0, w: 'fountain', text: 'FOAM FOUNTAIN ~100 M · WAVE ≥ 25 M ON ONE SHORE', v: 'yellow'}],
       big: [{l: 0, w: 'lake', lines: [{text: 'BLUE TO DEEP RED', color: 'red'}], y: 130, size: 130}]},
-    {a: 1, b: 2, T: 'stat', text: 'WHAT TRIGGERED IT?', label: 'NOT KNOWN', rings: true, color: '#ff5a4e'},
+    {a: 1, b: 2, T: 'stat', text: 'WHAT TRIGGERED IT?', label: 'NOT KNOWN', rings: true, color: pal().alt},
     {a: 2, b: 3, T: 'quote', head: 'PROPOSED TRIGGERS', lines: ['A LANDSLIDE (MOST GEOLOGISTS)', 'A SMALL ERUPTION ON THE LAKE BED', 'COOL RAIN OVERTURNING THE WATER', 'EARTHQUAKE: UNLIKELY · NO TREMORS'], hi: [0], size: 50},
-    {a: 3, b: 4, T: 'stat', text: 'UNPROVEN', label: 'NOBODY HAS SHOWN WHICH ONE', rings: true, color: '#ffd93b'},
+    {a: 3, b: 4, T: 'stat', text: 'UNPROVEN', label: 'NOBODY HAS SHOWN WHICH ONE', rings: true, color: pal().active},
     {a: 4, b: 5, T: 'roop', bones: 36, cam: ROOP_LOW, pill: [{l: 4, text: 'ROOPKUND · ~1800 CE', v: 'yellow'}],
       big: [{l: 4, w: 'why', lines: [{text: 'WHY WERE THEY', color: 'white'}, {text: 'IN THE HIMALAYAS?', color: 'yellow'}], y: 80, size: 110}, {l: 4, w: 'study', lines: [{text: 'THE STUDY DOES NOT SAY', color: 'red'}], y: 130, size: 100}]},
     {a: 5, b: null, T: 'quote', head: 'RULE 5', lines: ['SAY WHAT YOU', "DON'T KNOW", 'OUT LOUD.'], hi: [1, 2], size: 96},
   ],
   CH6: [
-    {a: 0, b: 1, T: 'stat', text: '1984 → 1986', label: 'MONOUN → NYOS', sub: 'A SIMILAR THREAT WAS NOT ANTICIPATED', rings: true, color: '#ff5a4e'},
+    {a: 0, b: 1, T: 'stat', text: '1984 → 1986', label: 'MONOUN → NYOS', sub: 'A SIMILAR THREAT WAS NOT ANTICIPATED', rings: true, color: pal().alt},
     {a: 1, b: 2, T: 'quote', head: 'THE LESSON', lines: ['THE WARNING WAS THERE.', 'IT WAS NOT READ', 'AS A WARNING.'], hi: [2], size: 80},
     {a: 2, b: 3, T: 'lake', pipe: true, cam: PIPE, pill: [{l: 2, text: 'DEGASSING TUBE · SIPHONS WATER FROM THE BOTTOM TO THE TOP', v: 'cyan'}, {l: 2, w: 'installed', text: 'FIRST PIPE 2001 · TWO MORE 2011', v: 'yellow'}],
       big: [{l: 2, w: 'degassing', lines: [{text: 'LET THE GAS OUT', color: 'white'}, {text: 'IN SAFE AMOUNTS', color: 'yellow'}], y: 80, size: 110}]},
@@ -135,11 +136,11 @@ export const SHOTS = {
     {a: 0, b: 1, T: 'ward', patients: 8, cam: WARD_DOWN, pill: [{l: 0, text: 'ONE MORE FILE · A SICKNESS', v: 'yellow'}], big: [{l: 0, w: 'sickness', lines: [{text: 'NOT A PLACE.', color: 'white'}, {text: 'A SICKNESS.', color: 'red'}], y: 80, size: 120}]},
     {a: 1, b: 2, T: 'ward', patients: 12, cam: WARD_SIDE, pill: [{l: 1, text: '1915 – 1926 · WORLDWIDE', v: 'yellow'}, {l: 1, w: 'described', text: 'DESCRIBED 1917: VON ECONOMO + CRUCHET', v: 'cyan'}],
       big: [{l: 1, w: 'sleepy', lines: [{text: 'ENCEPHALITIS LETHARGICA', color: 'white'}, {text: '"SLEEPY SICKNESS"', color: 'yellow'}], y: 80, size: 100}]},
-    {a: 2, b: 3, T: 'stat', text: '500,000+ DEAD', label: '1,000,000+ INFECTED · 1915–1926', rings: true, color: '#ff5a4e'},
+    {a: 2, b: 3, T: 'stat', text: '500,000+ DEAD', label: '1,000,000+ INFECTED · 1915–1926', rings: true, color: pal().alt},
     {a: 3, b: 4, T: 'ward', patients: 14, nurse: false, cam: WARD_STATUE, big: [{l: 3, w: 'many', lines: [{text: 'STATUE-LIKE', color: 'white'}, {text: 'SPEECHLESS · MOTIONLESS', color: 'yellow'}], y: 80, size: 110}]},
     {a: 4, b: 5, T: 'quote', head: 'WHAT CAUSED IT?', lines: ['ONCE LINKED TO SPANISH FLU', 'MODERN RESEARCH ARGUES AGAINST', 'AN ENTEROVIRUS FOUND IN CASES', '2012 · OLIVER SACKS: PROBABLE', 'OR A BACTERIUM: S. PNEUMONIAE'], hi: [3], size: 50},
     {a: 5, b: 6, T: 'quote', head: '2008 REVIEW', lines: ['ALMOST 100 YEARS LATER,', 'THE CAUSE REMAINED', '"ENIGMATIC".'], hi: [2], size: 88},
-    {a: 6, b: 7, T: 'kpu', rows: [{name: 'KNOWN', color: '#9be15d', what: 'A WORLDWIDE EPIDEMIC · 500,000+ DEAD', l: 6, w: 'known'}, {name: 'PROPOSED', color: '#ffd93b', what: 'A VIRUS (ENTEROVIRUS)', l: 6, w: 'proposed'}, {name: 'UNSOLVED', color: '#ff5a4e', what: 'WHY IT CAME · WHY IT VANISHED', l: 6, w: 'unsolved'}]},
+    {a: 6, b: 7, T: 'kpu', rows: [{name: 'KNOWN', color: '#9be15d', what: 'A WORLDWIDE EPIDEMIC · 500,000+ DEAD', l: 6, w: 'known'}, {name: 'PROPOSED', color: pal().active, what: 'A VIRUS (ENTEROVIRUS)', l: 6, w: 'proposed'}, {name: 'UNSOLVED', color: pal().alt, what: 'WHY IT CAME · WHY IT VANISHED', l: 6, w: 'unsolved'}]},
     {a: 7, b: null, T: 'quote', head: 'RULE 7', lines: ['SOME MYSTERIES', 'STAY OPEN.', "DON'T CLOSE ONE", "BECAUSE IT'S QUIET."], hi: [1], size: 90},
   ],
   OUTRO: [
@@ -154,13 +155,13 @@ const RuleHud = ({id}) => {
   if (!n) return null;
   const k = spring({frame: f, fps, config: {damping: 12, stiffness: 150}}); const out = Math.min(1, Math.max(0, (f - FR(3.0)) / 8));
   return <>
-    {f < FR(3.4) && <div style={{position: 'absolute', left: 0, right: 0, top: 360, height: 300, background: 'rgba(4,6,12,0.88)', borderTop: '6px solid #ffd93b', borderBottom: '6px solid #ffd93b', opacity: 1 - out, transform: `scaleY(${0.2 + 0.8 * Math.min(1, k)})`, textAlign: 'center'}}>
-      <div style={{fontFamily: 'Lilita One', fontSize: 56, color: '#ffd93b', letterSpacing: 8, marginTop: 28, ...STROKE(8)}}>FILE 005 · RULE {n}</div>
+    {f < FR(3.4) && <div style={{position: 'absolute', left: 0, right: 0, top: 360, height: 300, background: 'rgba(4,6,12,0.88)', borderTop: `6px solid ${pal().active}`, borderBottom: `6px solid ${pal().active}`, opacity: 1 - out, transform: `scaleY(${0.2 + 0.8 * Math.min(1, k)})`, textAlign: 'center'}}>
+      <div style={{fontFamily: 'Lilita One', fontSize: 56, color: pal().active, letterSpacing: 8, marginTop: 28, ...STROKE(8)}}>FILE 005 · RULE {n}</div>
       <div style={{fontFamily: 'Lilita One', fontSize: RULES[id].length > 30 ? 74 : 118, color: '#fff', marginTop: 12, lineHeight: 1.05, padding: '0 80px', ...STROKE(14)}}>{RULES[id]}</div>
     </div>}
     <div style={{position: 'absolute', right: 96, top: 52, textAlign: 'right'}}>
-      <div style={{fontFamily: 'Lilita One', fontSize: 30, color: '#ffd93b', letterSpacing: 5, ...STROKE(6)}}>FILE 005</div>
-      <div style={{display: 'flex', gap: 8, marginTop: 6, justifyContent: 'flex-end'}}>{Array.from({length: 7}, (_, i) => <div key={i} style={{width: 40, height: 40, borderRadius: 8, border: '4px solid #141414', background: i + 1 === n ? '#ffd93b' : i + 1 < n ? '#8a7a30' : '#2a2f40', color: i + 1 === n ? '#141414' : '#cfd6e6', fontFamily: 'Lilita One', fontSize: 26, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{i + 1}</div>)}</div>
+      <div style={{fontFamily: 'Lilita One', fontSize: 30, color: pal().active, letterSpacing: 5, ...STROKE(6)}}>FILE 005</div>
+      <div style={{display: 'flex', gap: 8, marginTop: 6, justifyContent: 'flex-end'}}>{Array.from({length: 7}, (_, i) => <div key={i} style={{width: 40, height: 40, borderRadius: 8, border: '4px solid #141414', background: i + 1 === n ? pal().active : i + 1 < n ? '#8a7a30' : '#2a2f40', color: i + 1 === n ? '#141414' : '#cfd6e6', fontFamily: 'Lilita One', fontSize: 26, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{i + 1}</div>)}</div>
     </div>
   </>;
 };

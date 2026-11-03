@@ -1,3 +1,4 @@
+import {pal} from '../../../palette.js'; // HUMANE caption palette 2026-11-03
 // LF05 FILE 005 "Bodies With No Wounds" shot components (1920x1080 @ 24 fps): crater lake (Monoun/Nyos), Dyatlov snow slope, Roopkund lake, sleepy-sickness ward,
 // plus a DNA/date timeline. Same overlay system as shots.jsx ({l,w} word cues). All people are generic low-poly figures: ILLUSTRATIVE RECREATION.
 import * as THREE from 'three';
@@ -179,7 +180,7 @@ export const TwoEventsShot = ({big, pill, startSec, endSec, cues = {}}) => {
       {f >= t1 && <>{dots(23, X(800), '#7fe3ff', t1)}{lbl(X(800), Y - 560 + 60, '23 · SOUTH ASIAN', '#7fe3ff', 44)}{lbl(X(800), Y - 510 + 60, '~800 CE', '#fff', 40)}</>}
       {f >= t2 && <>{dots(14, X(1800) - 50, '#ffb060', t2, 5)}{lbl(X(1800) - 50, Y - 560 + 60, '14 · E. MEDITERRANEAN', '#ffb060', 44)}{lbl(X(1800) - 50, Y - 510 + 60, '~1800 CE', '#fff', 40)}</>}
       {f >= t3 && <>{dots(1, X(1800) + 150, '#9be15d', t3, 1)}{lbl(X(1800) + 150, Y - 200, '1 · SE ASIAN', '#9be15d', 36)}</>}
-      {gap > 0 && <g opacity={gap}><line x1={X(800)} x2={X(1800)} y1={Y + 120} y2={Y + 120} stroke="#ff5a4e" strokeWidth={10} strokeLinecap="round" />{lbl((X(800) + X(1800)) / 2, Y + 200, '1,000 YEARS APART', '#ff5a4e', 56)}</g>}
+      {gap > 0 && <g opacity={gap}><line x1={X(800)} x2={X(1800)} y1={Y + 120} y2={Y + 120} stroke={pal().alt} strokeWidth={10} strokeLinecap="round" />{lbl((X(800) + X(1800)) / 2, Y + 200, '1,000 YEARS APART', pal().alt, 56)}</g>}
     </svg>
     <div style={{position: 'absolute', left: 96, top: 150, fontFamily: 'Fredoka', fontWeight: 600, fontSize: 24, letterSpacing: 3, color: '#cfd8ea', opacity: 0.8, ...STROKE(6)}}>38 INDIVIDUALS · RADIOCARBON + GENOME-WIDE ANALYSIS</div>
     <Ov big={big} pill={pill} startSec={startSec} endSec={endSec} />

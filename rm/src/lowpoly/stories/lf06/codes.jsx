@@ -1,3 +1,4 @@
+import {pal} from '../../../palette.js'; // HUMANE caption palette 2026-11-03
 // LF06 FILE 006 "Messages Nobody Can Read" shot components (1920x1080 @ 24 fps).
 // 2D: CipherShot (glyph grids: Zodiac Z340 17x20, Z13/Z32, Dorabella curves, Phaistos stamps), ScrapShot (Tamam Shud paper).
 // 3D: CodeShot scenes 'screen' (Kryptos courtyard), 'book' (Voynich), 'beach' (Somerton Park), 'hill' (Beale), 'disc' (Phaistos).
@@ -60,7 +61,7 @@ export const CipherShot = ({big, pill, startSec, endSec, kind = 'zodiac', cols =
       {solvedText.map((t, i) => <div key={i} style={{fontFamily: 'Lilita One', fontSize: i === 0 ? 120 : 64, color: i === 0 ? color : '#ffffff', letterSpacing: 6, margin: '8px 0', ...STROKE(14)}}>{t}</div>)}
     </div>}
     {tF !== null && f >= tF && <div style={{position: 'absolute', left: 0, right: 0, bottom: 150, textAlign: 'center', transform: `rotate(-3deg) scale(${spring({frame: f - tF, fps, config: {damping: 8, stiffness: 190}})})`}}>
-      <span style={{fontFamily: 'Lilita One', fontSize: 88, color: '#ff5a4e', border: '10px solid #ff5a4e', padding: '4px 36px', letterSpacing: 8, background: 'rgba(6,6,10,0.7)'}}>{noteStamp}</span></div>}
+      <span style={{fontFamily: 'Lilita One', fontSize: 88, color: pal().alt, border: `10px solid ${pal().alt}`, padding: '4px 36px', letterSpacing: 8, background: 'rgba(6,6,10,0.7)'}}>{noteStamp}</span></div>}
     <div style={{position: 'absolute', left: 96, bottom: 190, fontFamily: 'Fredoka', fontWeight: 600, fontSize: 24, letterSpacing: 3, color: '#cfd8ea', opacity: 0.85, ...STROKE(6)}}>{head}</div>
     {foot && <div style={{position: 'absolute', left: 96, bottom: 225, fontFamily: 'Fredoka', fontWeight: 600, fontSize: 28, letterSpacing: 3, color: '#cfd8ea', opacity: 0.85, ...STROKE(6)}}>{foot}</div>}
     <Ov big={big} pill={pill} startSec={startSec} endSec={endSec} />

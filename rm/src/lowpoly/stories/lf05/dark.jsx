@@ -1,3 +1,4 @@
+import {pal} from '../../../palette.js'; // HUMANE caption palette 2026-11-03
 // LF04 FILE 004 "Monsters in the Dark" shot components (1920x1080 @ 24 fps): night farm / Flatwoods hill / TNT road / Silver Bridge / Dover wall / owl,
 // plus a height chart, a schematic Dover map and a Known/Proposed/Unsolved board. Same overlay system as shots.jsx ({l,w} word cues).
 import * as THREE from 'three';
@@ -187,8 +188,8 @@ export const SizeShot = ({big, pill, startSec, endSec, owlAt}) => {
       {[0, 1, 2, 3, 4].map((ft) => <g key={ft}><line x1={X(ft)} x2={X(ft)} y1={680} y2={720} stroke="#cfd6e6" strokeWidth={5} /><text x={X(ft)} y={662} textAnchor="middle" fontFamily="Lilita One" fontSize={44} fill="#cfd6e6" stroke="#141414" strokeWidth={8} paintOrder="stroke">{ft} FT</text></g>)}
       <rect x={X(2)} y={500} width={(X(4) - X(2)) * k} height={110} rx={14} fill="#ff9a40" stroke="#141414" strokeWidth={6} />
       <text x={(X(2) + X(4)) / 2} y={470} textAnchor="middle" fontFamily="Lilita One" fontSize={52} fill="#ffb060" stroke="#141414" strokeWidth={10} paintOrder="stroke" letterSpacing={2} opacity={k}>FAMILY'S REPORT: 2-4 FT</text>
-      {ok > 0 && <g transform={`translate(${X(2.19)},${700}) scale(${ok})`}><line x1={0} x2={0} y1={0} y2={100} stroke="#ffd93b" strokeWidth={8} />
-        <circle cx={0} cy={110} r={26} fill="#ffd93b" stroke="#141414" strokeWidth={6} /><text x={0} y={178} textAnchor="middle" fontFamily="Lilita One" fontSize={46} fill="#ffd93b" stroke="#141414" strokeWidth={10} paintOrder="stroke" letterSpacing={2}>GREAT HORNED OWL ~2.2 FT</text></g>}
+      {ok > 0 && <g transform={`translate(${X(2.19)},${700}) scale(${ok})`}><line x1={0} x2={0} y1={0} y2={100} stroke={pal().active} strokeWidth={8} />
+        <circle cx={0} cy={110} r={26} fill={pal().active} stroke="#141414" strokeWidth={6} /><text x={0} y={178} textAnchor="middle" fontFamily="Lilita One" fontSize={46} fill={pal().active} stroke="#141414" strokeWidth={10} paintOrder="stroke" letterSpacing={2}>GREAT HORNED OWL ~2.2 FT</text></g>}
     </svg>
     <Ov big={big} pill={pill} startSec={startSec} endSec={endSec} />
   </AbsoluteFill>;
@@ -204,13 +205,13 @@ export const DoverMapShot = ({big, pill, startSec, endSec, pins = [], lineAt = n
       {Array.from({length: 13}, (_, i) => <line key={i} x1={i * 160} y1={0} x2={i * 160} y2={1080} stroke="#1e4366" strokeWidth={1} opacity={0.5} />)}
       {Array.from({length: 8}, (_, i) => <line key={'h' + i} x1={0} y1={i * 160} x2={1920} y2={i * 160} stroke="#1e4366" strokeWidth={1} opacity={0.5} />)}
       {[[200, 900, 700, 860, 900, 700], [300, 420, 760, 420, 1000, 300], [1100, 900, 1200, 640, 1700, 520], [700, 200, 1000, 330, 1200, 120]].map((r, i) => <polyline key={i} points={`${r[0]},${r[1]} ${r[2]},${r[3]} ${r[4]},${r[5]}`} fill="none" stroke="#2b5a7a" strokeWidth={8} strokeLinejoin="round" opacity={0.7} />)}
-      {lp > 0 && <line x1={P[0].x} y1={P[0].y} x2={P[0].x + (P[2].x - P[0].x) * lp} y2={P[0].y + (P[2].y - P[0].y) * lp} stroke="#ff5a4e" strokeWidth={9} strokeDasharray="26 14" strokeLinecap="round" />}
+      {lp > 0 && <line x1={P[0].x} y1={P[0].y} x2={P[0].x + (P[2].x - P[0].x) * lp} y2={P[0].y + (P[2].y - P[0].y) * lp} stroke={pal().alt} strokeWidth={9} strokeDasharray="26 14" strokeLinecap="round" />}
       {P.map((p, i) => { const t = pins[i] ? Math.max(0, cue(VO, pins[i], startSec)) : 0; if (f < t) return null; const k = spring({frame: f - t, fps, config: {damping: 9, stiffness: 170}});
-        return <g key={i} transform={`translate(${p.x},${p.y}) scale(${k})`}><circle r={24} fill="#ffd93b" stroke="#141414" strokeWidth={6} /><circle r={46} fill="none" stroke="#ffd93b" strokeWidth={4} opacity={0.6} />
+        return <g key={i} transform={`translate(${p.x},${p.y}) scale(${k})`}><circle r={24} fill={pal().active} stroke="#141414" strokeWidth={6} /><circle r={46} fill="none" stroke={pal().active} strokeWidth={4} opacity={0.6} />
           <text y={i === 1 ? 82 : -48} textAnchor="middle" fontFamily="Lilita One" fontSize={38} fill="#fff" stroke="#141414" strokeWidth={9} paintOrder="stroke" letterSpacing={2}>{p.n}</text>
-          <text y={i === 1 ? 126 : -90} textAnchor="middle" fontFamily="Lilita One" fontSize={34} fill="#ffd93b" stroke="#141414" strokeWidth={8} paintOrder="stroke" letterSpacing={2}>{p.date} 1977</text></g>; })}
+          <text y={i === 1 ? 126 : -90} textAnchor="middle" fontFamily="Lilita One" fontSize={34} fill={pal().active} stroke="#141414" strokeWidth={8} paintOrder="stroke" letterSpacing={2}>{p.date} 1977</text></g>; })}
     </svg>
-    {lp > 0.9 && <div style={{position: 'absolute', width: 1100, top: 790, textAlign: 'right', right: 96, ...Lilita, fontSize: 60, color: '#ff5a4e', letterSpacing: 4, ...STROKE(12), opacity: clamp01((lp - 0.9) * 10)}}>A STRAIGHT LINE · OVER 2 MILES</div>}
+    {lp > 0.9 && <div style={{position: 'absolute', width: 1100, top: 790, textAlign: 'right', right: 96, ...Lilita, fontSize: 60, color: pal().alt, letterSpacing: 4, ...STROKE(12), opacity: clamp01((lp - 0.9) * 10)}}>A STRAIGHT LINE · OVER 2 MILES</div>}
     <div style={{position: 'absolute', left: 96, top: 150, fontFamily: 'Fredoka', fontWeight: 600, fontSize: 24, letterSpacing: 3, color: '#cfd8ea', opacity: 0.8, ...STROKE(6)}}>SCHEMATIC · NOT TO SCALE · DOVER, MASSACHUSETTS</div>
     <Ov big={big} pill={pill} startSec={startSec} endSec={endSec} />
   </AbsoluteFill>;
@@ -220,7 +221,7 @@ export const DoverMapShot = ({big, pill, startSec, endSec, pins = [], lineAt = n
 export const KpuShot = ({rows, startSec, endSec, big, pill}) => {
   const {VO} = useCh(); const f = useCurrentFrame(); const {fps} = useVideoConfig();
   return <AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 40%, #1a2a44 0%, #060a14 85%)'}}>
-    <div style={{position: 'absolute', top: 120, width: '100%', textAlign: 'center', ...Lilita, fontSize: 70, color: '#ffd93b', ...STROKE(12), letterSpacing: 4}}>THE HONEST VERSION</div>
+    <div style={{position: 'absolute', top: 120, width: '100%', textAlign: 'center', ...Lilita, fontSize: 70, color: pal().active, ...STROKE(12), letterSpacing: 4}}>THE HONEST VERSION</div>
     {rows.map((r, i) => { const t = Math.max(0, relF(VO, r, startSec)); if (f < t) return null; const s = spring({frame: f - t, fps, config: {damping: 12, stiffness: 170}});
       return <div key={i} style={{position: 'absolute', top: 270 + i * 235, left: 220, width: 1480, height: 195, background: '#f3ead2', border: '6px solid #141414', borderRadius: 18, display: 'flex', alignItems: 'center', boxSizing: 'border-box', transform: `translateX(${(1 - s) * -1000}px)`, boxShadow: '0 10px 0 rgba(0,0,0,0.4)', overflow: 'hidden'}}>
         <div style={{width: 400, height: '100%', background: r.color, display: 'flex', alignItems: 'center', justifyContent: 'center', ...Lilita, fontSize: 68, color: '#141414', letterSpacing: 3, borderRight: '6px solid #141414'}}>{r.name}</div>

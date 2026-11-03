@@ -1,3 +1,4 @@
+import {pal} from '../../../palette.js'; // HUMANE caption palette 2026-11-03
 // LF04 "Things in the Sky" (FILE 004) shot components, 1920x1080 @ 24 fps. Same overlay system as shots.jsx (big/pill with {l,w} word cues).
 import * as THREE from 'three';
 import {useMemo} from 'react';
@@ -113,8 +114,8 @@ export const RadarShot = ({big, pill, startSec, endSec, brightAt}) => {
       <path d={`M${cx},${cy} L${cx + R * Math.cos(ang)},${cy + R * Math.sin(ang)} A${R},${R} 0 0 0 ${cx + R * Math.cos(ang - 0.5)},${cy + R * Math.sin(ang - 0.5)} Z`} fill="#4aff8a" opacity={0.22} />
       <line x1={cx} y1={cy} x2={cx + R * Math.cos(ang)} y2={cy + R * Math.sin(ang)} stroke="#7dffaa" strokeWidth={5} />
       {blips.map((b, i) => { const hot = bs !== null && f >= bs; const t = hot ? spring({frame: f - bs - i * 4, fps, config: {damping: 8, stiffness: 160}}) : 0;
-        return <g key={i}><circle cx={cx + b[0]} cy={cy + b[1]} r={16} fill={hot ? '#ffd93b' : '#7dffaa'} opacity={0.9} /><circle cx={cx + b[0]} cy={cy + b[1]} r={30 + 16 * Math.sin(f * 0.2 + i)} fill="none" stroke={hot ? '#ffd93b' : '#7dffaa'} strokeWidth={3} opacity={0.6} />
-          {hot && <circle cx={cx + b[0]} cy={cy + b[1]} r={44 * Math.max(0, t)} fill="none" stroke="#ff5a4e" strokeWidth={6} />}</g>; })}
+        return <g key={i}><circle cx={cx + b[0]} cy={cy + b[1]} r={16} fill={hot ? pal().active : '#7dffaa'} opacity={0.9} /><circle cx={cx + b[0]} cy={cy + b[1]} r={30 + 16 * Math.sin(f * 0.2 + i)} fill="none" stroke={hot ? pal().active : '#7dffaa'} strokeWidth={3} opacity={0.6} />
+          {hot && <circle cx={cx + b[0]} cy={cy + b[1]} r={44 * Math.max(0, t)} fill="none" stroke={pal().alt} strokeWidth={6} />}</g>; })}
     </svg>
     <div style={{position: 'absolute', top: 205, width: '100%', textAlign: 'center', ...Lilita, fontSize: 42, color: '#7dffaa', letterSpacing: 6, ...STROKE(8)}}>{bs !== null && f >= bs ? 'THEN HE LOOKED UP · 4 BRIGHT OBJECTS' : '4 STATIONARY BLIPS ON RADAR'}</div>
     <Ov big={big} pill={pill} startSec={startSec} endSec={endSec} />
@@ -148,10 +149,10 @@ export const TriShot = ({big, pill, startSec, endSec, stamp = '4:43 PM'}) => {
       {Array.from({length: 8}, (_, i) => <line key={'h' + i} x1={0} y1={i * 160} x2={1920} y2={i * 160} stroke="#1e4366" strokeWidth={1} opacity={0.5} />)}
       <line x1={P1[0]} y1={P1[1]} x2={L(P1, P2, k)[0]} y2={L(P1, P2, k)[1]} stroke="#ffb060" strokeWidth={10} strokeDasharray="26 14" strokeLinecap="round" />
       {[[A, P1], [A, P2], [B, P1], [B, P2]].map(([s, e], i) => { const q = L(s, e, clamp01(k * 1.4 - i * 0.1)); return <line key={i} x1={s[0]} y1={s[1]} x2={q[0]} y2={q[1]} stroke="#7fe3ff" strokeWidth={4} opacity={0.8} />; })}
-      {[[A, 'PHOTO 1'], [B, 'PHOTO 2']].map(([p, t]) => <g key={t}><circle cx={p[0]} cy={p[1]} r={22} fill="#ffd93b" stroke="#141414" strokeWidth={5} /><text x={p[0]} y={p[1] + 70} textAnchor="middle" fontFamily="Lilita One" fontSize={44} fill="#fff" stroke="#141414" strokeWidth={9} paintOrder="stroke" letterSpacing={3}>{t}</text></g>)}
+      {[[A, 'PHOTO 1'], [B, 'PHOTO 2']].map(([p, t]) => <g key={t}><circle cx={p[0]} cy={p[1]} r={22} fill={pal().active} stroke="#141414" strokeWidth={5} /><text x={p[0]} y={p[1] + 70} textAnchor="middle" fontFamily="Lilita One" fontSize={44} fill="#fff" stroke="#141414" strokeWidth={9} paintOrder="stroke" letterSpacing={3}>{t}</text></g>)}
       <circle cx={L(P1, P2, k)[0]} cy={L(P1, P2, k)[1]} r={20} fill="#ff9a40" stroke="#fff" strokeWidth={5} />
     </svg>
-    <div style={{position: 'absolute', top: 200, right: 140, ...Lilita, fontSize: 110, color: '#ffd93b', ...STROKE(14), opacity: clamp01((f - FR(1)) / 8)}}>{stamp}</div>
+    <div style={{position: 'absolute', top: 200, right: 140, ...Lilita, fontSize: 110, color: pal().active, ...STROKE(14), opacity: clamp01((f - FR(1)) / 8)}}>{stamp}</div>
     <Ov big={big} pill={pill} startSec={startSec} endSec={endSec} />
   </AbsoluteFill>;
 };
