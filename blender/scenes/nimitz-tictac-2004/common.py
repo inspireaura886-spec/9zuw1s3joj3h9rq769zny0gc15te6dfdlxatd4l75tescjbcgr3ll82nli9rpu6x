@@ -103,3 +103,14 @@ def runway(length=3200, width=45, y0=-400):
     lights('CentreL', [(0, y + 15) for y in range(int(y0), int(y0 + length), 30)], (0.85, 0.9, 1.0), 25, s=0.25)
     lights('Threshold', [(x, y0 + 2) for x in range(-int(width / 2), int(width / 2) + 1, 4)], (0.2, 1.0, 0.35), 50)
     return rw
+
+
+def dusk_sea(NF, hdri_rot=100, moon_dir=(0.5, 0.8, 0.35), moon=2.2, sea_z=-0.4, ocean=True, wave_scale=1.2, wind=10):
+    """Dusk Pacific shared by the nimitz plates (same light as b04)."""
+    Wd.hdri('kloppenheim_02_puresky', strength=0.9, bg_strength=1.1, rot=hdri_rot, tint=(1.0, 0.92, 0.85))
+    Wd.moon(direction=moon_dir, strength=moon, color=(1.0, 0.9, 0.8), angle=1.0)
+    if ocean:
+        o = Wd.ocean(center=(0, 0, 0), spatial=90, res=11, wave_scale=wave_scale, choppy=1.0, time_frames=NF, wind=wind)
+        o.modifiers['Ocean'].repeat_x = o.modifiers['Ocean'].repeat_y = 3
+    Wd.sea_plane(size=60000, z=sea_z, rough=0.12, frames=NF)
+    Wd.fog(center=(0, 400, 20), size=(8000, 8000, 160), density=0.0004, color=(0.8, 0.85, 0.95))
