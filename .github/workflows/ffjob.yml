@@ -1,0 +1,15 @@
+name: ffjob
+on:
+  workflow_dispatch:
+    inputs:
+      job: {required: true, description: 'folder under ffjob/ holding run.sh + inputs'}
+jobs:
+  ff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {sparse-checkout: 'ffjob/${{ inputs.job }}', lfs: false}
+      - run: sudo apt-get -qq update && sudo apt-get -qq install -y ffmpeg fonts-dejavu-core >/dev/null
+      - run: cd ffjob/${{ inputs.job }} && bash run.sh
+      - uses: actions/upload-artifact@v4
+        with: {name: out, path: 'ffjob/${{ inputs.job }}/out/', retention-days: 3}
