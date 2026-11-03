@@ -166,9 +166,11 @@ def cockpit(panel_glow=1.2, seed=5):
     return {'root': root, 'gauges': gl}
 
 
-def ppi_material(name='PPI', sweep_s=4.0, frames=200, blips=(), seed=0, glow=6.0, clutter=0.6, t0=0.0):
+def ppi_material(name='PPI', sweep_s=4.0, frames=200, blips=(), seed=0, glow=6.0, clutter=0.6, t0=0.0, floor=0.0):
     """Animated radar scope on a UV disc. blips = [((x0,y0),(x1,y1), brightness)] in [-1,1] scope space over frames.
-    Everything (rings, coast clutter, blips) is modulated by the phosphor afterglow behind the rotating beam."""
+    Everything (rings, coast clutter, blips) is modulated by the phosphor afterglow behind the rotating beam.
+    Optional (2026-11-03, dc-radar): floor = blip afterglow floor (0..1, blips never fully fade; default 0 = old look);
+    a blip may carry a 4th item vis = [(frame, 0..1), ...] keyed visibility (vanish / return)."""
     m, nb, b, out = M.new(name)
     M.no_light(m)
     nt = m.node_tree
@@ -222,7 +224,10 @@ def ppi_material(name='PPI', sweep_s=4.0, frames=200, blips=(), seed=0, glow=6.0
     sp = nb.math('GREATER_THAN', speck.outputs['Value'], vb=0.992)
     clut = nb.math('ADD', nb.math('MULTIPLY', cl.outputs['Result'], vb=clutter).outputs[0], nb.math('MULTIPLY', sp.outputs[0], vb=0.5).outputs[0])
     tot = nb.math('ADD', rings2.outputs[0], clut.outputs[0])
-    for i, (p0, p1, br) in enumerate(blips):
+    bsum = None
+    for i, bp in enumerate(blips):
+        p0, p1, br = bp[0], bp[1], bp[2]
+        vis = bp[3] if len(bp) > 3 else None
         vv = nb.n('ShaderNodeCombineXYZ')
         for axis, a0, a1 in (('X', p0[0], p1[0]), ('Y', p0[1], p1[1])):
             vv.inputs[axis].default_value = a0
@@ -238,8 +243,18 @@ def ppi_material(name='PPI', sweep_s=4.0, frames=200, blips=(), seed=0, glow=6.0
         bl.inputs['From Max'].default_value = 0.0
         bl.inputs['To Max'].default_value = br
         nb.l(dist, 'Value', bl, 'Value')
-        tot = nb.math('ADD', tot.outputs[0], bl.outputs['Result'])
+        bout = bl.outputs['Result']
+        if vis:
+            vn = nb.n('ShaderNodeValue')
+            for f, v in vis:
+                vn.outputs[0].default_value = v
+                vn.outputs[0].keyframe_insert('default_value', frame=f)
+            bout = nb.math('MULTIPLY', bout, vn.outputs[0]).outputs[0]
+        tot = nb.math('ADD', tot.outputs[0], bout)
+        bsum = bout if bsum is None else nb.math('ADD', bsum, bout).outputs[0]
     lit = nb.math('MULTIPLY', tot.outputs[0], glowc.outputs[0])
+    if floor and bsum is not None:
+        lit = nb.math('ADD', lit.outputs[0], nb.math('MULTIPLY', bsum, vb=floor).outputs[0])
     base = nb.math('ADD', lit.outputs[0], nb.math('MULTIPLY', beamline.outputs[0], vb=1.5).outputs[0])
     inside = nb.math('LESS_THAN', r, vb=0.98)
     fin = nb.math('MULTIPLY', base.outputs[0], inside.outputs[0])
@@ -263,7 +278,7 @@ def ppi_material(name='PPI', sweep_s=4.0, frames=200, blips=(), seed=0, glow=6.0
     return m
 
 
-def radar_room(frames=120, blips=(), seed=2, haze=0.02, t0=0.0):
+def radar_room(frames=120, blips=(), seed=2, haze=0.02, t0=0.0, floor=0.0):
     """Dark ATC radar room: hero PPI console at origin (scope face up, tilted toward the operator), 2 background
     consoles with their own scopes (bokeh), green spill, desk lamp, smoky haze."""
     root = Md.empty('RadarRoom')
@@ -283,7 +298,7 @@ def radar_room(frames=120, blips=(), seed=2, haze=0.02, t0=0.0):
     sl = math.atan2(0.30, 0.90)
     nrm = (0, -math.sin(sl), math.cos(sl))
     zc = 0.88 + 0.30 * 0.5 + 0.004
-    ppi = ppi_material('PPI_hero', frames=frames, blips=blips, seed=seed, t0=t0)
+    ppi = ppi_material('PPI_hero', frames=frames, blips=blips, seed=seed, t0=t0, floor=floor)
     disc('Bezel', (0, 0.0, zc), nrm, 0.34, dark, n=48)
     disc('Scope', (0, -0.002 * nrm[1], zc + 0.003), nrm, 0.30, ppi, n=64)
     # knobs / buttons row
