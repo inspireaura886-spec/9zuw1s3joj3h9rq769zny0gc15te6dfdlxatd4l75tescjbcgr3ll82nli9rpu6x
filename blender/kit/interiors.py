@@ -278,7 +278,7 @@ def ppi_material(name='PPI', sweep_s=4.0, frames=200, blips=(), seed=0, glow=6.0
     return m
 
 
-def radar_room(frames=120, blips=(), seed=2, haze=0.02, t0=0.0, floor=0.0):
+def radar_room(frames=120, blips=(), seed=2, haze=0.02, t0=0.0, ppi_floor=0.0):
     """Dark ATC radar room: hero PPI console at origin (scope face up, tilted toward the operator), 2 background
     consoles with their own scopes (bokeh), green spill, desk lamp, smoky haze."""
     root = Md.empty('RadarRoom')
@@ -298,7 +298,7 @@ def radar_room(frames=120, blips=(), seed=2, haze=0.02, t0=0.0, floor=0.0):
     sl = math.atan2(0.30, 0.90)
     nrm = (0, -math.sin(sl), math.cos(sl))
     zc = 0.88 + 0.30 * 0.5 + 0.004
-    ppi = ppi_material('PPI_hero', frames=frames, blips=blips, seed=seed, t0=t0, floor=floor)
+    ppi = ppi_material('PPI_hero', frames=frames, blips=blips, seed=seed, t0=t0, floor=ppi_floor)
     disc('Bezel', (0, 0.0, zc), nrm, 0.34, dark, n=48)
     disc('Scope', (0, -0.002 * nrm[1], zc + 0.003), nrm, 0.30, ppi, n=64)
     # knobs / buttons row

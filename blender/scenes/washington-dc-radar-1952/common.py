@@ -31,7 +31,7 @@ def radar_set(NF, blips, seed=3, t0=T0, floor=0.55):
     sc = core.reset()
     setup(sc, exposure=0.95, vol=False, glare=0.6, vignette=0.45)
     Wd.hdri('moonless_golf', strength=0.02)
-    I.radar_room(frames=NF, blips=blips, seed=seed, haze=0.02, t0=t0, floor=floor)
+    I.radar_room(frames=NF, blips=blips, seed=seed, haze=0.02, t0=t0, ppi_floor=floor)
     return sc
 
 
