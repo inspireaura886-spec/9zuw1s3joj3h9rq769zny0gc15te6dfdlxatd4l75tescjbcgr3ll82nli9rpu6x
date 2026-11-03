@@ -5,7 +5,7 @@ import {ThickStickMan} from '../ThickStickMan.jsx';
 import {Scenes, NightSky, Fog, Glow, Cone, Paper, Captions, HookTitle, ScreenFlash, Finish, FontFaces, ramp, clamp, rnd} from '../World.jsx';
 import VO from '../data/route-9.vo.json';
 
-const A = '#ffd400';
+const A = '#C8B27A'; // humane muted brass (was #ffd400 template yellow; 2026-11-03)
 const WARM = '#ffe9a8';
 const OLD = '#f3dfb4';
 
