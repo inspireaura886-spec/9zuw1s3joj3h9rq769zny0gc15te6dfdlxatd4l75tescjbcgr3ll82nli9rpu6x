@@ -134,8 +134,43 @@ def scan(m, sc):
         op_count = sc.svk_loop_issues
     except Exception as ex:
         op_count = 'op error: %r' % ex
+    f1 = sc.frame_end + 1
+    beyond = {}
+    for o in sc.objects:
+        for idb in (o, getattr(o, 'data', None)):
+            ad = getattr(idb, 'animation_data', None) if idb is not None else None
+            if ad and ad.action:
+                for fc in ad.action.fcurves:
+                    n = sum(1 for k in fc.keyframe_points if k.co.x > f1 + 1e-6)
+                    if n:
+                        beyond['%s:%s[%d]' % (o.name, fc.data_path, fc.array_index)] = n
     return {'range': [sc.frame_start, sc.frame_end, 'checks f%d vs f%d' % (sc.frame_start, sc.frame_end + 1)],
+            'keys_beyond_loop_end': beyond,
             'curves': curves, 'textures': tex, 'operator_issue_count': op_count}
+
+
+def close_fix(m, sc):
+    """The extension's 'CLOSE' method (key the start value at frame_end+1, drop keys past it), safe key removal."""
+    import math as _m
+    f0, f1 = sc.frame_start, sc.frame_end + 1
+    fixed = []
+    for owner, idb in m.loop._anim_blocks(bpy.context, False):
+        for fc in m.beat._fcurves(idb):
+            a_, b_ = fc.evaluate(f0), fc.evaluate(f1)
+            d = _m.remainder(a_ - b_, _m.tau) if fc.data_path.endswith('rotation_euler') else a_ - b_
+            has_close = any(abs(k.co.x - f1) < 1e-6 and abs(k.co.y - a_) < 1e-6 for k in fc.keyframe_points)
+            if abs(d) > 1e-6:
+                fc.keyframe_points.insert(f1, a_, options={'FAST'})
+                has_close = True
+                fixed.append('%s:%s[%d] %.4g->%.4g' % (owner, fc.data_path, fc.array_index, b_, a_))
+            if has_close:
+                while True:
+                    ks = [k for k in fc.keyframe_points if k.co.x > f1 + 1e-6]
+                    if not ks:
+                        break
+                    fc.keyframe_points.remove(ks[-1])
+            fc.update()
+    return fixed
 
 
 def write_rep(a, tag):
@@ -164,14 +199,23 @@ def hook(a, sc=None, frames=None):
     if MODE in ('scan', 'fix'):
         REP['scan_before'] = scan(m, sc)
         REP['poses_before'] = poses(sc, seam)
-    if MODE == 'fix':
+    write_rep(a, tag)
+    if MODE == 'fix' and '--k1-nopre' not in argv:
         _orig_render(a, sc, frames)
+    if MODE == 'fix':
         for f in stills:
             p = os.path.join(a.out, '%05d.png' % f)
             if os.path.exists(p):
                 os.replace(p, os.path.join(a.out, 'pre_%05d.png' % f))
-        r = bpy.ops.svk.loop_fix(method='CLOSE')
-        REP['fix_result'] = list(r)
+        try:
+            r = bpy.ops.svk.loop_fix(method='CLOSE')
+            REP['fix_result'] = list(r)
+        except Exception as ex:
+            # v1.1.0 bug: loop_fix removes several keys past the loop end with remove(fast=True) from a stale list
+            # -> 'Keyframe not in F-Curve'. Same CLOSE logic, keys removed one at a time.
+            REP['fix_op_error'] = str(ex).splitlines()[-1]
+            REP['fix_result'] = close_fix(m, sc)
+        write_rep(a, tag)
         REP['scan_after'] = scan(m, sc)
         REP['poses_after'] = poses(sc, seam)
     if MODE == 'wedge':
