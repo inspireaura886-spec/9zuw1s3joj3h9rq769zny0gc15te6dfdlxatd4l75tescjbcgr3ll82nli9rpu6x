@@ -3,7 +3,7 @@ import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
 import bpy, math
 a = core.args(); sc = core.reset(); NF = 235
-setup(sc, exposure=1.2, vol=True, glare=0.6)
+setup(sc, exposure=1.0, vol=True, glare=0.25)
 dusk_sea(NF, hdri_rot=60)
 j1 = Md.fighter('F1', f1=NF, burner=0.0); j2 = Md.fighter('F2', f1=NF, burner=0.0, seed=9)
 Md.fly(j1, [(0, (0, -400, 900), (0, 0, 0)), (NF, (0, 600, 900), (0, 0, 0))], interp='LINEAR')
