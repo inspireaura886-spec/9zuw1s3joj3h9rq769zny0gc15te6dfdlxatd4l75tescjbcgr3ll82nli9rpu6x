@@ -1,0 +1,60 @@
+name: textjob
+on:
+  workflow_dispatch:
+    inputs:
+      prompt_b64: {required: false, default: '', description: 'base64 prompt text'}
+      prompt_ref: {required: false, default: '', description: 'branch:path of a prompt file (scratch branch)'}
+      search: {required: false, default: '0', description: '1 = enable Google Search grounding'}
+jobs:
+  t:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: get prompt
+        env: {PB: '${{ inputs.prompt_b64 }}', PR: '${{ inputs.prompt_ref }}', REPO: '${{ github.repository }}'}
+        run: |
+          mkdir -p out
+          if [ -n "$PB" ]; then printf '%s' "$PB" | base64 -d > p.txt
+          else BR="${PR%%:*}"; FP="${PR#*:}"; curl -sfL "https://raw.githubusercontent.com/$REPO/$BR/$FP" -o p.txt; fi
+          wc -c p.txt
+      - name: call
+        env: {K: '${{ secrets.GEMINI_API_KEY }}', S: '${{ inputs.search }}'}
+        run: |
+          python3 - <<'PY'
+          import json, os, time, urllib.request, urllib.error
+          p = open('p.txt').read()
+          body = {"contents": [{"role": "user", "parts": [{"text": p}]}],
+                  "generationConfig": {"maxOutputTokens": 32000, "temperature": 0.7}}
+          if os.environ.get('S') == '1':
+              body["tools"] = [{"google_search": {}}]
+          url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+          st, txt, raw = None, "", {}
+          for wait in (0, 10, 30, 60):
+              time.sleep(wait)
+              req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
+                    headers={"Content-Type": "application/json", "x-goog-api-key": os.environ["K"]})
+              try:
+                  with urllib.request.urlopen(req, timeout=600) as r:
+                      st = r.status; raw = json.load(r)
+              except urllib.error.HTTPError as e:
+                  st = e.code
+                  try: raw = json.loads(e.read().decode())
+                  except Exception: raw = {}
+              print("HTTP", st)
+              if st not in (429, 500, 503): break
+          if st == 200:
+              try: txt = "".join(x.get("text", "") for x in raw["candidates"][0]["content"]["parts"])
+              except Exception: txt = ""
+          else:
+              txt = "ERROR HTTP %s\n%s" % (st, json.dumps(raw.get("error", {}), indent=1))
+          open("out/out.md", "w").write(txt)
+          meta = {"status": st, "usage": raw.get("usageMetadata"),
+                  "finish": (raw.get("candidates") or [{}])[0].get("finishReason"),
+                  "grounding": (raw.get("candidates") or [{}])[0].get("groundingMetadata")}
+          json.dump(meta, open("out/meta.json", "w"), indent=1)
+          print("status", st, "finish", meta["finish"], "chars", len(txt))
+          if st != 200: print(txt[:600])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: out, path: out/, retention-days: 3}
