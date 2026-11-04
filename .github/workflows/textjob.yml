@@ -17,9 +17,6 @@ jobs:
           if [ -n "$PB" ]; then printf '%s' "$PB" | base64 -d > p.txt
           else BR="${PR%%:*}"; FP="${PR#*:}"; curl -sfL "https://raw.githubusercontent.com/$REPO/$BR/$FP" -o p.txt; fi
           wc -c p.txt
-      - name: secret names (names only, never values)
-        env: {ALL: '${{ toJSON(secrets) }}'}
-        run: echo "secret names:" $(printf '%s' "$ALL" | jq -r 'keys[]')
       - name: call
         env: {K: '${{ secrets.GEMINI_API_KEY }}', S: '${{ inputs.search }}'}
         run: |
