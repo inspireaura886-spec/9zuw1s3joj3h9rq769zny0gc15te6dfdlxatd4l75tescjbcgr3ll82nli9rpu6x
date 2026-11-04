@@ -10,5 +10,5 @@ Md.fly(j, [(0, (0, 0, 0), (0, 0, -8)), (NF // 2, (30, VF * NF // 2, 6), (0, 0, 1
 o = Md.orb('Tail', (0, -90, 0), color=(1.0, 0.98, 0.95), strength=60, power=3e5, radius=3, halo=0.9, pulse=0.03, f1=NF, seed=5)
 Md.fly(o, [(0, (0, -80, 0), None), (NF // 2, (30, VF * NF // 2 - 85, 6), None), (NF, (-10, VF * NF - 90, 0), None)], interp='LINEAR')
 cam = C.Cam(clip_end=90000)
-cam.shot(0, NF, C.track('Venom', offset=(-20, -50, 12), offset1=(-30, -60, 10), look_offset=(10, -30, 0)), lens=(36, 40), fstop=8, focus='Venom')
+cam.shot(0, NF, C.track('Venom', offset=(-30, -120, 18), offset1=(-40, -130, 14), look_offset=(0, -45, 0)), lens=(36, 40), fstop=8, focus='Venom')
 finish_cam(cam, NF, a, sc)

@@ -52,5 +52,6 @@ def night_country(NF, exposure=1.1):
     Wd.city_lights('Base', center=(0, 5000, -790), radius=900, count=900, seed=61, strength=7, size=1.4, cluster=0.8)
     Wd.city_lights('Vil1', center=(-3500, 9000, -790), radius=500, count=300, seed=62, strength=6, size=1.3, cluster=0.8)
     Wd.city_lights('Vil2', center=(4000, 12000, -790), radius=700, count=400, seed=63, strength=6, size=1.3, cluster=0.8)
-    Wd.fog(center=(0, 20000, -300), size=(160000, 160000, 2600), density=0.00004, color=(0.72, 0.78, 0.95), anisotropy=0.3)
+    # fog box edge showed as a horizon bar (look check 2026-11-04): removed
+    #Wd.fog(center=(0, 20000, -300), size=(160000, 160000, 2600), density=0.00004, color=(0.72, 0.78, 0.95), anisotropy=0.3)
     return sc
