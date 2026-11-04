@@ -20,7 +20,7 @@ cam.shot(0, cut, C.dolly((0.0, 0.5, 1.12), (0.0, 7.2, 1.02), look=(0.0, 16.0, 0.
          lens=(30, 33), fstop=4.0, focus=(0, 13, 0.6))
 # look r2: crane from 2.6 m saw only leaf tops (clearing hidden) + field edge: now steep high crane over the clearing,
 # lit by a soft cool moon pool so the empty flattened patch is the subject
-Wd.spot('MoonPool', (0.6, 14.2, 10.0), (CL[0], CL[1], 0.0), color=(0.62, 0.72, 1.0), power=1800, size_deg=26, blend=0.8, radius=0.6)
+Wd.spot('MoonPool', (0.6, 14.2, 10.0), (CL[0], CL[1], 0.0), color=(0.62, 0.72, 1.0), power=3200, size_deg=26, blend=0.8, radius=0.6)
 cam.shot(cut, NF, C.crane((0.9, 12.6, 4.3), (0.0, 15.6, 0.0), dz=1.0, dlook=0.0), lens=(34, 32), fstop=8.0,
          focus=(0, 15.5, 0.05))
 finish_cam(cam, NF, a, sc)

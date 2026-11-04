@@ -43,5 +43,5 @@ Wd.area('Rim', (0.7, 0.9, top + 0.9), (0, 0, top), color=(0.55, 0.65, 0.9), powe
 haze(center=(0, 0.4, 1.4), size=(5, 5, 2.8), density=0.012)
 T = (0.0, 0.0, z - 0.03)
 cam = C.Cam()
-cam.shot(0, NF, C.push_in((0.04, -0.95, top + 0.44), T, amount=0.25), lens=(38, 42), fstop=3.2, focus=T)   # look r2: stack cut at right edge
+cam.shot(0, NF, C.push_in((0.04, -0.78, top + 0.52), T, amount=0.22), lens=(38, 41), fstop=3.2, focus=T)   # look r2: stack cut at right edge
 finish_cam(cam, NF, a, sc)
