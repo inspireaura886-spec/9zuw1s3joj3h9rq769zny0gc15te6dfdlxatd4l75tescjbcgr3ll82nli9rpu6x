@@ -2,7 +2,7 @@
 open night sky, three short meteor streaks, slow tilt up."""
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
-a = core.args(); NF = arg(a, '--nf', 223, int)
+a = core.args(); NF = arg(a, '--nf', 222, int)
 sc = night_country(NF, exposure=1.2)
 for i, (st, p0, p1) in enumerate([(30, (-1500, 3500, 900), (-600, 3500, 650)), (95, (900, 4000, 1100), (1800, 4000, 800)), (160, (-300, 3800, 1000), (500, 3800, 760))]):
     o = Md.orb('Met%d' % i, p0, color=(0.9, 0.95, 1.0), strength=40, power=2e5, radius=3, halo=0.7, pulse=0.0, f1=NF, seed=i + 7)

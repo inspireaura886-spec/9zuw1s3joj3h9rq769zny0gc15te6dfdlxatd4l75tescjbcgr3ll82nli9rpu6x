@@ -2,7 +2,7 @@
 (fighter), one tailing it close; slow glide."""
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
-a = core.args(); NF = arg(a, '--nf', 171, int)
+a = core.args(); NF = arg(a, '--nf', 115, int)
 blips = [((0.40, -0.30), (-0.10, 0.10), 3.6), ((0.46, -0.33), (-0.04, 0.07), 3.6)]
 sc = radar_set(NF, blips, t0=T0 + 0.9)
 cam = C.Cam()

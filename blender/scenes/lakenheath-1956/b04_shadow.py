@@ -2,7 +2,7 @@
 fighter jinking, a white light holds station behind it."""
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
-a = core.args(); NF = arg(a, '--nf', 171, int)
+a = core.args(); NF = arg(a, '--nf', 264, int)
 sc = night_country(NF, exposure=1.2)
 VF = 6.0
 j = Md.fighter('Venom', f1=NF, burner=0.35)

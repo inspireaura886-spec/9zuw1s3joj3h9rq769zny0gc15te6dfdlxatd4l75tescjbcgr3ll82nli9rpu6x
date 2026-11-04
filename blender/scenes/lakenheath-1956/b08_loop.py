@@ -1,8 +1,8 @@
 """lakenheath b08 (L10 end question): scope shot, ends on the exact frame-0 hook framing (loop seam into b01)."""
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
-a = core.args(); NF = arg(a, '--nf', 189, int)
-cut = arg(a, '--cut', 90, int)
+a = core.args(); NF = arg(a, '--nf', 231, int)
+cut = arg(a, '--cut', 110, int)
 t0 = T0 - NF / 30.0
 while t0 < -8: t0 += 4.0
 blips = [((-0.28, 0.28), (-0.30, 0.30), 3.8), ((0.25, 0.21), (0.24, 0.20), 3.0)]

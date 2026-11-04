@@ -1,7 +1,7 @@
 """lakenheath b06 (L8 'Venom crews saw only a stationary blip, no chase'): one blip barely moving; low angle."""
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
-a = core.args(); NF = arg(a, '--nf', 171, int)
+a = core.args(); NF = arg(a, '--nf', 172, int)
 blips = [((0.12, -0.12), (0.11, -0.115), 3.6)]
 sc = radar_set(NF, blips, t0=T0 + 1.7)
 cam = C.Cam()
