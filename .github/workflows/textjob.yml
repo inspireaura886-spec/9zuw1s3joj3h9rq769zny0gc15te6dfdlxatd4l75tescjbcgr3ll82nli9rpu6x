@@ -5,6 +5,7 @@ on:
       prompt_b64: {required: false, default: '', description: 'base64 prompt text'}
       prompt_ref: {required: false, default: '', description: 'branch:path of a prompt file (scratch branch)'}
       search: {required: false, default: '0', description: '1 = enable Google Search grounding'}
+      model: {required: false, default: 'gemini-3.8-flash', description: 'Gemini Flash model id (Flash only, never -pro)'}
 jobs:
   t:
     runs-on: ubuntu-latest
@@ -18,7 +19,7 @@ jobs:
           else BR="${PR%%:*}"; FP="${PR#*:}"; curl -sfL "https://raw.githubusercontent.com/$REPO/$BR/$FP" -o p.txt; fi
           wc -c p.txt
       - name: call
-        env: {K: '${{ secrets.GEMINI_API_KEY }}', S: '${{ inputs.search }}'}
+        env: {K: '${{ secrets.GEMINI_API_KEY }}', S: '${{ inputs.search }}', M: '${{ inputs.model }}'}
         run: |
           python3 - <<'PY'
           import json, os, time, urllib.request, urllib.error
@@ -29,7 +30,12 @@ jobs:
                   "generationConfig": {"maxOutputTokens": 32000, "temperature": 0.7}}
           if os.environ.get('S') == '1':
               body["tools"] = [{"google_search": {}}]
-          url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+          m = (os.environ.get("M") or "gemini-3.8-flash").strip()
+          if m.startswith("models/"): m = m[7:]
+          if "flash" not in m or "pro" in m or not all(c.isalnum() or c in "-." for c in m):
+              raise SystemExit("refused model %r: Flash models only, never -pro" % m)
+          print("model:", m)
+          url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % m
           st, txt, raw = None, "", {}
           for wait in (0, 10, 30, 60):
               time.sleep(wait)
@@ -50,7 +56,7 @@ jobs:
           else:
               txt = "ERROR HTTP %s\n%s" % (st, json.dumps(raw.get("error", {}), indent=1))
           open("out/out.md", "w").write(txt)
-          meta = {"status": st, "usage": raw.get("usageMetadata"),
+          meta = {"model": m, "status": st, "usage": raw.get("usageMetadata"),
                   "finish": (raw.get("candidates") or [{}])[0].get("finishReason"),
                   "grounding": (raw.get("candidates") or [{}])[0].get("groundingMetadata")}
           json.dump(meta, open("out/meta.json", "w"), indent=1)
