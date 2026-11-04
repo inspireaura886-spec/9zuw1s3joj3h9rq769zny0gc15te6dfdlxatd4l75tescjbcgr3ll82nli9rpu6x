@@ -44,12 +44,12 @@ def warn(msg):
 
 
 # ---------------------------------------------------------------- render setup
-def setup(sc, samples=128, exposure=0.0, adaptive=0.015, vol=True, glare=0.32, glare_thr=1.1, vignette=0.22,
+def setup(sc, samples=128, exposure=0.0, adaptive=0.015, vol=True, vol_step=1.5, glare=0.32, glare_thr=1.1, vignette=0.22,
           sat=0.97, lift=(0.995, 1.0, 1.02), gain=(1.02, 1.0, 0.97), lens_dist=-0.006, dispersion=0.0035):
     """Cycles CPU + OIDN at film settings: AgX MHC, motion blur, more bounces (scanned foliage needs transparent
     bounces), finer volume steps for shafts; gentle lens finish (less vignette than v1: no murky corners)."""
     core.setup_render(sc, samples=samples, look='AgX - Medium High Contrast', exposure=exposure, motion_blur=True,
-                      shutter=0.5, bounces=8, vol_step=1.5 if vol else 8.0, vol_max_steps=160 if vol else 16,
+                      shutter=0.5, bounces=8, vol_step=vol_step if vol else 8.0, vol_max_steps=160 if vol else 16,
                       clamp_ind=10.0, adaptive=adaptive)
     cy = sc.cycles
     cy.diffuse_bounces = 4
