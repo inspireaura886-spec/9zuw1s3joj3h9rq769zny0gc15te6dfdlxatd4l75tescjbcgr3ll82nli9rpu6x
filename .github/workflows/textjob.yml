@@ -23,6 +23,8 @@ jobs:
           python3 - <<'PY'
           import json, os, time, urllib.request, urllib.error
           p = open('p.txt').read()
+          k = os.environ.get("K", "").strip()
+          print("key present:", "yes" if k else "NO (secret GEMINI_API_KEY empty or not visible)")
           body = {"contents": [{"role": "user", "parts": [{"text": p}]}],
                   "generationConfig": {"maxOutputTokens": 32000, "temperature": 0.7}}
           if os.environ.get('S') == '1':
@@ -32,7 +34,7 @@ jobs:
           for wait in (0, 10, 30, 60):
               time.sleep(wait)
               req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
-                    headers={"Content-Type": "application/json", "x-goog-api-key": os.environ["K"]})
+                    headers={"Content-Type": "application/json", "x-goog-api-key": k})
               try:
                   with urllib.request.urlopen(req, timeout=600) as r:
                       st = r.status; raw = json.load(r)
