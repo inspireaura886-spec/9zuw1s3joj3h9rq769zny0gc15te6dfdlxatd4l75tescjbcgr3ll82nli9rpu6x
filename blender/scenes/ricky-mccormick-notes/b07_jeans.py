@@ -26,16 +26,21 @@ for k, (sx, sy, sz, dz) in enumerate(((0.40, 0.31, 0.045, 0.0), (0.38, 0.29, 0.0
         p.use_smooth = True
 jt = seat + 0.0865 + 0.006   # + wrinkle displacement headroom
 # back pocket patch (raised 2 mm: no z-fighting) + stitching
-pk = grid('Pocket', 0.14, 0.15, 12, 12, lambda u, v: 0.0)
-pk.location = (0.05, 0.02, jt + 0.002)
+PENT = [(-0.068, 0.072), (-0.068, -0.04), (0.0, -0.075), (0.068, -0.04), (0.068, 0.072)]
+me = bpy.data.meshes.new('Pocket')
+me.from_pydata([(0.05 + x, 0.02 + y, 0.0) for x, y in PENT], [], [list(range(5))])
+pk = link(bpy.data.objects.new('Pocket', me))
+pk.location = (0, 0, jt + 0.0026)
+so = pk.modifiers.new('so', 'SOLIDIFY'); so.thickness = 0.0022; so.offset = -1.0
+bvp = pk.modifiers.new('bv', 'BEVEL'); bvp.width = 0.0012; bvp.segments = 2
 M.assign(pk, M.texture_set('Denim2', 'denim_fabric', scale=5.0, tint=(0.45, 0.52, 0.70), box=True))
 st = M.principled('Stitch', base=(0.75, 0.45, 0.15), rough=0.6)
-for name, pts in (('StitchA', [(-0.068, 0.072), (-0.068, -0.04), (0.0, -0.075), (0.068, -0.04), (0.068, 0.072)]),):
-    o = ink_curve([(0.05 + x, 0.02 + y, jt + 0.0032) for x, y in pts], name=name, bevel=0.0008)
+for name, pts in (('StitchA', [(x * 0.9, y * 0.9 - 0.004) for x, y in PENT]),):
+    o = ink_curve([(0.05 + x, 0.02 + y, jt + 0.0034) for x, y in pts], name=name, bevel=0.0007)
     M.assign(o, st)
 # folded note edge sticking out of the pocket mouth (note 2 scan as texture)
-nt = paper('NoteEdge', os.path.join(HERE, 'note2.jpg'), (0.045, 0.095, jt + 0.0045), w=0.10, h=0.05,
-           rot=(math.radians(8), 0, math.radians(4)), curl=0.002)
+nt = paper('NoteEdge', os.path.join(HERE, 'note2.jpg'), (0.045, 0.088, jt + 0.0012), w=0.10, h=0.05,
+           rot=(math.radians(4), 0, math.radians(4)), curl=0.002)   # slides UNDER the pocket patch: comes out of the pocket
 lamp_light((0.05, 0.03, jt), loc=(-0.7, 0.35, 1.5), power=55, size_deg=55)
 Wd.area('Rim', (0.6, 0.8, 1.2), (0, 0, seat), color=(0.55, 0.65, 0.9), power=30, size=1.0)
 haze(center=(0, 0.5, 1.3), size=(5, 5, 2.6), density=0.012)
