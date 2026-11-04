@@ -10,10 +10,10 @@ from kit import cine as CN
 
 a = core.args(); NF = arg(a, '--nf', 157, int)
 sc = core.reset()
-CN.setup(sc, samples=arg(a, '--spp', 160, int), glare=0.35, vignette=0.2, lift=(0.99, 1.0, 1.035),
+CN.setup(sc, samples=arg(a, '--spp', 160, int), exposure=arg(a, '--ev', 0.0, float), glare=0.35, vignette=0.2, lift=(0.99, 1.0, 1.035),
          gain=(1.03, 1.0, 0.95))
 
-SUN_AZ, SUN_EL = 101.0, 16.0          # just left of straight down the track (+Y): corn wall shadows rake the road
+SUN_AZ, SUN_EL = 97.0, 16.0          # just left of straight down the track (+Y): corn wall shadows rake the road
 CN.hdri_sun('industrial_sunset_02', sun_az=SUN_AZ, strength=1.0)
 CN.sun(elev=SUN_EL, az=SUN_AZ, warmth='golden', strength=5.0, angle=1.0)
 

@@ -99,10 +99,25 @@ def hdri_sun_dir(hid):
     return az, el
 
 
+# measured sun direction (az, el in Blender world mapping) per HDRI, logged by hdri_sun_dir on GitHub runs;
+# used where numpy is not allowed (JANCTION preview bundles)
+HDRI_SUN = {}
+
+
+def _in_jr():
+    try:
+        _JR  # noqa: defined only inside a JANCTION preview bundle
+        return True
+    except NameError:
+        return False
+
+
 def hdri_sun(hid, sun_az=None, strength=1.0, bg_strength=None, tint=(1, 1, 1)):
     """Real HDRI world. sun_az (deg, world: 0=+X, 90=+Y) rotates the map so its sun lands where the key sun is."""
     rot = 0.0
-    sd = hdri_sun_dir(hid) if sun_az is not None else None
+    sd = None
+    if sun_az is not None:
+        sd = HDRI_SUN.get(hid) if _in_jr() else hdri_sun_dir(hid)
     if sd:
         rot = sd[0] - sun_az            # mapping rotates the lookup vector: world dir d shows texel R(rot) d
         REPORT['hdri_sun_el'] = round(sd[1], 1)
@@ -292,9 +307,16 @@ def autoexpose(sc, a, frame, target=LUMA_TARGET, iters=3):
 
 
 def render(cam, NF, a, sc, meter_frame=None):
-    """Bake the camera, meter exposure, write cine_report.txt, render, then exposure-check the written frames."""
+    """Bake the camera, meter exposure, write cine_report.txt, render, then exposure-check the written frames.
+    Inside a JANCTION preview bundle only the bake runs (the service renders; scene exposure is used as set)."""
     cam.bake(0, NF - 1)
     sc.frame_start, sc.frame_end = 0, NF - 1
+    if _in_jr():
+        return None
+    return _render_full(cam, NF, a, sc, meter_frame)
+
+
+def _render_full(cam, NF, a, sc, meter_frame=None):
     if a.samples:
         sc.cycles.samples = a.samples
     if a.pct != 100:
