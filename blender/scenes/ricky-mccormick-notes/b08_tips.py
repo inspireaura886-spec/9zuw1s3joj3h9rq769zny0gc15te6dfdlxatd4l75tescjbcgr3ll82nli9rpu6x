@@ -2,7 +2,7 @@
 the lamp, cardboard archive box behind; slow eased push-in. 'CASE OPEN' chip in Remotion. No readable text."""
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
-a = core.args(); NF = arg(a, '--nf', 105, int)
+a = core.args(); NF = arg(a, '--nf', 95, int)
 sc = core.reset()
 setup(sc, exposure=0.95, vol=True, glare=0.5, vignette=0.45)
 Wd.hdri('moonless_golf', strength=0.015, bg_strength=0.0)

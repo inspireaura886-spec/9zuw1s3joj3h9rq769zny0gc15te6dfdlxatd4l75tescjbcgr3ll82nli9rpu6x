@@ -2,31 +2,33 @@
 camera cranes down to the back pocket, where the edge of a folded note shows. No person."""
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
-a = core.args(); NF = arg(a, '--nf', 75, int)
+a = core.args(); NF = arg(a, '--nf', 62, int)
 sc = core.reset()
 setup(sc, exposure=0.95, vol=True, glare=0.45, vignette=0.45)
 Wd.hdri('moonless_golf', strength=0.015, bg_strength=0.0)
 dark_room()
-model('painted_wooden_chair_01', (0, 0, 0), rot_z=math.radians(180))
+model('painted_wooden_chair_01', (0, 0, 0), rot_z=0.0)   # backrest AWAY from camera (look r1: 180 put it in front)
 bpy.context.view_layer.update()
 dg = bpy.context.evaluated_depsgraph_get()
 hit, loc, nrm, idx, ob, mtx = sc.ray_cast(dg, Vector((0, 0.05, 2.0)), Vector((0, 0, -1)))
 seat = loc.z if hit else 0.46
 print('IA3D seat z', seat, ob.name if hit else None)
 # folded jeans: bevelled slab, denim texture, two fold layers
-dm = M.texture_set('Denim', 'denim_fabric', scale=6.0, tint=(0.55, 0.62, 0.8))
+dm = M.texture_set('Denim', 'denim_fabric', scale=5.0, tint=(0.55, 0.62, 0.8), box=True)
+wr = bpy.data.textures.new('Wrinkle', 'CLOUDS'); wr.noise_scale = 0.06
 for k, (sx, sy, sz, dz) in enumerate(((0.40, 0.31, 0.045, 0.0), (0.38, 0.29, 0.04, 0.042))):
     j = Wd.box('Jeans%d' % k, (0, 0.02, seat + sz / 2 + dz + 0.001), (sx, sy, sz))
     bv = j.modifiers.new('bv', 'BEVEL'); bv.width = 0.014; bv.segments = 4
-    ss = j.modifiers.new('ss', 'SUBSURF'); ss.levels = 2; ss.render_levels = 2
+    ss = j.modifiers.new('ss', 'SUBSURF'); ss.levels = 4; ss.render_levels = 4
+    dp = j.modifiers.new('dp', 'DISPLACE'); dp.texture = wr; dp.strength = 0.009; dp.mid_level = 0.5
     M.assign(j, dm)
     for p in j.data.polygons:
         p.use_smooth = True
-jt = seat + 0.0865
+jt = seat + 0.0865 + 0.006   # + wrinkle displacement headroom
 # back pocket patch (raised 2 mm: no z-fighting) + stitching
-pk = grid('Pocket', 0.14, 0.15, 4, 4, lambda u, v: 0.0)
+pk = grid('Pocket', 0.14, 0.15, 12, 12, lambda u, v: 0.0)
 pk.location = (0.05, 0.02, jt + 0.002)
-M.assign(pk, M.texture_set('Denim2', 'denim_fabric', scale=6.0, tint=(0.48, 0.55, 0.74)))
+M.assign(pk, M.texture_set('Denim2', 'denim_fabric', scale=5.0, tint=(0.45, 0.52, 0.70), box=True))
 st = M.principled('Stitch', base=(0.75, 0.45, 0.15), rough=0.6)
 for name, pts in (('StitchA', [(-0.068, 0.072), (-0.068, -0.04), (0.0, -0.075), (0.068, -0.04), (0.068, 0.072)]),):
     o = ink_curve([(0.05 + x, 0.02 + y, jt + 0.0032) for x, y in pts], name=name, bevel=0.0008)

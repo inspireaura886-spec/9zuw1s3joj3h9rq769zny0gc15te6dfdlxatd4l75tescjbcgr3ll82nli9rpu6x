@@ -2,7 +2,7 @@
 an ink line writes a few shaky generic marks, then STOPS and the pen hovers. Shallow real DOF. Slow push-in only."""
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
-a = core.args(); NF = arg(a, '--nf', 120, int)
+a = core.args(); NF = arg(a, '--nf', 102, int)
 sc = core.reset()
 setup(sc, exposure=0.95, vol=False, glare=0.45, vignette=0.42)
 Wd.hdri('moonless_golf', strength=0.02, bg_strength=0.0)
@@ -10,7 +10,7 @@ dark_room()
 top = desk(loc=(0, 0, 0))
 img = lined_paper_img()
 paper('Lined', img, (0, 0, top + 0.0004), rot=(0, 0, math.radians(-4)), curl=0.002, base=(1, 1, 1))
-z = top + 0.0018
+z = top + 0.00125
 pts = scribble_points(-0.03, -0.004, z, letters=4, seed=5)
 # stroke grows with hesitations, stops at ~58 % of the plate, never finishes
 f_end = int(NF * 0.58)

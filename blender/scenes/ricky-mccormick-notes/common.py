@@ -21,7 +21,7 @@ def arg(a, key, default=None, cast=str):
 def setup(sc, exposure=1.0, vol=True, samples=20, glare=0.5, vignette=0.38, sat=0.92, lift=(0.99, 1.0, 1.05),
           gain=(1.04, 1.0, 0.95)):
     core.setup_render(sc, samples=samples, look='AgX - Medium High Contrast', exposure=exposure,
-                      vol_step=2.0 if vol else 8.0, vol_max_steps=64 if vol else 16, bounces=5, clamp_ind=4.0)
+                      vol_step=3.0 if vol else 8.0, vol_max_steps=40 if vol else 16, bounces=5, clamp_ind=4.0)
     core.finish(sc, glare=glare, glare_thr=1.0, glare_size=7, vignette=vignette, lift=lift, gain=gain, sat=sat)
 
 
@@ -208,14 +208,13 @@ def corn_mat():
     b.inputs['Specular IOR Level'].default_value = 0.4
     try:
         b.inputs['Subsurface Weight'].default_value = 0.0
-        b.inputs['Transmission Weight'].default_value = 0.12
     except Exception:
         pass
     return m
 
 
 def cornfield(rows=(-6, 6), y=(-4, 60), spacing_row=0.76, spacing=0.26, lane=0.0, clearing=None, seed=11,
-              flattened=None):
+              flattened=None, lane_gap=0.0, lane_y=(-1e9, 1e9)):
     """Rows along +Y. lane = x of the camera's furrow (kept clear between two rows).
     clearing = (cx, cy, r): no standing plants there; flattened = (cx, cy, r): lay ~30 broken stalks flat inside."""
     rnd = random.Random(seed)
@@ -238,6 +237,8 @@ def cornfield(rows=(-6, 6), y=(-4, 60), spacing_row=0.76, spacing=0.26, lane=0.0
         while yy < y[1]:
             yy += spacing * rnd.uniform(0.8, 1.2)
             px, py = x + rnd.uniform(-0.05, 0.05), yy
+            if lane_gap and abs(px - lane) < lane_gap / 2 and lane_y[0] < py < lane_y[1]:
+                continue
             if clearing and (px - clearing[0]) ** 2 + (py - clearing[1]) ** 2 < clearing[2] ** 2:
                 continue
             e = P.instance(protos[rnd.randrange(5)], (px, py, 0), rnd.uniform(0, 6.283), rnd.uniform(0.9, 1.1))
@@ -334,7 +335,7 @@ def ink_curve(pts, name='Ink', bevel=0.00045, grow=None):
     for p, q in zip(sp.points, pts):
         p.co = (*q, 1)
     o = link(bpy.data.objects.new(name, cu))
-    M.assign(o, M.principled('InkM', base=(0.01, 0.012, 0.03), rough=0.35, spec=0.6))
+    M.assign(o, M.principled('InkM', base=(0.008, 0.009, 0.02), rough=0.95, spec=0.05))
     if grow:
         cu.bevel_factor_mapping_end = 'SPLINE'
         for f, v in grow:
