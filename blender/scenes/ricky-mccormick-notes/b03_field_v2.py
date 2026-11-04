@@ -10,16 +10,17 @@ from kit import cine as CN
 
 a = core.args(); NF = arg(a, '--nf', 157, int)
 sc = core.reset()
-CN.setup(sc, samples=arg(a, '--spp', 160, int), exposure=arg(a, '--ev', 0.0, float), vol_step=arg(a, '--vstep', 1.5, float), glare=0.35, vignette=0.2, lift=(0.99, 1.0, 1.035),
+CN.setup(sc, samples=arg(a, '--spp', 64, int), exposure=arg(a, '--ev', 0.0, float), vol_step=arg(a, '--vstep', 3.0, float), glare=0.35, vignette=0.2, lift=(0.99, 1.0, 1.035),
          gain=(1.03, 1.0, 0.95))
 
-SUN_AZ, SUN_EL = 97.0, 16.0          # just left of straight down the track (+Y): corn wall shadows rake the road
+SUN_AZ, SUN_EL = 150.0, 16.0         # r2: front-LEFT side-backlight (r1 sun straight ahead = black foreground)
 CN.hdri_sun('industrial_sunset_02', sun_az=SUN_AZ, strength=1.0)
 CN.sun(elev=SUN_EL, az=SUN_AZ, warmth='golden', strength=5.0, angle=1.0)
 
 ROAD_W = 3.4
 # ---- ground: scanned rutted track + farm soil under the corn
-CN.ground('Track', 'aerial_mud_1', (ROAD_W + 0.6, 240), center=(0, 110, 0.0), tile_m=4.5, tint=(0.95, 0.88, 0.8))
+sc.cycles.transparent_max_bounces = 16   # r1: 48 bounces through alpha grass = 75 min/frame
+CN.ground('Track', 'aerial_mud_1', (ROAD_W + 0.6, 240), center=(0, 110, 0.0), tile_m=4.5, tint=(1.1, 1.0, 0.9))
 for sx in (-1, 1):
     CN.ground('Soil%d' % sx, 'farm_soil', (140, 240), center=(sx * (ROAD_W / 2 + 70), 110, -0.005), tile_m=3.0,
               tint=(0.6, 0.53, 0.46))
@@ -105,9 +106,9 @@ print('IA3D corn v2 instances', n)
 
 # ---- dense roadside dressing: scanned grass verges + weeds, debris + stones on the track
 edge = lambda x, y: (not (ROAD_W / 2 - 0.35 < abs(x) < ROAD_W / 2 + 0.55)) or (y < 1.2 and abs(x + 1.15) < 0.75)
-CN.scatter('grass_medium_01', 340, (-ROAD_W / 2 - 0.6, ROAD_W / 2 + 0.6, -3, 60), seed=1, avoid=edge, scale=(0.7, 1.3))
-CN.scatter('grass_medium_02', 260, (-ROAD_W / 2 - 0.6, ROAD_W / 2 + 0.6, -3, 60), seed=2, avoid=edge, scale=(0.8, 1.4))
-CN.scatter('grass_medium_02', 120, (-0.35, 0.35, 0.5, 60), seed=3, scale=(0.5, 0.9))        # crown strip between ruts
+CN.scatter('grass_medium_01', 700, (-ROAD_W / 2 - 0.6, ROAD_W / 2 + 0.6, -3, 60), seed=1, avoid=edge, scale=(1.0, 1.7))
+CN.scatter('grass_medium_02', 600, (-ROAD_W / 2 - 0.6, ROAD_W / 2 + 0.6, -3, 60), seed=2, avoid=edge, scale=(1.0, 1.8))
+CN.scatter('grass_medium_02', 300, (-0.4, 0.4, 0.5, 60), seed=3, scale=(0.7, 1.2))        # crown strip between ruts
 CN.scatter('weed_plant_02', 40, (-ROAD_W / 2 - 0.6, ROAD_W / 2 + 0.6, -2, 40), seed=4, avoid=edge, scale=(0.8, 1.2))
 CN.scatter('nettle_plant', 30, (-ROAD_W / 2 - 0.6, ROAD_W / 2 + 0.6, -2, 40), seed=5, avoid=edge, scale=(0.8, 1.2))
 CN.scatter('dandelion_01', 40, (-ROAD_W / 2 - 0.6, ROAD_W / 2 + 0.6, -2, 30), seed=6, avoid=edge, scale=(0.9, 1.2))
@@ -115,8 +116,10 @@ CN.scatter('dry_branches_medium_01', 10, (-ROAD_W / 2, ROAD_W / 2, 2, 30), seed=
 
 # ---- hero cluster (in focus): left verge, 1.4 m ahead of the camera's start
 CAM_X = -1.15
-HERO = Vector((-1.38, 1.55, 0.16))
-CN.place('dandelion_01', (HERO.x + 0.03, HERO.y, 0), rot=(0, 0, 0.6), scale=1.15, name='HeroDandelion')
+HERO = Vector((-1.27, 1.6, 0.2))       # r2: inside the frame for the whole push (r1 drifted out left)
+CN.place('dandelion_01', (HERO.x + 0.03, HERO.y, 0), rot=(0, 0, 0.6), scale=1.45, name='HeroDandelion')
+CN.place('grass_medium_01', (HERO.x + 0.22, HERO.y + 0.05, 0), rot=(0, 0, 0.9), scale=1.6, name='HeroGrassC')
+CN.place('grass_medium_02', (HERO.x - 0.25, HERO.y + 0.4, 0), rot=(0, 0, 2.2), scale=1.7, name='HeroGrassD')
 CN.place('grass_medium_01', (HERO.x - 0.16, HERO.y + 0.18, 0), rot=(0, 0, 1.9), scale=1.2, name='HeroGrassA')
 CN.place('weed_plant_02', (HERO.x + 0.12, HERO.y - 0.16, 0), rot=(0, 0, 2.6), scale=1.0, name='HeroWeed')
 CN.place('grass_medium_02', (HERO.x - 0.05, HERO.y - 0.32, 0), rot=(0, 0, 0.3), scale=1.1, name='HeroGrassB')
@@ -125,8 +128,8 @@ CN.haze(center=(0, 110, 12), size=(150, 240, 24), density=0.0075, color=(1.0, 0.
         noise=0.3, noise_scale=0.05, height_falloff=1.4)
 
 cam = C.Cam()
-P0 = Vector((CAM_X, -0.25, 0.42))
-P1 = Vector((CAM_X, 0.10, 0.45))
+P0 = Vector((CAM_X, -0.25, 0.34))
+P1 = Vector((CAM_X, 0.10, 0.36))
 LOOK = Vector((-0.6, 40.0, 2.2))
 CN.shot(cam, 0, NF, C.dolly(P0, P1, look=LOOK), lens=50, fstop=2.8, focus=HERO)
-CN.render(cam, NF, a, sc, meter_frame=NF // 2)
+CN.render(cam, NF, a, sc, meter_frame=NF // 2, target=0.27)
