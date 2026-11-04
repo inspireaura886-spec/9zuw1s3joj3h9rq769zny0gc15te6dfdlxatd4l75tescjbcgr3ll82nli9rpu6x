@@ -6,19 +6,19 @@ import {AbsoluteFill, Sequence, Img, staticFile, useCurrentFrame, interpolate, E
 import {PlateTrack, Real3DFinish, R3DTag, IAMark, R3DFonts, R3DCaption, R3DHead, R3DLabel} from '../Real3DKit.jsx';
 import VO from './vo.json';
 
-export const FITZ_FRAMES = 1000;
+export const FITZ_FRAMES = 996;  // r1: 996 = 6 x 166 (1000 lost 3 frames in the 6-part concat)
 export const SCHEME = 'clay';
 const P = 'real3d/edmund-fitzgerald-1975/';
 const lift = (b, c = 1.0) => ({filter: `brightness(${b}) contrast(${c})`});
 const plates = [
   {src: P + 'b2.mp4', from: 148, dur: 150, drift: 0.02},                          // radar: echo gone at plate f90 = 7.93 s ("gone")
-  {src: P + 'b1.mp4', from: 298, dur: 49, drift: 0.03, style: lift(1.3)},          // night lake: "No Mayday. 29 men."
+  {src: P + 'b1.mp4', from: 298, dur: 49, drift: 0.03, style: lift(1.6, 1.04)},          // night lake: "No Mayday. 29 men."
   {src: P + 'b3.mp4', from: 347, dur: 159, drift: 0.02, style: lift(1.18)},        // deck: radars dead, heavy seas
   {src: P + 'b4.mp4', from: 506, dur: 84, drift: 0.02},                            // wreck 530 ft down
   {src: P + 'hatch.mp4', from: 709, dur: 60, drift: 0.03},
   {src: P + 'b5s.mp4', from: 769, dur: 60, drift: 0.03},
-  {src: P + 'b5w.mp4', from: 829, dur: 59, drift: 0.03, style: lift(1.35)},
-  {src: P + 'b6.mp4', from: 888, dur: 100, drift: 0.02, style: lift(1.3)},
+  {src: P + 'b5w.mp4', from: 829, dur: 59, drift: 0.03, style: lift(1.75, 1.05)},
+  {src: P + 'b6.mp4', from: 888, dur: 100, drift: 0.02, style: lift(1.6, 1.04)},
 ];
 const ez = Easing.bezier(0.33, 0, 0.2, 1);
 const cl = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'};
@@ -35,6 +35,8 @@ const Photo = ({dur, fadeIn = 0, still = false}) => { const f = useCurrentFrame(
     <AbsoluteFill style={{transform: `scale(${s})`, transformOrigin: '52% 69%'}}>
       <Img src={staticFile(P + 'uscg.jpg')} style={{width: '100%', height: '100%', objectFit: 'cover', filter: 'contrast(1.06) brightness(0.92) sepia(0.12)'}} />
     </AbsoluteFill>
+    {/* r1: dark pad behind the caption band (y 980) so clay words read on the light photo */}
+    <div style={{position: 'absolute', left: 0, top: 880, width: 1080, height: 300, background: 'radial-gradient(ellipse 52% 50% at center, rgba(0,0,0,0.62), rgba(0,0,0,0.35) 55%, rgba(0,0,0,0) 80%)'}} />
     <div style={{position: 'absolute', left: 0, top: 1280, width: 1080, height: 640, background: 'linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 35%, rgba(0,0,0,0.7) 100%)'}} />
   </AbsoluteFill>); };
 // Real NTSB sketch card over a blurred, darkened copy of itself; one continuous accelerating push into the stern
@@ -58,7 +60,7 @@ export const Fitzgerald1975 = () => (
     <Sequence from={0} durationInFrames={148}><Photo dur={148} /></Sequence>
     <PlateTrack plates={plates} dip={0} />
     <Sequence from={590} durationInFrames={119}><Sketch dur={119} /></Sequence>
-    <Sequence from={988} durationInFrames={12}><Photo dur={12} fadeIn={12} still /></Sequence>
+    <Sequence from={988} durationInFrames={8}><Photo dur={8} fadeIn={8} still /></Sequence>
     <Real3DFinish seed={75} />
     <Head from={0} dur={100} inF={-12} lines={['729-ft ship sank', 'no Mayday was sent']} />
     <Head from={232} dur={66} lines={['Gone from radar', 'in 10 minutes']} />
@@ -71,7 +73,7 @@ export const Fitzgerald1975 = () => (
     <Head from={772} dur={56} lines={['Theory 2', 'a shoal']} />
     <Head from={832} dur={55} lines={['Theory 3', '3 rogue waves']} />
     <Head from={894} dur={90} lines={['No final answer', '29 men lost']} />
-    <Sequence from={988} durationInFrames={12}><Scrim inF={0} outF={99} /><R3DHead scheme={SCHEME} lines={['729-ft ship sank', 'no Mayday was sent']} inF={-12} /></Sequence>
+    <Sequence from={988} durationInFrames={8}><Scrim inF={-6} outF={99} /><R3DHead scheme={SCHEME} lines={['729-ft ship sank', 'no Mayday was sent']} inF={-12} /></Sequence>
     <Tag from={4} dur={70} text="LAKE SUPERIOR · NOV 10, 1975" />
     <Tag from={78} dur={68} text="REAL PHOTO · SS EDMUND FITZGERALD · USCG" />
     <Tag from={152} dur={144} text="TRAILING SHIP ARTHUR M. ANDERSON · RADAR" />
