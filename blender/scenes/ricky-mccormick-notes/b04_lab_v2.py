@@ -12,7 +12,7 @@ a = core.args(); NF = arg(a, '--nf', 172, int)
 sc = core.reset()
 CN.setup(sc, samples=arg(a, '--spp', 80, int), exposure=arg(a, '--ev', 0.0, float), glare=0.4, glare_thr=1.0, vignette=0.2, lift=(0.99, 1.0, 1.04),
          gain=(1.04, 1.0, 0.94))
-CN.hdri_sun('fireplace', strength=0.55)
+CN.hdri_sun('fireplace', strength=0.35)
 
 # ---- scanned table: long worn-wood bench table, long axis along X
 tb = CN.place('WoodenTable_01', (0, 0, 0), rot=(0, 0, 0), name='Table')
@@ -33,25 +33,28 @@ paper('Blank', None, (-0.26, 0.11, top + 0.0004), rot=(0, 0, math.radians(-14)),
 
 col = CN.model('magnifying_glass_01')
 mg = place_col(col, (0, 0, 0), ground=True, name='Magnifier')
-# look r1: the scan's lens read near-black at a grazing view -> force a clear optical glass on the lens material
+# look r1/r2: paper under the lens read black = the lamp's light cannot pass the glass (caustics off) -> the lens
+# material lets SHADOW rays through (Light Path Is Shadow Ray -> Transparent); frame/handle materials untouched
 for o in col.all_objects:
     for ms in getattr(o, 'material_slots', []):
         mt = ms.material
         if not mt or not mt.use_nodes:
             continue
-        for nd in mt.node_tree.nodes:
-            if nd.bl_idname == 'ShaderNodeBsdfPrincipled':
-                tw = nd.inputs.get('Transmission Weight')
-                if (tw and tw.default_value > 0.3) or any(k in mt.name.lower() for k in ('glass', 'lens')):
-                    print('IA3D lens material fixed', mt.name)
-                    nd.inputs['Base Color'].default_value = (0.98, 0.99, 1.0, 1)
-                    for ln in list(nd.inputs['Base Color'].links):
-                        mt.node_tree.links.remove(ln)
-                    if tw:
-                        tw.default_value = 1.0
-                    nd.inputs['Roughness'].default_value = 0.01
-                    nd.inputs['IOR'].default_value = 1.52
-                    nd.inputs['Alpha'].default_value = 1.0
+        nt = mt.node_tree
+        pb = [nd for nd in nt.nodes if nd.bl_idname == 'ShaderNodeBsdfPrincipled']
+        outn = [nd for nd in nt.nodes if nd.bl_idname == 'ShaderNodeOutputMaterial']
+        tw = pb[0].inputs.get('Transmission Weight') if pb else None
+        if not (pb and outn and tw and tw.default_value > 0.3) or not outn[0].inputs['Surface'].links:
+            continue
+        src = outn[0].inputs['Surface'].links[0].from_socket
+        lp = nt.nodes.new('ShaderNodeLightPath')
+        tr = nt.nodes.new('ShaderNodeBsdfTransparent')
+        mx = nt.nodes.new('ShaderNodeMixShader')
+        nt.links.new(lp.outputs['Is Shadow Ray'], mx.inputs['Fac'])
+        nt.links.new(src, mx.inputs[1])
+        nt.links.new(tr.outputs['BSDF'], mx.inputs[2])
+        nt.links.new(mx.outputs['Shader'], outn[0].inputs['Surface'])
+        print('IA3D lens shadow-transparent', mt.name)
 mx_, my_, mz_ = mg['size']
 h = mz_ - mx_ / 2
 phi = math.radians(150)
@@ -63,15 +66,15 @@ mg.location = (LENS.x - h * math.sin(phi), LENS.y + h * math.cos(phi), top + my_
 # pencils + notepads behind note 1, encyclopedia set + glowing oil lamp as background bokeh at the back edge
 D = min(sx, sy)                              # table depth (front-back)
 BK = D / 2
-for aid, loc, rz, s in (('stationery_supplies', (-0.11, 0.20, top), 0.25, 1.0),
+for aid, loc, rz, s in (('stationery_supplies', (-0.34, 0.16, top), 0.25, 1.0),
                         ('office_notepads', (0.15, 0.24, top), 0.2, 1.0),
                         ('book_encyclopedia_set_01', (-0.24, BK - 0.09, top), 0.25, 1.0),
-                        ('vintage_oil_lamp', (0.13, BK - 0.10, top), 0.4, 1.0)):
+                        ('vintage_oil_lamp', (0.20, BK - 0.08, top), 0.4, 1.0)):
     e = CN.place(aid, (loc[0], loc[1], loc[2] + 0.0016), rot=(0, 0, rz), scale=s, name='P_' + aid)
     print('IA3D prop', aid, 'size', tuple(round(v, 3) for v in e['size']))
 oil = bpy.data.objects['P_vintage_oil_lamp']
 oz = oil['size'][2]
-Wd.point('OilFlame', (0.13, BK - 0.10, top + oz * 0.58), color=(1.0, 0.62, 0.3), power=2.5, radius=0.012)
+Wd.point('OilFlame', (0.20, BK - 0.08, top + oz * 0.58), color=(1.0, 0.62, 0.3), power=2.5, radius=0.012)
 
 LX, LY = -0.42, BK - 0.12
 lampm = CN.place('desk_lamp_arm_01', (LX - 0.12, LY + 0.04, top), rot=(0, 0, math.radians(-35)), name='DeskLamp')
@@ -79,19 +82,19 @@ lz = lampm['size'][2]
 HZ = top + min(0.5, lz * 0.85)
 # lamp head pool: warm practical from where the shade is (upper-left, just out of frame)
 CN.practical('LampKey', (LX, LY - 0.08, HZ), (0.0, 0.03, top), kelvin_rgb=(1.0, 0.70, 0.42),
-             power=30, cone=75, blend=0.6, radius=0.05)
+             power=45, cone=75, blend=0.6, radius=0.05)
 Wd.point('LampBulb', (LX, LY - 0.08, HZ + 0.02), color=(1.0, 0.72, 0.45), power=4, radius=0.02)
 # soft warm ceiling bounce: gives the magnifier glass a readable highlight (r1 lens read black)
-Wd.area('Bounce', (0.05, -0.05, top + 1.1), (0, 0.05, top), color=(1.0, 0.9, 0.8), power=6, size=1.2)
+Wd.area('Bounce', (0.05, -0.05, top + 1.1), (0, 0.05, top), color=(1.0, 0.9, 0.8), power=3, size=1.2)
 # blue-hour window from camera-right (cool fill, keeps shadows readable, not murky)
-Wd.area('Window', (0.95, -0.15, top + 0.55), (0, 0.05, top), color=(0.58, 0.70, 1.0), power=22, size=1.0)
+Wd.area('Window', (0.95, -0.15, top + 0.55), (0, 0.05, top), color=(0.58, 0.70, 1.0), power=10, size=1.0)
 CN.haze(center=(0, 0.1, top + 0.6), size=(2.4, 2.0, 1.4), density=0.05, color=(1.0, 0.95, 0.9), anisotropy=0.5,
         noise=0.4, noise_scale=0.6, height_falloff=0.0)
 
 cam = C.Cam()
 FOC = Vector((-0.01, 0.03, top))                 # cipher lines just below/left of the lens
-P0 = Vector((0.03, -0.37, top + 0.43))           # look r1: 27 deg grazing view = black lens + looming books
-P1 = Vector((0.025, -0.32, top + 0.39))          # now ~46 deg: see through the lens, books/lamp as top bokeh
+P0 = Vector((0.03, -0.44, top + 0.36))           # r1 27 deg = grazing/black lens; r2 46 deg = flat document look
+P1 = Vector((0.025, -0.39, top + 0.325))         # r3 ~36 deg: depth falloff across the sheet, books/lamp as top bokeh
 CN.shot(cam, 0, NF, C.dolly(P0, P1, look=Vector((0.0, 0.06, top)), look1=Vector((0.0, 0.055, top))), lens=58,
         fstop=2.0, focus=FOC)
-CN.render(cam, NF, a, sc, meter_frame=NF // 2)
+CN.render(cam, NF, a, sc, meter_frame=NF // 2, target=0.31)   # white-paper frame: meter a bit higher

@@ -306,22 +306,22 @@ def autoexpose(sc, a, frame, target=LUMA_TARGET, iters=3):
     return sc.view_settings.exposure
 
 
-def render(cam, NF, a, sc, meter_frame=None):
+def render(cam, NF, a, sc, meter_frame=None, target=LUMA_TARGET):
     """Bake the camera, meter exposure, write cine_report.txt, render, then exposure-check the written frames.
     Inside a JANCTION preview bundle only the bake runs (the service renders; scene exposure is used as set)."""
     cam.bake(0, NF - 1)
     sc.frame_start, sc.frame_end = 0, NF - 1
     if _in_jr():
         return None
-    return _render_full(cam, NF, a, sc, meter_frame)
+    return _render_full(cam, NF, a, sc, meter_frame, target)
 
 
-def _render_full(cam, NF, a, sc, meter_frame=None):
+def _render_full(cam, NF, a, sc, meter_frame=None, target=LUMA_TARGET):
     if a.samples:
         sc.cycles.samples = a.samples
     if a.pct != 100:
         sc.render.resolution_percentage = a.pct
-    autoexpose(sc, a, NF // 2 if meter_frame is None else meter_frame)
+    autoexpose(sc, a, NF // 2 if meter_frame is None else meter_frame, target=target)
     os.makedirs(a.out, exist_ok=True)
     info = core.render(a, sc)
     lum = {}
