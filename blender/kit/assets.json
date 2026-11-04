@@ -16,6 +16,14 @@
   {
    "id": "narrow_moonlit_road",
    "res": "2k"
+  },
+  {
+   "id": "industrial_sunset_02",
+   "res": "2k"
+  },
+  {
+   "id": "fireplace",
+   "res": "2k"
   }
  ],
  "textures": [
@@ -90,6 +98,15 @@
     "nor_gl",
     "Rough"
    ]
+  },
+  {
+   "id": "aerial_mud_1",
+   "res": "2k",
+   "maps": [
+    "Diffuse",
+    "nor_gl",
+    "Rough"
+   ]
   }
  ],
  "models": [
@@ -123,6 +140,54 @@
   },
   {
    "id": "cardboard_box_01",
+   "res": "1k"
+  },
+  {
+   "id": "WoodenTable_01",
+   "res": "2k"
+  },
+  {
+   "id": "grass_medium_01",
+   "res": "1k"
+  },
+  {
+   "id": "grass_medium_02",
+   "res": "1k"
+  },
+  {
+   "id": "dandelion_01",
+   "res": "1k"
+  },
+  {
+   "id": "weed_plant_02",
+   "res": "1k"
+  },
+  {
+   "id": "nettle_plant",
+   "res": "1k"
+  },
+  {
+   "id": "dry_branches_medium_01",
+   "res": "1k"
+  },
+  {
+   "id": "round_spectacles",
+   "res": "1k"
+  },
+  {
+   "id": "stationery_supplies",
+   "res": "1k"
+  },
+  {
+   "id": "office_notepads",
+   "res": "1k"
+  },
+  {
+   "id": "book_encyclopedia_set_01",
+   "res": "1k"
+  },
+  {
+   "id": "vintage_oil_lamp",
    "res": "1k"
   }
  ]
