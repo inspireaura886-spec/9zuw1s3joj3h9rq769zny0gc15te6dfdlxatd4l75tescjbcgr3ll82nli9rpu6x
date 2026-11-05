@@ -21,12 +21,17 @@ def fnoise(X, Y, s=1.0, ph=0.0):
 
 
 def ramp(nb, stops):
+    """ColorRamp with exact stops (positions ascending). Creates middle elements at their final positions so
+    Blender's re-sorting never scrambles the colours."""
     n = nb.n('ShaderNodeValToRGB')
     cr = n.color_ramp
-    while len(cr.elements) < len(stops):
-        cr.elements.new(0.5)
-    for e, (p, c) in zip(cr.elements, stops):
-        e.position = p
+    e0, e1 = cr.elements[0], cr.elements[1]
+    e0.position = stops[0][0]
+    e0.color = (*stops[0][1], 1)
+    e1.position = stops[-1][0]
+    e1.color = (*stops[-1][1], 1)
+    for p, c in stops[1:-1]:
+        e = cr.elements.new(p)
         e.color = (*c, 1)
     return n
 
@@ -401,7 +406,7 @@ def spit_height(X, Y):
     ridge = 0.95 * np.exp(-((Y + 2.0) / 24.0) ** 2) * (1 - smooth01(np.abs(X), 120, 200))
     Z = ridge + 0.05 * fnoise(X, Y, 14.0)
     Z = Z - 2.6 * smooth01(Y, 10, 40) - 2.6 * smooth01(-Y, 26, 80)
-    Z = Z + 1.7 * np.exp(-((Y - 196.0) / 9.0) ** 2) * (1 - smooth01(np.abs(X), 330, 420))   # far lagoon rim
+    Z = Z + 3.1 * np.exp(-((Y - 196.0) / 9.0) ** 2) * (1 - smooth01(np.abs(X), 330, 420))   # far lagoon rim
     return np.maximum(Z, -2.6 + 0.05 * fnoise(X, Y, 9.0))
 
 
@@ -439,7 +444,7 @@ def spit_scene(NF, golden=True, sun_az=250, elev=14, water_z=-0.05, wash=False):
     rnd = random.Random(8)
     pts = []
     for k in range(150):
-        pts.append((rnd.uniform(-330, 330), rnd.uniform(188, 204), 1.0))
+        pts.append((rnd.uniform(-330, 330), rnd.uniform(188, 204), 0.7))
     scatter_palms(me, pts, seed=4, scale=(0.9, 1.5))
     # lighting
     if golden:
@@ -472,7 +477,7 @@ def clump(NF, wash=False, crust=0.35, loc=(0.0, 0.0), seed=2):
         objs.append(trunk('Root%d' % k, base, tip, 0.1, 0.02, wm, root_end=False))
     # dry fronds scattered
     me = palm_mesh_obj(dry=True)
-    for k in range(10):
+    for k in range(0):
         o = bpy.data.objects.new('Dry%d' % k, me)
         o.location = (lx + rnd.uniform(-9, 9), ly + rnd.uniform(-6, 6), z0 + 0.1)
         o.rotation_euler = (math.radians(88), 0, rnd.uniform(0, 6.283))
@@ -640,7 +645,7 @@ def sensor_sled(name='Sled', loc=(0, 0, 0), scale=1.0):
 
 
 def steel_tube(name='Tube', loc=(0, 0, 0.1), length=0.76, r=0.07, yaw=25.0):
-    rust = M.principled('TubeRust', base=(0.34, 0.15, 0.06), rough=0.85, metal=0.55, grime=0.6, rough_noise=0.2, bump=0.9, bump_scale=30)
+    rust = M.principled('TubeRust', base=(0.55, 0.22, 0.08), rough=0.85, metal=0.55, grime=0.6, rough_noise=0.2, bump=0.9, bump_scale=30)
     o = cyl(name, (-length / 2, 0, 0), (length / 2, 0, 0), r, rust, 28)
     root = Md.empty(name + 'Root', loc)
     o.parent = root
@@ -648,9 +653,9 @@ def steel_tube(name='Tube', loc=(0, 0, 0.1), length=0.76, r=0.07, yaw=25.0):
     return o
 
 
-def lagoon_floor(NF, extent=60.0, depth=-4.0, ripple=0.06, tint=(0.95, 1.0, 1.0)):
+def lagoon_floor(NF, extent=140.0, depth=-4.0, ripple=0.06, tint=(0.95, 1.0, 1.0)):
     """Underwater sand floor lit from above: ground plane, aqua fog, ripples via texture bump."""
-    xs = np.linspace(-extent, extent, 241)
+    xs = np.linspace(-extent, extent, 321)
     X, Y = np.meshgrid(xs, xs)
     Z = depth + ripple * np.sin(X * 1.7 + 0.8 * np.sin(Y * 0.5)) + 0.12 * fnoise(X, Y, 3.0)
     sm = M.texture_set('LagSand', 'damp_beach_sand', scale=0.9, tint=tuple(1.5 * t for t in tint), box=True)
@@ -658,7 +663,7 @@ def lagoon_floor(NF, extent=60.0, depth=-4.0, ripple=0.06, tint=(0.95, 1.0, 1.0)
     return Z
 
 
-def underwater_world(strength=1.6, density=0.016, color=(0.2, 0.62, 0.68), center=(0, 0, -2.0), size=(160, 160, 30)):
+def underwater_world(strength=1.6, density=0.03, color=(0.2, 0.62, 0.68), center=(0, 0, -2.0), size=(300, 300, 30)):
     w = bpy.data.worlds.new('UW')
     bpy.context.scene.world = w
     w.use_nodes = True

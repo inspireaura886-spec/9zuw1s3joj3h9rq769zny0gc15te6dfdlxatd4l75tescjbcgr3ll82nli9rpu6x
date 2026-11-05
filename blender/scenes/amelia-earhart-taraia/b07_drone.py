@@ -17,9 +17,9 @@ for fr in range(0, NF + 1, 3):
     dr.location = (bx + 3 + 2.2 * math.sin(t * 0.5), by - 2 + 1.6 * math.cos(t * 0.45), 8.0 + 0.25 * math.sin(t * 1.2)); dr.keyframe_insert('location', frame=fr)
     dr.rotation_euler = (math.radians(3 * math.sin(t)), math.radians(2 * math.cos(t * 0.8)), math.radians(20 * t)); dr.keyframe_insert('rotation_euler', frame=fr)
 for k, f0 in enumerate((6, 40, 74)):
-    rm = glow_mat('PingM%d' % k, (0.6, 0.95, 1.0), 4.0)
+    rm = glow_mat('PingM%d' % k, (0.6, 0.95, 1.0), 40.0)
     ro = ring_mesh('Ping%d' % k, r=1.0, w=0.07, n=160)
-    ro.data.materials.append(rm); ro.location = (bx, by, 0.12)
+    ro.data.materials.append(rm); ro.visible_shadow = False; ro.location = (bx, by, 0.12)
     ro.scale = (0.2, 0.2, 0.2); ro.keyframe_insert('scale', frame=f0 - 1)
     ro.scale = (46, 46, 46); ro.keyframe_insert('scale', frame=f0 + 36)
     key_fac(rm, [(0, 0.0), (f0 - 1, 0.0), (f0, 0.9), (f0 + 34, 0.0)])
