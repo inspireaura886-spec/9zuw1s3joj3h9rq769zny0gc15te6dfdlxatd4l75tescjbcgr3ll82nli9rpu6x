@@ -1,0 +1,18 @@
+"""b13 (MEDIUM-WIDE 35 mm, VO 'thirty-inch steel tube'): sandy lagoon floor, a sonar ping sweeps past a corroded 30-inch (76 cm) steel tube half-settled in the sand. Slow forward dolly."""
+import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from ac import *
+a = core.args(); NF = arg(a, "--nf", 98, int)
+sc = core.reset(); look(sc, vol=True, glare=0.35, vignette=0.28, lift=(0.97, 1.0, 1.04))
+underwater_world(strength=1.7, density=0.02)
+CN.sun(elev=62, az=215, warmth='noon', strength=4.5, check=False)
+lagoon_floor(NF, depth=-4.0, ripple=0.04)
+steel_tube('Tube', (0, 0, -3.86), length=0.76, r=0.07, yaw=28)
+rm = glow_mat('PingTM', (0.55, 0.95, 1.0), 3.2)
+ro = ring_mesh('PingT', r=1.0, w=0.05, n=200)
+ro.data.materials.append(rm); ro.location = (-9, 5, -3.88)
+ro.scale = (0.5, 0.5, 0.5); ro.keyframe_insert('scale', frame=6)
+ro.scale = (17, 17, 17); ro.keyframe_insert('scale', frame=NF - 6)
+key_fac(rm, [(0, 0.0), (6, 0.0), (10, 1.0), (NF - 10, 0.6), (NF - 4, 0.0)])
+cam = C.Cam(clip_end=1500)
+cam.shot(0, NF, C.dolly((-2.6, -2.3, -3.0), (-1.5, -1.5, -3.45), look=(0.0, 0.0, -3.85), look1=(0.0, 0.0, -3.85)), lens=35, fstop=5.6, focus=Vector((0, 0, -3.85)))
+go(cam, NF, a, sc, meter=NF // 2, target=0.24)

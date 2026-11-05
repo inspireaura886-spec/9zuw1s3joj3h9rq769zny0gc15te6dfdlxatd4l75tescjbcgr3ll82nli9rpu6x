@@ -1,0 +1,21 @@
+"""b11 (WIDE 24 mm, VO 'washed away'): aerial of the sandspit, surf lifts and takes the loose branches, one Y-shaped pale trunk left in the shallows. Crane up."""
+import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from ac import *
+a = core.args(); NF = arg(a, "--nf", 145, int)
+sc = core.reset(); look(sc, vol=False, glare=0.4, vignette=0.24)
+spit_scene(NF, sun_az=238, elev=17)
+ytrunk(loc=(-6.0, 20.0), z=-0.1, crust=0.5)
+wm = driftwood_mat('LooseWood', crust=0.35)
+rnd = random.Random(21)
+for k in range(11):
+    x, y = rnd.uniform(-22, 22), rnd.uniform(9.0, 19.0)
+    o = trunk('Loose%d' % k, (x, y, 0.15), (x + rnd.uniform(-3.2, 3.2), y + rnd.uniform(-1.2, 1.2), 0.2), 0.12, 0.07, wm, root_end=False)
+    o.location = (0, 0, 0)
+    o.keyframe_insert('location', frame=0)
+    o.location = (rnd.uniform(-2, 3), 4.0 + rnd.uniform(0, 6), 0.0)
+    o.keyframe_insert('location', frame=NF - 20)
+    o.location = (rnd.uniform(-4, 5), 18.0 + rnd.uniform(0, 14), -0.4)
+    o.keyframe_insert('location', frame=NF)
+cam = C.Cam(clip_end=6000)
+cam.shot(0, NF, C.crane((12, -34, 15), (-4, 14, 0), dz=26, dlook=0), lens=24, fstop=11, focus=Vector((-5, 18, 0)))
+go(cam, NF, a, sc, meter=NF // 2, target=0.27)
