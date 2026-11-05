@@ -11,8 +11,8 @@ m = glow_mat('ArcM', (0.6, 0.92, 1.0), 4.0)
 pts = []
 for k in range(60):
     u = k / 59
-    x = -2600 + 5600 * u
-    y = 450 + 3400 * u - 900 * (u - 0.5) ** 2
+    x = -260 + 1500 * u + 500 * u * u
+    y = 260 + 9000 * u ** 1.6
     pts.append((x, y, 3.2))
 arc = curve_poly('Arc7', pts, bevel=3.0, mat=m)
 key_fac(m, [(0, 0.55), (NF, 0.7)])

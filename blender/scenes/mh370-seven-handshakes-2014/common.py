@@ -448,3 +448,34 @@ def swell_ocean(NF, half=4500.0, wave_scale=2.2, wind=16.0, choppy=0.9, color=(0
     Wd.sea_plane(size=240000, z=center[2] - 2.5 * wave_scale, color=color, rough=max(rough, 0.12), wave=0.15, frames=max(NF, 60))
     return Wd.ocean_wide(center=center, half=half, wave_scale=wave_scale, choppy=choppy, wind=wind, time_frames=max(NF, 60),
                          color=color, rough=rough)
+
+
+def space_world(stars=1.0, seed=0.0):
+    """Black space with a fine star field in every direction (no horizon glow)."""
+    w = bpy.data.worlds.new('Space')
+    bpy.context.scene.world = w
+    w.use_nodes = True
+    nt = w.node_tree
+    nb = M.NB(nt)
+    for n in list(nt.nodes):
+        nt.nodes.remove(n)
+    out = nb.n('ShaderNodeOutputWorld')
+    tc = nb.n('ShaderNodeTexCoord')
+    vo = nb.n('ShaderNodeTexVoronoi', Scale=900.0)
+    nb.l(tc, 'Generated', vo, 'Vector')
+    st = nb.math('POWER', nb.math('SUBTRACT', va=1.0, b=vo.outputs['Distance']).outputs[0], vb=70.0)
+    nz = nb.n('ShaderNodeTexNoise', Scale=30.0)
+    nb.l(tc, 'Generated', nz, 'Vector')
+    st2 = nb.math('MULTIPLY', st.outputs[0], nz.outputs['Fac'])
+    st3 = nb.math('MULTIPLY', st2.outputs[0], vb=stars * 2.5)
+    bg = nb.n('ShaderNodeBackground')
+    bg.inputs['Color'].default_value = (0.8, 0.85, 1.0, 1)
+    nb.l(st3, 0, bg, 'Strength')
+    lp = nb.n('ShaderNodeLightPath')
+    mx = nb.n('ShaderNodeMixShader')
+    blk = nb.n('ShaderNodeBackground', Strength=0.0)
+    nb.l(lp, 'Is Camera Ray', mx, 'Fac')
+    nb.l(blk, 'Background', mx, 1)
+    nb.l(bg, 'Background', mx, 2)
+    nb.l(mx, 'Shader', out, 'Surface')
+    return w

@@ -5,13 +5,13 @@ import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
 a = core.args(); NF = arg(a, '--nf', 88, int)
 sc = core.reset(); look(sc, vol=False, glare=0.45, vignette=0.22)
-Wd.hdri('qwantani_night_puresky', strength=0.0, bg_strength=0.18, rot=30)
+space_world(1.0)
 earth('Earth')
 S = lonlat(SUB_LON, 0, GEO_R)
 n = S.normalized()
 sat = satellite('Sat', S, scale=0.16)
 sat.rotation_euler = (0, 0, math.radians(SUB_LON + 90))
-CN.sun(elev=12, az=SUB_LON + 38, warmth='noon', strength=5.0, check=False)
+CN.sun(elev=12, az=SUB_LON + 38, warmth='noon', strength=7.0, check=False)
 tgt = lonlat(92, -28, EARTH_R * 1.01)
 pm = glow_mat('PulseM', (0.6, 0.92, 1.0), 40.0)
 bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=8, radius=0.09, location=S)
@@ -28,8 +28,8 @@ beam = curve_poly('Beam', [tuple(S), tuple(tgt)], bevel=0.012, mat=lm)
 key_fac(lm, [(0, 0.0), (8, 0.35), (40, 0.5), (48, 0.2), (NF, 0.45)])
 side = n.cross(Vector((0, 0, 1))).normalized()
 cam = C.Cam(clip_end=5000)
-p0 = S + n * 7.5 + Vector((0, 0, 1.6)) + side * 1.4
-p1 = S + n * 5.6 + Vector((0, 0, 1.2)) + side * 1.0
+p0 = S + n * 7.5 + Vector((0, 0, 1.6)) + side * 0.35
+p1 = S + n * 5.6 + Vector((0, 0, 1.2)) + side * 0.25
 lk = S - n * 30 + Vector((0, 0, -6))
 cam.shot(0, NF, C.dolly(p0, p1, look=lk), lens=35, fstop=8, focus=S)
 go(cam, NF, a, sc, meter=NF // 2, target=0.2)

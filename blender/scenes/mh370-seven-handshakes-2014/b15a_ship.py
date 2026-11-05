@@ -19,10 +19,10 @@ for k in range(41):
     pts = sec + [(-x, z) for x, z in reversed(sec[:-1])]
     rings.append([(x, y, z) for x, z in pts])
 v, f = Md.loft(rings, cap_start=True, cap_end=True)
-hull_m = M.principled('Hull', base=(0.05, 0.08, 0.16), rough=0.35, grime=0.35, rough_noise=0.1)
+hull_m = M.principled('Hull', base=(0.32, 0.06, 0.03), rough=0.35, grime=0.35, rough_noise=0.1)
 white = M.principled('Super', base=(0.82, 0.82, 0.8), rough=0.45, grime=0.25)
 deck_m = M.principled('Deck', base=(0.22, 0.26, 0.24), rough=0.7, grime=0.3)
-steel = M.principled('Steel', base=(0.55, 0.42, 0.18), rough=0.4, metal=0.6)
+steel = M.principled('Steel', base=(0.85, 0.36, 0.06), rough=0.45, metal=0.2)
 win = M.principled('Win', base=(0.01, 0.012, 0.015), rough=0.05, coat=1.0)
 ship = Md.empty('Ship')
 hull = Md.mesh_obj('HullMesh', v, f, parent=ship, smooth=True, mats=(hull_m,))
@@ -50,6 +50,6 @@ for fr in range(0, NF + 1, 2):
     ship.keyframe_insert('location', frame=fr); ship.keyframe_insert('rotation_euler', frame=fr)
 Wd.point('DeckLamp', (0, -L2 + 4, DECK + 8), color=(1.0, 0.8, 0.55), power=3000, radius=0.3)
 cam = C.Cam(clip_end=60000)
-cam.shot(0, NF, C.dolly((48, -96, 15), (30, -74, 13), look=(2, -36, 4), look1=(0, -30, 4)), lens=28, fstop=8,
+cam.shot(0, NF, C.dolly((38, -84, 10), (24, -64, 9), look=(2, -34, 5), look1=(0, -28, 5)), lens=28, fstop=8,
          focus=Vector((0, -42, 6)))
 go(cam, NF, a, sc, meter=NF // 2, target=0.26)

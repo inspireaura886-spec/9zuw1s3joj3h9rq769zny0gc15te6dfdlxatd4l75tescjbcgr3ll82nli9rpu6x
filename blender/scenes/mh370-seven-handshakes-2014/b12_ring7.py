@@ -4,10 +4,10 @@ import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
 a = core.args(); NF = arg(a, '--nf', 120, int)
 sc = core.reset(); look(sc, vol=False, glare=0.55, vignette=0.22)
-Wd.hdri('qwantani_night_puresky', strength=0.0, bg_strength=0.18, rot=30)
+space_world(1.0)
 earth('Earth')
 P0 = lonlat(SUB_LON, 0)
-CN.sun(elev=-12, az=95, warmth='noon', strength=5.0, check=False)
+CN.sun(elev=-12, az=95, warmth='noon', strength=7.0, check=False)
 for k in range(6):
     m = glow_mat('RingM%d' % k, (0.55, 0.9, 1.0), 4.0)
     curve_poly('Ring%d' % k, small_circle(P0, RING_RHO[k]), bevel=0.18, mat=m)

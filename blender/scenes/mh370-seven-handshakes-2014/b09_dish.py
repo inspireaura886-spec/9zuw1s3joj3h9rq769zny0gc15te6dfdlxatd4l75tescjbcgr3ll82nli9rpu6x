@@ -5,7 +5,7 @@ from common import *
 a = core.args(); NF = arg(a, '--nf', 57, int)
 sc = core.reset(); look(sc, vol=True, glare=0.45, vignette=0.24)
 Wd.hdri('rogland_clear_night', strength=0.6, bg_strength=1.6, rot=200)
-Wd.moon(direction=(-0.6, 0.5, 0.35), strength=0.9, color=(0.62, 0.72, 1.0), angle=0.55)
+Wd.moon(direction=(-0.55, -0.6, 0.4), strength=2.2, color=(0.62, 0.72, 1.0), angle=0.55)
 CN.ground('Ground', 'dry_ground_rocks', (600, 600), tile_m=5.0, tint=(0.55, 0.5, 0.45))
 white = M.principled('DishWhite', base=(0.78, 0.79, 0.8), rough=0.42, grime=0.15)
 steel = M.principled('Steel', base=(0.5, 0.52, 0.55), rough=0.35, metal=0.9)
@@ -48,6 +48,8 @@ boxm('Hut', (16, 10, 1.6), (9, 5, 3.2), hut, 0.04)
 wm = M.emission('HutWin', (1.0, 0.8, 0.55), 6.0)
 boxm('HutWin', (16, 7.48, 1.9), (2.0, 0.04, 0.9), wm)
 Wd.point('HutLamp', (16, 6.6, 3.4), color=(1.0, 0.75, 0.45), power=900, radius=0.2)
+Wd.spot('Flood', (10, -14, 7), (0, 2, 7), color=(1.0, 0.86, 0.68), power=9000, size_deg=34, blend=0.7, radius=0.3)
+boxm('FloodPole', (10, -14, 3.5), (0.15, 0.15, 7), hut)
 fm = M.principled('Fence', base=(0.3, 0.3, 0.32), rough=0.4, metal=0.8)
 for k in range(14):
     x = -45 + k * 7

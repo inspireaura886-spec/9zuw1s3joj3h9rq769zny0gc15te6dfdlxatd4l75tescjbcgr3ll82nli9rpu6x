@@ -6,18 +6,18 @@ from common import *
 a = core.args(); NF = arg(a, '--nf', 89, int)
 sc = core.reset(); look(sc, vol=True, glare=0.55, vignette=0.26)
 Wd.hdri('qwantani_night_puresky', strength=0.25, bg_strength=0.5, rot=60)
-Wd.moon(direction=(0.2, 0.9, 0.25), strength=1.2, color=(0.62, 0.72, 1.0), angle=0.55)
-Wd.sea_plane(size=200000, z=0.0, color=(0.004, 0.007, 0.012), rough=0.3, wave=0.1, frames=NF)
+Wd.moon(direction=(-0.5, 0.75, 0.3), strength=0.8, color=(0.62, 0.72, 1.0), angle=0.55)
+Wd.sea_plane(size=200000, z=0.0, color=(0.004, 0.007, 0.012), rough=0.55, wave=0.1, frames=NF)
 land = M.principled('LandM', base=(0.02, 0.025, 0.018), rough=0.9, bump=0.3, bump_scale=0.002)
 Wd.terrain('Peninsula', size=30000, res=180, height=320, scale=0.00011, center=(15000, 9000, -60), seed=3, mat=land, island=0.9)
 Wd.terrain('FarCoast', size=40000, res=120, height=380, scale=0.00008, center=(-26000, 30000, -80), seed=8, mat=land, island=0.9)
 import random as _r
 rnd = _r.Random(5)
-for k in range(9):
-    t = math.radians(150 + k * 14 + rnd.uniform(-4, 4))
+for k in range(16):
+    t = math.radians(140 + k * 9 + rnd.uniform(-3, 3))
     cx, cy = 15000 + 5600 * math.cos(t), 9000 + 5600 * math.sin(t)
-    Wd.city_lights('Town%d' % k, center=(cx, cy, 160), radius=rnd.uniform(500, 1300), count=rnd.randint(250, 700), seed=k,
-                   strength=40, size=6, cluster=0.65)
+    Wd.city_lights('Town%d' % k, center=(cx, cy, 160), radius=rnd.uniform(500, 1300), count=rnd.randint(400, 1100), seed=k,
+                   strength=55, size=7, cluster=0.55)
 for k in range(5):
     Wd.city_lights('Far%d' % k, center=(-26000 + 7000 * math.cos(k), 30000 - 8000 + k * 900, 220), radius=900, count=180,
                    seed=20 + k, strength=30, size=8)
