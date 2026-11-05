@@ -161,9 +161,30 @@ def scatter_palms(me, pts, seed=3, scale=(0.7, 1.35)):
         bpy.context.scene.collection.objects.link(o)
 
 
-def day_world(sun_az=250, elev=40, strength=5.0, hdri_strength=1.0):
-    CN.hdri_sun('kloppenheim_02_puresky', sun_az=sun_az, strength=hdri_strength)
-    return CN.sun(elev=elev, az=sun_az, warmth='noon', strength=strength, check=False)
+def day_world(sun_az=250, elev=40, strength=1.0, hdri_strength=1.0):
+    """Clear tropical day: Nishita sky + its own sun disc (no separate sun lamp, so light and sky agree)."""
+    w = bpy.data.worlds.new('Day')
+    bpy.context.scene.world = w
+    w.use_nodes = True
+    nt = w.node_tree
+    for n in list(nt.nodes):
+        nt.nodes.remove(n)
+    nb = M.NB(nt)
+    out = nb.n('ShaderNodeOutputWorld')
+    sky = nb.n('ShaderNodeTexSky')
+    sky.sky_type = 'NISHITA'
+    sky.sun_elevation = math.radians(elev)
+    sky.sun_rotation = math.radians(sun_az)
+    sky.sun_disc = True
+    sky.sun_size = math.radians(0.6)
+    sky.sun_intensity = strength
+    sky.air_density = 1.0
+    sky.dust_density = 0.5
+    sky.altitude = 0.0
+    bg = nb.n('ShaderNodeBackground', Strength=1.0)
+    nb.l(sky, 'Color', bg, 'Color')
+    nb.l(bg, 'Background', out, 'Surface')
+    return w
 
 
 def deep_plane(z=-60.0, size=60000.0, color=(0.01, 0.07, 0.16)):
@@ -376,22 +397,30 @@ def trunk(name, p0, p1, r0, r1, mat, root_end=True):
     return o
 
 
+def spit_height(X, Y):
+    ridge = 0.95 * np.exp(-((Y + 2.0) / 24.0) ** 2) * (1 - smooth01(np.abs(X), 120, 200))
+    Z = ridge + 0.05 * fnoise(X, Y, 14.0)
+    Z = Z - 2.6 * smooth01(Y, 10, 40) - 2.6 * smooth01(-Y, 26, 80)
+    Z = Z + 1.7 * np.exp(-((Y - 196.0) / 9.0) ** 2) * (1 - smooth01(np.abs(X), 330, 420))   # far lagoon rim
+    return np.maximum(Z, -2.6 + 0.05 * fnoise(X, Y, 9.0))
+
+
+def spit_z(x, y):
+    return float(spit_height(np.array([x]), np.array([y]))[0])
+
+
 def spit_scene(NF, golden=True, sun_az=250, elev=14, water_z=-0.05, wash=False):
     """Local sandspit: coral-sand ridge running along X, lagoon on +Y, ocean on -Y, palms on the far rim.
     Returns dict with clump objects. Hero clump at the origin."""
     size, res = 420.0, 420
     xs = np.linspace(-size / 2, size / 2, res + 1)
     X, Y = np.meshgrid(xs, xs)
-    ridge = 0.95 * np.exp(-((Y + 2.0) / 24.0) ** 2) * (1 - smooth01(np.abs(X), 120, 200))
-    Z = ridge + 0.05 * fnoise(X, Y, 14.0) - 0.0
-    # shelf to the lagoon (+Y) and ocean (-Y)
-    Z = Z - 2.6 * smooth01(Y, 10, 40) - 2.6 * smooth01(-Y, 26, 80)
-    Z = np.maximum(Z, -2.6 + 0.05 * fnoise(X, Y, 9.0))
+    Z = spit_height(X, Y)
     col = np.ones(X.shape + (3,))
     wet = smooth01(-Z, -0.02, 0.5)
-    col[..., 0] = 1.5 - 0.6 * wet
-    col[..., 1] = 1.45 + 0.05 * wet
-    col[..., 2] = 1.3 + 0.0 * wet
+    col[..., 0] = 2.7 - 1.0 * wet
+    col[..., 1] = 2.6 - 0.8 * wet
+    col[..., 2] = 2.3 - 0.9 * wet
     sm = M.texture_set('SpitSand', 'damp_beach_sand', scale=0.45, tint=(1.5, 1.45, 1.3), box=True)
     nt = sm.node_tree
     nb = M.NB(nt)
@@ -409,8 +438,8 @@ def spit_scene(NF, golden=True, sun_az=250, elev=14, water_z=-0.05, wash=False):
     me = palm_mesh_obj()
     rnd = random.Random(8)
     pts = []
-    for k in range(120):
-        pts.append((rnd.uniform(-420, 420), rnd.uniform(520, 600), 0.2))
+    for k in range(150):
+        pts.append((rnd.uniform(-330, 330), rnd.uniform(188, 204), 1.0))
     scatter_palms(me, pts, seed=4, scale=(0.9, 1.5))
     # lighting
     if golden:
@@ -424,7 +453,7 @@ def clump(NF, wash=False, crust=0.35, loc=(0.0, 0.0), seed=2):
     wm = driftwood_mat('Driftwood', crust=crust)
     objs = []
     lx, ly = loc
-    z0 = 0.62
+    z0 = spit_z(lx, ly) + 0.38
     # main trunk (fuselage-like), two crossing trunks (wing-like), a tail pair
     spec = [((-8.5, -0.3, z0), (7.5, 0.4, z0 + 0.15), 0.42, 0.28),
             ((-1.5, -6.2, z0 + 0.1), (0.9, 5.8, z0 + 0.25), 0.34, 0.2),
@@ -445,7 +474,7 @@ def clump(NF, wash=False, crust=0.35, loc=(0.0, 0.0), seed=2):
     me = palm_mesh_obj(dry=True)
     for k in range(10):
         o = bpy.data.objects.new('Dry%d' % k, me)
-        o.location = (lx + rnd.uniform(-9, 9), ly + rnd.uniform(-6, 6), 0.5)
+        o.location = (lx + rnd.uniform(-9, 9), ly + rnd.uniform(-6, 6), z0 + 0.1)
         o.rotation_euler = (math.radians(88), 0, rnd.uniform(0, 6.283))
         o.scale = (0.5, 0.5, 0.5)
         bpy.context.scene.collection.objects.link(o)
@@ -611,12 +640,11 @@ def sensor_sled(name='Sled', loc=(0, 0, 0), scale=1.0):
 
 
 def steel_tube(name='Tube', loc=(0, 0, 0.1), length=0.76, r=0.07, yaw=25.0):
-    rust = M.principled('TubeRust', base=(0.30, 0.13, 0.05), rough=0.85, metal=0.55, grime=0.6, rough_noise=0.2, bump=0.9, bump_scale=30)
+    rust = M.principled('TubeRust', base=(0.34, 0.15, 0.06), rough=0.85, metal=0.55, grime=0.6, rough_noise=0.2, bump=0.9, bump_scale=30)
     o = cyl(name, (-length / 2, 0, 0), (length / 2, 0, 0), r, rust, 28)
-    o.location = loc
-    o.rotation_mode = 'XYZ'
-    # end caps look open: inner dark ring
-    o.rotation_euler = (math.radians(4), math.radians(8), math.radians(yaw))
+    root = Md.empty(name + 'Root', loc)
+    o.parent = root
+    root.rotation_euler = (math.radians(3), math.radians(5), math.radians(yaw))
     return o
 
 

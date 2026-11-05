@@ -3,7 +3,7 @@ import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ac import *
 a = core.args(); NF = arg(a, "--nf", 62, int)
 sc = core.reset(); look(sc, vol=False, glare=0.3, vignette=0.2)
-day_world(sun_az=215, elev=30, strength=5.0)
+day_world(sun_az=215, elev=36)
 at = Atoll(); at.build(NF=NF)
 lx, ly = at.spit_center()
 taraia_shape((lx + 6, ly), rot_deg=18, scale=1.0, z=1.05)

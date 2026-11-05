@@ -4,7 +4,7 @@ from ac import *
 a = core.args(); NF = arg(a, "--nf", 98, int)
 sc = core.reset(); look(sc, vol=True, glare=0.35, vignette=0.28, lift=(0.97, 1.0, 1.04))
 underwater_world(strength=1.7, density=0.02)
-CN.sun(elev=62, az=215, warmth='noon', strength=4.5, check=False)
+CN.sun(elev=62, az=215, warmth='noon', strength=7.0, check=False)
 lagoon_floor(NF, depth=-4.0, ripple=0.04)
 steel_tube('Tube', (0, 0, -3.86), length=0.76, r=0.07, yaw=28)
 rm = glow_mat('PingTM', (0.55, 0.95, 1.0), 3.2)

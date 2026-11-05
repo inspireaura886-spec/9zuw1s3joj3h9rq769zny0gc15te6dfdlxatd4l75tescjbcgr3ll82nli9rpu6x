@@ -4,7 +4,7 @@ from ac import *
 a = core.args(); NF = arg(a, "--nf", 133, int)
 sc = core.reset(); look(sc, vol=True, glare=0.35, vignette=0.26, lift=(0.97, 1.0, 1.04))
 underwater_world(strength=1.8, density=0.016)
-CN.sun(elev=64, az=210, warmth='noon', strength=4.5, check=False)
+CN.sun(elev=64, az=210, warmth='noon', strength=7.0, check=False)
 lagoon_floor(NF, depth=-4.0)
 sled = sensor_sled('Sled', (0, -9, -2.3), scale=1.25)
 for fr in range(0, NF + 1, 3):
@@ -18,5 +18,5 @@ for k, f0 in enumerate((8, 48, 88)):
     ro.scale = (11, 11, 11); ro.keyframe_insert('scale', frame=f0 + 30)
     key_fac(rm, [(0, 0.0), (f0 - 1, 0.0), (f0, 1.0), (f0 + 30, 0.0)])
 cam = C.Cam(clip_end=2000)
-cam.shot(0, NF, C.track('Sled', offset=(5.2, -6.5, 0.9), offset1=(4.2, -5.2, 0.5), look_offset=(0, 1.5, -0.5)), lens=35, fstop=8, focus='Sled')
+cam.shot(0, NF, C.track('Sled', offset=(4.2, -5.2, 0.9), offset1=(3.4, -4.2, 0.6), look_offset=(0, 0.9, 0.1)), lens=35, fstop=8, focus='Sled')
 go(cam, NF, a, sc, meter=NF // 2, target=0.24)
