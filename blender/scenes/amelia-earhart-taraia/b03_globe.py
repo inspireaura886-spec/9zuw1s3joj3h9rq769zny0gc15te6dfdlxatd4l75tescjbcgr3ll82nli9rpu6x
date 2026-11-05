@@ -29,5 +29,5 @@ curve_poly('NBeam', [tuple(n * EARTH_R * 1.004), tuple(n * (EARTH_R + 16))], bev
 key_fac(bm, [(0, 0.0), (38, 0.0), (50, 0.9), (NF, 0.7)])
 cam = C.Cam(clip_end=5000)
 lon_d = LON % 360
-cam.shot(0, NF, C.orbit((0, 0, 0), r=300, a0=lon_d - 18, a1=lon_d - 4, h=(-24, -26), look_h=-6), lens=35, fstop=11, focus=lonlat(LON, LAT))
+cam.shot(0, NF, C.orbit((0, 0, 0), r=330, a0=lon_d - 9, a1=lon_d - 1, h=(-24, -26), look_h=-6), lens=35, fstop=11, focus=lonlat(LON, LAT))
 go(cam, NF, a, sc, meter=NF - 10, target=0.2)

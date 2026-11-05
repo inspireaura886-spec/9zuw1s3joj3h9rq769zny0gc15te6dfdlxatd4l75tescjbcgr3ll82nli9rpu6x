@@ -3,7 +3,7 @@ import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ac import *
 a = core.args(); NF = arg(a, "--nf", 75, int)
 sc = core.reset(); look(sc, vol=False, glare=0.4, vignette=0.24)
-spit_scene(NF, sun_az=238, elev=20)
+spit_scene(NF, sun_az=58, elev=20)
 clump(NF)
 wm = wire_mat('WirePlane')
 wire_plane((0.5, 0.0, 5.4), span=13.0, yaw_deg=84, mat=wm)
