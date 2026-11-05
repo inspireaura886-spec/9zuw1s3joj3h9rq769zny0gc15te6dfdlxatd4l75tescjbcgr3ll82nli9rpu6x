@@ -251,52 +251,41 @@ class Atoll:
         xs = np.linspace(-size / 2, size / 2, res + 1)
         X, Y = np.meshgrid(xs, xs)
         Z = self.height(X, Y)
+        # colour baked per vertex in numpy (depth ramp + surf foam): no ColorRamp nodes involved
+        zs = [-30, -15, -6, -2.5, -1.0, -0.1, 0.15, 0.7, 1.5, 2.4, 3.0]
+        cs = np.array([(0.003, 0.025, 0.06), (0.008, 0.075, 0.17), (0.02, 0.26, 0.38), (0.10, 0.60, 0.60), (0.36, 0.82, 0.74),
+                       (0.78, 0.88, 0.80), (0.66, 0.60, 0.46), (0.86, 0.80, 0.66), (0.30, 0.34, 0.14), (0.07, 0.15, 0.04),
+                       (0.05, 0.12, 0.03)])
+        col = np.stack([np.interp(Z, zs, cs[:, k]) for k in range(3)], -1)
+        rr_ = np.hypot(X, Y); th_ = np.arctan2(Y, X)
+        d_ = rr_ - (self.R0 + self.wob(th_)); w_ = self.width(th_)
+        foam = (np.exp(-((d_ - w_ - 28) / 7.0) ** 2) * (0.55 + 0.45 * fnoise(X, Y, 6.0))
+                + 0.5 * np.exp(-((d_ - w_ - 4) / 4.0) ** 2) + 0.25 * np.exp(-((-d_ - w_ - 6) / 5.0) ** 2))
+        fo = np.clip(foam, 0, 1)[..., None]
+        col = col * (1 - fo) + 0.95 * fo
         m, nb, b, out = M.new('AtollGround')
+        va = nb.n('ShaderNodeVertexColor')
+        va.layer_name = 'Col'
         tc = nb.n('ShaderNodeTexCoord')
-        sep = nb.n('ShaderNodeSeparateXYZ')
-        nb.l(tc, 'Object', sep, 'Vector')
-        mr = nb.n('ShaderNodeMapRange')
-        mr.inputs['From Min'].default_value = -30.0
-        mr.inputs['From Max'].default_value = 3.0
-        mr.clamp = True
-        nb.l(sep, 'Z', mr, 'Value')
-        sand_hi = (0.86, 0.80, 0.66)
-        cr = ramp(nb, [
-            (0.00, (0.003, 0.025, 0.06)), (0.48, (0.008, 0.075, 0.17)), (0.727, (0.02, 0.26, 0.38)),
-            (0.833, (0.10, 0.60, 0.60)), (0.879, (0.36, 0.82, 0.74)), (0.903, (0.78, 0.88, 0.80)),
-            (0.913, (0.66, 0.60, 0.46)), (0.93, sand_hi), (0.948, (0.30, 0.34, 0.14)), (0.975, (0.07, 0.15, 0.04)),
-            (1.0, (0.05, 0.12, 0.03))])
-        nb.l(mr, 'Result', cr, 'Fac')
         nz = nb.n('ShaderNodeTexNoise', Scale=0.07, Detail=7.0)
         nb.l(tc, 'Object', nz, 'Vector')
-        mxn = nb.n('ShaderNodeMix')
-        mxn.data_type = 'RGBA'
-        mxn.blend_type = 'MULTIPLY'
-        mxn.inputs['Factor'].default_value = 0.55
-        nb.l(cr, 'Color', mxn, 6)
-        cn = ramp(nb, [(0.25, (0.62, 0.62, 0.62)), (0.75, (1.25, 1.25, 1.2))])
-        nb.l(nz, 'Fac', cn, 'Fac')
-        nb.l(cn, 'Color', mxn, 7)
+        nm = nb.math('MULTIPLY_ADD', nz.outputs['Fac'], vb=0.5)
+        nm.inputs[2].default_value = 0.75
+        cc = nb.n('ShaderNodeCombineColor')
+        nb.l(nm, 0, cc, 'Red'); nb.l(nm, 0, cc, 'Green'); nb.l(nm, 0, cc, 'Blue')
+        mx2 = nb.n('ShaderNodeMix')
+        mx2.data_type = 'RGBA'
+        mx2.blend_type = 'MULTIPLY'
+        mx2.inputs['Factor'].default_value = 1.0
+        nb.l(va, 'Color', mx2, 6)
+        nb.l(cc, 'Color', mx2, 7)
+        nb.l(mx2, 2, b, 'Base Color')
         b.inputs['Roughness'].default_value = 0.85
         bn = nb.n('ShaderNodeTexNoise', Scale=0.9, Detail=8.0)
         nb.l(tc, 'Object', bn, 'Vector')
         bp = nb.n('ShaderNodeBump', Strength=0.35, Distance=0.4)
         nb.l(bn, 'Fac', bp, 'Height')
         nb.l(bp, 'Normal', b, 'Normal')
-        rr_ = np.hypot(X, Y); th_ = np.arctan2(Y, X)
-        d_ = rr_ - (self.R0 + self.wob(th_)); w_ = self.width(th_)
-        foam = (np.exp(-((d_ - w_ - 28) / 7.0) ** 2) * (0.55 + 0.45 * fnoise(X, Y, 6.0))
-                + 0.5 * np.exp(-((d_ - w_ - 4) / 4.0) ** 2) + 0.25 * np.exp(-((-d_ - w_ - 6) / 5.0) ** 2))
-        col = 1.0 + 2.0 * np.clip(foam, 0, 1)[..., None] * np.ones((1, 1, 3))
-        va = nb.n('ShaderNodeVertexColor')
-        va.layer_name = 'Col'
-        mx2 = nb.n('ShaderNodeMix')
-        mx2.data_type = 'RGBA'
-        mx2.blend_type = 'MULTIPLY'
-        mx2.inputs['Factor'].default_value = 1.0
-        nb.l(mxn, 2, mx2, 6)
-        nb.l(va, 'Color', mx2, 7)
-        nb.l(mx2, 2, b, 'Base Color')
         grid_obj('Atoll', X, Y, Z, colors=col, mat=m)
         deep_plane()
         if water:
