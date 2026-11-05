@@ -51,10 +51,10 @@ const Photo = ({dur, s0 = 1.0, s1 = 1.08, fadeIn = 0}) => { const f = useCurrent
   </AbsoluteFill>); };
 
 // Route schematic (approximate, not to scale): IGARI -> turn back across the peninsula -> Strait -> last radar 02:22.
-const LON0 = 95, LAT1 = 8.3, K = 80; // px per degree
+const LON0 = 95.8, LAT1 = 8.3, K = 78; // px per degree
 const px = (lon, lat) => [(lon - LON0) * K + 18, (LAT1 - lat) * K + 18];
 const route = [[103.6, 6.9], [102.9, 6.5], [102.25, 6.15], [101.3, 5.85], [100.3, 5.7], [99.0, 6.0], [97.6, 6.4], [96.4, 6.7]];
-const places = [['KOTA BHARU', 102.25, 6.1, 'r'], ['PENANG', 100.33, 5.3, 'b'], ['KUALA LUMPUR', 101.69, 3.14, 'r'], ['SUMATRA', 95.4, 4.6, 'r']];
+const places = [['KOTA BHARU', 102.25, 6.1, 'r'], ['PENANG', 100.33, 5.3, 'b'], ['KUALA LUMPUR', 101.69, 3.14, 'r'], ['SUMATRA', 96.0, 4.6, 'r']];
 const MapCard = ({dur}) => { const f = useCurrentFrame();
   const s = interpolate(f, [0, dur], [1.06, 1.0], {easing: ez, ...cl});
   const o = interpolate(f, [0, 8], [0, 1], cl);
@@ -62,7 +62,7 @@ const MapCard = ({dur}) => { const f = useCurrentFrame();
   const d = route.map((p, i) => { const [x, y] = px(p[0], p[1]); return (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1); }).join(' ');
   const [ix, iy] = px(route[0][0], route[0][1]); const [lx, ly] = px(route[route.length - 1][0], route[route.length - 1][1]);
   const grid = [];
-  for (let lo = 95; lo <= 105; lo += 2) { const [x] = px(lo, 0); grid.push(<line key={'v' + lo} x1={x} y1={18} x2={x} y2={px(0, 2.4)[1]} stroke="rgba(247,243,234,0.12)" strokeWidth={1.5} />); }
+  for (let lo = 96; lo <= 104; lo += 2) { const [x] = px(lo, 0); grid.push(<line key={'v' + lo} x1={x} y1={18} x2={x} y2={px(0, 2.4)[1]} stroke="rgba(247,243,234,0.12)" strokeWidth={1.5} />); }
   for (let la = 3; la <= 8; la += 1) { const [, y] = px(0, la); grid.push(<line key={'h' + la} x1={18} y1={y} x2={738} y2={y} stroke="rgba(247,243,234,0.12)" strokeWidth={1.5} />); }
   return (<AbsoluteFill style={{opacity: o}}>
     <AbsoluteFill style={{background: 'linear-gradient(#0b1015, #10161c)'}} />
