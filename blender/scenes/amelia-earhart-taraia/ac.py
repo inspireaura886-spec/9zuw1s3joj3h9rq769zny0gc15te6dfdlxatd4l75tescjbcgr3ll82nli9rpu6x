@@ -186,7 +186,7 @@ def day_world(sun_az=250, elev=40, strength=1.0, hdri_strength=1.0):
     sky.air_density = 1.0
     sky.dust_density = 0.5
     sky.altitude = 0.0
-    bg = nb.n('ShaderNodeBackground', Strength=1.0)
+    bg = nb.n('ShaderNodeBackground', Strength=0.05)
     nb.l(sky, 'Color', bg, 'Color')
     nb.l(bg, 'Background', out, 'Surface')
     return w
@@ -503,7 +503,7 @@ def ytrunk(loc=(0.0, 0.0), z=0.55, yaw=0.0, crust=0.3):
 
 
 # ------------------------------------------------------------------ generic twin-engine plane (hologram wireframe)
-def wire_mat(name='WirePlane', color=(0.6, 0.92, 1.0), strength=5.0):
+def wire_mat(name='WirePlane', color=(0.6, 0.92, 1.0), strength=14.0):
     m, nb, b, out = M.new(name)
     M.no_light(m)
     m.node_tree.nodes.remove(b)
@@ -511,7 +511,7 @@ def wire_mat(name='WirePlane', color=(0.6, 0.92, 1.0), strength=5.0):
     em = nb.n('ShaderNodeEmission', Strength=strength)
     em.inputs['Color'].default_value = (*color, 1)
     wf = nb.n('ShaderNodeWireframe')
-    wf.inputs['Size'].default_value = 0.05
+    wf.inputs['Size'].default_value = 0.07
     mx = nb.n('ShaderNodeMixShader')
     mx.name = 'Mix'
     nb.l(wf, 'Fac', mx, 'Fac')
@@ -536,11 +536,11 @@ def key_fade(m, keys):
 def wire_plane(center, span=13.0, yaw_deg=0.0, mat=None):
     """Generic unmarked twin-engine monoplane, ~11 m long, built from subdivided primitives (wireframe shows edges)."""
     root = Md.empty('WirePlane', center)
-    parts = []
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=18, ring_count=10, radius=1.0, location=(0, 0, 0))
-    fus = bpy.context.active_object
-    fus.scale = (0.85, 5.6, 0.85)
-    parts.append(fus)
+    parts = [cyl('WFus', (0, -4.8, 0), (0, 3.6, 0), 0.8, mat, 10)]
+    bpy.ops.mesh.primitive_cone_add(vertices=10, radius1=0.8, radius2=0.05, depth=2.0, location=(0, 4.6, 0), rotation=(math.radians(-90), 0, 0))
+    nose = bpy.context.active_object
+    nose.data.materials.append(mat)
+    parts.append(nose)
     parts.append(boxm('WWing', (0, 0.6, 0.0), (span, 1.9, 0.16), mat))
     parts.append(boxm('WTail', (0, -5.0, 0.35), (4.2, 1.1, 0.12), mat))
     parts.append(boxm('WFin', (0, -5.1, 1.0), (0.12, 1.2, 1.6), mat))

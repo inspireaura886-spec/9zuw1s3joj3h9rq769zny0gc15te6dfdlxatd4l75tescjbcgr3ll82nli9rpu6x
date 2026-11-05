@@ -17,5 +17,5 @@ for k in range(11):
     o.location = (rnd.uniform(-4, 5), 18.0 + rnd.uniform(0, 14), -0.4)
     o.keyframe_insert('location', frame=NF)
 cam = C.Cam(clip_end=6000)
-cam.shot(0, NF, C.crane((14, -30, 24), (-3, 16, 0), dz=22, dlook=0), lens=35, fstop=11, focus=Vector((-5, 18, 0)))
+cam.shot(0, NF, C.crane((12, -12, 11), (-4, 17, 0), dz=12, dlook=0), lens=35, fstop=11, focus=Vector((-5, 18, 0)))
 go(cam, NF, a, sc, meter=NF // 2, target=0.27)
