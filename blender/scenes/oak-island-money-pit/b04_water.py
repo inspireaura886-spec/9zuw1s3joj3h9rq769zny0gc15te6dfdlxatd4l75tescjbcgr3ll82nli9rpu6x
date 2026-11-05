@@ -3,14 +3,14 @@ import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from oc import *
 a = core.args(); NF = arg(a, '--nf', 165, int)
 sc = core.reset()
-setup(sc, exposure=0.8, vol=True, glare=0.5, vignette=0.4)
+setup(sc, exposure=0.55, vol=True, glare=0.5, vignette=0.4)
 Wd.hdri('moonless_golf', strength=0.05, bg_strength=0.0)
 D = 6.0
 fl = shaft(depth=D)
 platform(-2.2); 
 M.assign(bpy.data.objects['Floor'], M.texture_set('FloorStone', 'rough_concrete', scale=1.0, tint=(0.3, 0.3, 0.3), box=True))
-Wd.area('Sky', (0, 0, 2.5), (0, 0, -4), color=(0.7, 0.8, 1.0), power=1400, size=2.4)
-lan = Wd.point('Lantern', (0.5, -0.5, -1.2), color=(1.0, 0.62, 0.3), power=160, radius=0.15)
+Wd.area('Sky', (0, 0, 2.5), (0, 0, -4), color=(0.7, 0.8, 1.0), power=500, size=2.4)
+lan = Wd.point('Lantern', (0.5, -0.5, -1.2), color=(1.0, 0.62, 0.3), power=50, radius=0.15)
 CN.haze(center=(0, 0, -D / 2), size=(2.9, 2.9, D), density=0.035, color=(0.9, 0.82, 0.7), anisotropy=0.5, height_falloff=0.0)
 # crowbar
 bar = cyl('Crowbar', (0, 0, 0), (0, 0, 1.6), 0.016, M.principled('Bar', base=(0.12, 0.12, 0.13), rough=0.45, metal=1.0))
