@@ -10,7 +10,7 @@ fl = shaft(depth=D)
 platform(-2.2); 
 M.assign(bpy.data.objects['Floor'], M.texture_set('FloorStone', 'rough_concrete', scale=1.0, tint=(0.3, 0.3, 0.3), box=True))
 Wd.area('Sky', (0, 0, 2.5), (0, 0, -4), color=(0.7, 0.8, 1.0), power=500, size=2.4)
-bpy.data.objects['Sky'].visible_camera = False
+bpy.data.objects['Sky'].visible_camera = False; bpy.data.objects['Sky'].visible_glossy = False
 lan = Wd.point('Lantern', (0.5, -0.5, -1.2), color=(1.0, 0.62, 0.3), power=50, radius=0.15)
 CN.haze(center=(0, 0, -D / 2), size=(2.9, 2.9, D), density=0.035, color=(0.9, 0.82, 0.7), anisotropy=0.5, height_falloff=0.0)
 # crowbar
