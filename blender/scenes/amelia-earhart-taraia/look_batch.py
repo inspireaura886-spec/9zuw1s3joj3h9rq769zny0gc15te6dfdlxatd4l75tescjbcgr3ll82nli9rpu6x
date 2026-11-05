@@ -10,7 +10,7 @@ PCT, SPP = g('--lpct', '50'), g('--lspp', '16')
 JOBS = [('b01_atoll_top', '0,100', 114), ('b02_lagoon_low', '30', 62), ('b03_globe', '90', 157), ('b04_aerial_bw', '40,100', 173),
         ('b05_ship', '50', 104), ('b06_approach', '35', 76), ('b07_drone', '50', 99), ('b08_seabed', '60', 133),
         ('b09_spit_twist', '10,40', 75), ('b10_trunks', '30', 69), ('b11_spit_wash', '20,120', 145), ('b12_macro', '50', 106),
-        ('b13_tube', '50', 98), ('b15_dawn', '50', 102)]
+        ('b13_tube', '50', 98), ('b15_dawn', '50', 102), ('d01_nowater', '0', 114), ('d02_dark', '0', 114)]
 os.makedirs(OUT, exist_ok=True)
 tim = []
 for idx in [int(x) for x in ST.split(',') if x.strip()]:
