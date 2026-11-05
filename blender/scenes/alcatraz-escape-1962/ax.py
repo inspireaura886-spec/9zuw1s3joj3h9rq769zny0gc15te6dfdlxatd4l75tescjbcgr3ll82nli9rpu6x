@@ -229,7 +229,7 @@ def island(NF, lighthouse=True):
         sp = Wd.spot('LHBeam', (88, -12, 40), (400, -12, 40), color=(1.0, 0.92, 0.75), power=6e5, size_deg=7, blend=0.4, radius=0.5)
         sp.parent = piv
         sp.location = (0, 0, 0)
-        sp.rotation_euler = (math.radians(90), 0, math.radians(-90))
+        sp.rotation_euler = (0, math.radians(-90), 0)
         for f in range(0, max(NF, 60) + 1, 5):
             piv.rotation_euler = (0, 0, math.radians(f * 4.5))
             piv.keyframe_insert('rotation_euler', frame=f)
