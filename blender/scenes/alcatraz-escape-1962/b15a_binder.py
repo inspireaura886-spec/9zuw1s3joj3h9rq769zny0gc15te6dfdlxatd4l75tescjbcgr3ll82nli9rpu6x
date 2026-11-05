@@ -1,0 +1,31 @@
+"""b15a (MEDIUM-WIDE 35 mm, 'finding in nineteen seventy-nine'): closed case binder labelled 1979 PRESUMED DROWNED on a desk under a hooded lamp. Slow push-in. (Room raised to z=50.)"""
+import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from ax import *
+a = core.args(); NF = arg(a, '--nf', 88, int)
+sc = core.reset(); look(sc, vol=True, glare=0.4, vignette=0.3)
+Wd.hdri('moonless_golf', strength=0.03)
+m = mats()
+Z = 50.0
+room_box(4.0, 3.0, 2.6, z0=Z, tag='N')
+top = M.texture_set('BinderDesk', 'wood_table_worn', scale=1.0, tint=(0.32, 0.24, 0.17), box=True)
+boxm('Desk', (0, 0, Z + 0.72), (1.8, 0.9, 0.05), top, 0.01)
+cloth = M.principled('BinderCloth', base=(0.045, 0.06, 0.05), rough=0.85, bump=0.5, bump_scale=300)
+lab = M.principled('BinderLabel', base=(0.62, 0.6, 0.52), rough=0.8)
+txm = M.principled('BinderText', base=(0.02, 0.02, 0.02), rough=0.5)
+zb = Z + 0.745
+boxm('Binder', (0, 0, zb + 0.03), (0.34, 0.28, 0.06), cloth, 0.008)
+boxm('BinderSpine', (-0.17, 0, zb + 0.03), (0.012, 0.28, 0.062), M.principled('BinderSp', base=(0.03, 0.04, 0.035), rough=0.8))
+boxm('Label', (0.0, 0.05, zb + 0.0615), (0.2, 0.075, 0.002), lab, 0.0005)
+text_obj('Y1979', '1979', (-0.085, 0.056, zb + 0.0632), size=0.028, mat=txm)
+text_obj('Drown', 'PRESUMED DROWNED', (-0.092, 0.036, zb + 0.0632), size=0.0105, mat=txm)
+boxm('Clasp', (0.15, 0, zb + 0.062), (0.03, 0.05, 0.004), m['tin'])
+rnd = random.Random(2)
+for k in range(5):
+    p = boxm('Loose%d' % k, (0.38 + 0.01 * k, -0.15 + rnd.uniform(-0.02, 0.02), zb + 0.001 + 0.002 * k), (0.21, 0.297, 0.002), lab, 0.0004)
+    p.rotation_euler = (0, 0, math.radians(rnd.uniform(-6, 6)))
+desk_lamp(-0.6, 0.33, Z + 0.745, tag='BL', power=300, target=(0.0, 0.0, zb + 0.03))
+Wd.area('RoomFill', (0.5, -1.4, Z + 2.3), (0, 0, Z + 0.75), color=(0.55, 0.65, 1.0), power=40, size=2.0)
+CN.haze(center=(0, 0, Z + 1.2), size=(3.8, 2.8, 2.4), density=0.01, color=(0.9, 0.88, 0.8), anisotropy=0.55, noise=0.35, noise_scale=0.3)
+cam = C.Cam(clip_end=60)
+cam.shot(0, NF, C.dolly((0.34, -0.66, Z + 1.45), (0.08, -0.36, Z + 1.15), look=(0.0, 0.02, zb + 0.04), look1=(0.0, 0.03, zb + 0.04)), lens=35, fstop=3.5, focus=Vector((0.0, 0.03, zb + 0.05)))
+go(cam, NF, a, sc, meter=NF // 2, target=0.21)

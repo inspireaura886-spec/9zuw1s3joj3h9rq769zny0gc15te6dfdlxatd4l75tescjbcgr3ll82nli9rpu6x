@@ -1,0 +1,17 @@
+"""b05 (MEDIUM-WIDE 28 mm, 'squeezed through widened cell vents'): cell rear wall with a widened vent, spoon and chipped concrete, dusty service corridor beyond. Low push-in toward the vent."""
+import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from ax import *
+a = core.args(); NF = arg(a, '--nf', 75, int)
+sc = core.reset(); look(sc, vol=True, glare=0.4, vignette=0.28)
+Wd.hdri('moonless_golf', strength=0.03)
+info = cell(0.0, tag='V', head=False, vent=True)
+m = mats()
+utility_corridor()
+spoon((0.02, CD - 0.55, 0.0), yaw=28)
+boxm('WalkFloor', (0, -1.6, -0.03), (6, 3.2, 0.06), m['floor'])
+Wd.spot('CellKey', (0.7, -1.4, 1.9), (0.12, 2.6, 0.7), color=(1.0, 0.8, 0.55), power=170, size_deg=40, blend=0.7, radius=0.06)
+Wd.area('CellFill', (-0.4, 0.4, 2.3), (0.1, 2.4, 0.6), color=(0.55, 0.7, 1.0), power=45, size=1.2)
+CN.haze(center=(0, 1.4, 1.2), size=(1.5, 2.7, 2.3), density=0.014, color=(0.9, 0.88, 0.8), anisotropy=0.55, noise=0.4, noise_scale=0.4)
+cam = C.Cam(clip_end=100)
+cam.shot(0, NF, C.dolly((0.1, 0.55, 0.62), (0.12, 2.35, 0.7), look=(0.12, 4.0, 0.8), look1=(0.12, 4.0, 0.8)), lens=28, fstop=3.2, focus=Vector((0.12, 2.85, 0.75)))
+go(cam, NF, a, sc, meter=NF // 2, target=0.2)
