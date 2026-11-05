@@ -94,11 +94,11 @@ const Plos = ({dur}) => { const f = useCurrentFrame();
     <AbsoluteFill style={{transform: `scale(${s})`}}>
       <div style={{position: 'absolute', left: SAFE.left, top: 520, width: SAFE.width, fontFamily: 'Special Elite', fontSize: 28, letterSpacing: 4, color: ACC, opacity: t0}}>PLOS ONE · 2026</div>
       <div style={{position: 'absolute', left: SAFE.left, top: 570, width: SAFE.width, fontFamily: 'DM Serif Display', fontSize: 110, lineHeight: 1, color: INK, opacity: t0}}>28 hearers</div>
-      <div style={{position: 'absolute', left: SAFE.left, top: 730, width: SAFE.width, display: 'flex', flexWrap: 'wrap', gap: 26, justifyContent: 'center'}}>
+      <div style={{position: 'absolute', left: SAFE.left, top: 730, width: SAFE.width, display: 'flex', flexWrap: 'wrap', gap: 20, justifyContent: 'center'}}>
         {Array.from({length: 28}).map((_, i) => { const a = interpolate(f, [60 + i * 1.2, 70 + i * 1.2], [0, 1], {easing: ez, ...cl});
-          return <div key={i} style={{width: 78, height: 78, borderRadius: 39, background: INK, opacity: 0.85 * a, transform: `scale(${0.6 + 0.4 * a})`}} />; })}
+          return <div key={i} style={{width: 64, height: 64, borderRadius: 32, background: INK, opacity: 0.85 * a, transform: `scale(${0.6 + 0.4 * a})`}} />; })}
       </div>
-      <div style={{position: 'absolute', left: SAFE.left + 20, top: 1070, width: SAFE.width - 40, textAlign: 'center', opacity: many, transform: `translateY(${(1 - many) * 12}px)`, border: `4px solid ${ACC}`, borderRadius: 10, padding: '14px 0', background: 'rgba(10,10,12,0.6)', fontFamily: 'Montserrat', fontWeight: 900, fontSize: 34, whiteSpace: 'nowrap', letterSpacing: 1, color: INK}}>TINNITUS: FOR MANY, NOT ALL</div>
+      <div style={{position: 'absolute', left: SAFE.left + 20, top: 1095, width: SAFE.width - 40, textAlign: 'center', opacity: many, transform: `translateY(${(1 - many) * 12}px)`, border: `4px solid ${ACC}`, borderRadius: 10, padding: '14px 0', background: 'rgba(10,10,12,0.6)', fontFamily: 'Montserrat', fontWeight: 900, fontSize: 34, whiteSpace: 'nowrap', letterSpacing: 1, color: INK}}>TINNITUS: FOR MANY, NOT ALL</div>
     </AbsoluteFill><Bottom /></AbsoluteFill>); };
 
 const Cap = () => { const f = useCurrentFrame(); const y = (f < 173 || f >= 1332) ? 1300 : 1280;
@@ -112,7 +112,7 @@ export const TaosHum = () => (
     <Sequence from={269} durationInFrames={138}><Fade><Docs dur={138} /></Fade></Sequence>
     <Sequence from={683} durationInFrames={109}><Fade><Dial dur={109} /></Fade></Sequence>
     <Sequence from={985} durationInFrames={186}><Fade><Plos dur={186} /></Fade></Sequence>
-    <Sequence from={1332} durationInFrames={93}><Adams dur={93} s0={1.0} s1={1.0} card={false} fadeIn={10} /></Sequence>
+    <Sequence from={1332} durationInFrames={93}><Adams dur={93} s0={1.07} s1={1.0} card={false} fadeIn={10} /></Sequence>
     <Real3DFinish seed={51} />
     <Head from={0} dur={167} inF={-12} lines={['Labs hunted a sound', 'in Taos']} />
     <Head from={177} dur={88} lines={['A hum most people', 'cannot hear']} />
