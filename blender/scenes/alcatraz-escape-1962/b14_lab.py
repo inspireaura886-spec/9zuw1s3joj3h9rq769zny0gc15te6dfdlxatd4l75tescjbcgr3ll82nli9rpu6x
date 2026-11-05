@@ -39,7 +39,7 @@ b3 = cyl('StampKnob', (0, 0, 0.05), (0, 0, 0.115), 0.022, wood, 14)
 for o in (b1, b2, b3):
     o.parent = sp
 tf = 118 if NF > 125 else NF - 8
-for f, z in ((0, 1.25), (tf - 14, 1.25), (tf, 0.9515 + 0.006), (tf + 4, 0.9515 + 0.006), (tf + 18, 1.3), (NF, 1.45)):
+for f, z in ((0, 1.95), (tf - 14, 1.95), (tf, 0.9515 + 0.006), (tf + 4, 0.9515 + 0.006), (tf + 18, 1.9), (NF, 2.05)):
     sp.location = (0.0, -0.1, z)
     sp.keyframe_insert('location', frame=f)
 if sp.animation_data:
@@ -55,5 +55,5 @@ desk_lamp(0.95, 0.5, 0.945, tag='LL', power=260, target=(0.0, 0.0, 0.94))
 Wd.area('LabCool', (0, -0.4, 2.7), (0, 0.1, 0.9), color=(0.75, 0.88, 1.0), power=300, size=3.0)
 CN.haze(center=(0, 0, 1.4), size=(4.8, 3.8, 2.7), density=0.006, color=(0.85, 0.92, 0.95), anisotropy=0.4, noise=0.2, noise_scale=0.4)
 cam = C.Cam(clip_end=60)
-cam.shot(0, NF, C.dolly((0.12, -0.78, 1.32), (0.02, -0.52, 1.12), look=(0.0, 0.03, 0.945), look1=(0.0, 0.0, 0.945)), lens=35, fstop=4.0, focus=Vector((0.0, 0.02, 0.945)))
+cam.shot(0, NF, C.dolly((0.12, -0.98, 1.6), (0.02, -0.64, 1.42), look=(0.0, 0.03, 0.945), look1=(0.0, 0.0, 0.945)), lens=35, fstop=4.0, focus=Vector((0.0, 0.02, 0.945)))
 go(cam, NF, a, sc, meter=NF // 2, target=0.21)

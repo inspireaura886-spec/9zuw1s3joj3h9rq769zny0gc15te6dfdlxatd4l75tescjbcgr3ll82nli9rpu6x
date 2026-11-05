@@ -24,5 +24,5 @@ for i, pts in enumerate(reds):
     r = curve_poly('PathR%d' % i, pts, bevel=0.04, mat=coral)
     grow_curve(r, [(0, 0.0), (6 + 4 * i, 0.0), (NF - 15, 1.0), (NF, 1.0)])
 cam = C.Cam(clip_end=300)
-cam.shot(0, NF, C.dolly((6.8, -3.4, 4.2), (1.6, 0.6, 2.7), look=(3.0, 1.0, 0), look1=(0.3, 1.2, 0)), lens=28, fstop=9, focus=Vector((2.0, 1.0, 0)))
+cam.shot(0, NF, C.dolly((6.8, -3.4, 4.6), (2.6, -0.6, 3.7), look=(3.0, 1.0, 0), look1=(0.3, 1.2, 0)), lens=28, fstop=9, focus=Vector((2.0, 1.0, 0)))
 go(cam, NF, a, sc, meter=NF // 2, target=0.2)
