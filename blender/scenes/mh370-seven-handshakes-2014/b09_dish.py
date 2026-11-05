@@ -31,16 +31,18 @@ def dish(name, loc, rd=7.0, el=38, az=20):
     cyl(name + 'Ped', (x, y, z), (x, y, z + rd * 0.85), rd * 0.12, white, 24)
     boxm(name + 'Base', (x, y, z + 0.6), (rd * 0.5, rd * 0.5, 1.2), white, 0.05)
     # feed horn on a quadripod
-    ax = d.matrix_world.to_3x3() @ Vector((0, 0, 1))
+    from mathutils import Euler
+    MW = Matrix.Translation(piv) @ Euler(d.rotation_euler).to_matrix().to_4x4()
+    ax = MW.to_3x3() @ Vector((0, 0, 1))
     fz = piv + ax * (0.42 * rd * 1.0)
     for k in range(4):
         t = 2 * math.pi * k / 4 + 0.785
-        rim = d.matrix_world @ Vector((rd * 0.95 * math.cos(t), rd * 0.95 * math.sin(t), (rd * 0.95) ** 2 / (4 * 0.42 * rd)))
+        rim = MW @ Vector((rd * 0.95 * math.cos(t), rd * 0.95 * math.sin(t), (rd * 0.95) ** 2 / (4 * 0.42 * rd)))
         cyl(name + 'Strut%d' % k, rim, fz, 0.06, steel, 8)
     cyl(name + 'Feed', fz - ax * 0.4, fz + ax * 0.3, 0.35, white, 16)
-dish('Dish1', (0, 0, 0), 7.0, 38, 200)
-dish('Dish2', (-38, 30, 0), 4.0, 30, 200)
-dish('Dish3', (34, 44, 0), 3.2, 45, 210)
+dish('Dish1', (0, 0, 0), 7.0, 38, 25)
+dish('Dish2', (-38, 30, 0), 4.0, 30, 15)
+dish('Dish3', (34, 44, 0), 3.2, 45, 35)
 hut = M.principled('Hut', base=(0.55, 0.55, 0.52), rough=0.7, grime=0.3)
 boxm('Hut', (16, 10, 1.6), (9, 5, 3.2), hut, 0.04)
 wm = M.emission('HutWin', (1.0, 0.8, 0.55), 6.0)

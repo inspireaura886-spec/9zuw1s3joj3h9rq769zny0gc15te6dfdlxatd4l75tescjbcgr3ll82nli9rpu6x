@@ -14,7 +14,7 @@ for k in range(60):
     x = -2600 + 5600 * u
     y = 450 + 3400 * u - 900 * (u - 0.5) ** 2
     pts.append((x, y, 3.2))
-arc = curve_poly('Arc7', pts, bevel=1.4, mat=m)
+arc = curve_poly('Arc7', pts, bevel=3.0, mat=m)
 key_fac(m, [(0, 0.55), (NF, 0.7)])
 cam = C.Cam(clip_end=60000)
 cam.shot(0, NF, C.dolly((-60, -60, 150), (-30, -20, 64), look=(250, 2400, 0), look1=(200, 2200, 4)), lens=24, fstop=11,

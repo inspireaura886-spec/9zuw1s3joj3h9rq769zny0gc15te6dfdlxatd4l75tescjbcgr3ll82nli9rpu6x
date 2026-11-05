@@ -27,7 +27,7 @@ sw = glow_mat('SwathM', (0.45, 0.95, 1.0), 2.0)
 sv = [(0, 0, -0.5), (-34, 6, -26), (34, 6, -26), (0, 7, -0.5)]
 swath = Md.mesh_obj('Swath', [sv[0], sv[1], sv[2]], [(0, 1, 2)], smooth=False, mats=(sw,)); swath.parent = auv
 key_fac(sw, [(0, 0.16), (NF // 2, 0.24), (NF, 0.16)])
-fly_line(auv, NF, (0, 40, 18), (0, 0.22, 0))
+fly_line(auv, NF, (0, 40, 30), (0, 0.22, 0))
 cam = C.Cam(clip_end=4000)
 cam.shot(0, NF, C.track('AUV', offset=(11, -24, 9), offset1=(8, -17, 7), look_offset=(0, 18, -9)), lens=28, fstop=5.6,
          focus='AUV')

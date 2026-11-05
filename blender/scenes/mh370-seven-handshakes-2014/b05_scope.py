@@ -19,6 +19,7 @@ lead.parent = scr
 for o in (lab, lead):
     for f, h in ((0, False), (OFF - 5, True), (OFF - 3, False), (OFF, True)):
         o.hide_render = h; o.keyframe_insert('hide_render', frame=f)
+bpy.context.view_layer.update()
 c = scr.matrix_world.translation.copy()
 cam = C.Cam()
 cam.shot(0, NF, C.push_in(c + Vector((-0.12, -0.62, 0.12)), c + Vector((0.01, 0, 0.0)), amount=0.05), lens=50, fstop=2.8,

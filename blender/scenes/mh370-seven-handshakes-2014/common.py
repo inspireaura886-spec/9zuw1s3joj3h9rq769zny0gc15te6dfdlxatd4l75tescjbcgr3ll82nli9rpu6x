@@ -445,5 +445,6 @@ def dawn_world(sun_az=70.0, elev=7.0, strength=4.0, hdri_strength=0.9):
 
 def swell_ocean(NF, half=4500.0, wave_scale=2.2, wind=16.0, choppy=0.9, color=(0.006, 0.014, 0.02), rough=0.08,
                 center=(0, 0, 0)):
+    Wd.sea_plane(size=240000, z=center[2] - 2.5 * wave_scale, color=color, rough=max(rough, 0.12), wave=0.15, frames=max(NF, 60))
     return Wd.ocean_wide(center=center, half=half, wave_scale=wave_scale, choppy=choppy, wind=wind, time_frames=max(NF, 60),
                          color=color, rough=rough)
