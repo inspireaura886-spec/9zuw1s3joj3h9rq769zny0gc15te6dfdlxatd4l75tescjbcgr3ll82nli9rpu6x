@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from rc import *
 from kit import cine as CN
 
-SOIL = 'aerial_mud_1'
+SOIL = 'forest_ground_04'
 def cyl(name, p0, p1, r, mat, seg=24):
     p0, p1 = Vector(p0), Vector(p1)
     d = p1 - p0
@@ -17,12 +17,12 @@ def cyl(name, p0, p1, r, mat, seg=24):
     return o
 
 def wood_mat():
-    return M.texture_set('OakM', 'wood_table_worn', scale=2.0, tint=(0.55, 0.42, 0.3), rough_mul=1.0, box=True)
+    return M.texture_set('OakM', 'wood_table_worn', scale=2.0, tint=(0.34, 0.27, 0.2), rough_mul=1.0, box=True)
 
-def soil_mat(tint=(0.5, 0.42, 0.35)):
-    return M.texture_set('SoilM', SOIL, scale=1.6, tint=tint, box=True)
+def soil_mat(tint=(0.42, 0.36, 0.3)):
+    return M.texture_set('SoilM', SOIL, scale=1.1, tint=tint, box=True)
 
-def shaft(depth=24.0, w=1.8, z_top=0.0, tint=(0.5, 0.42, 0.35)):
+def shaft(depth=24.0, w=3.0, z_top=0.0, tint=(0.42, 0.36, 0.3)):
     """Open-top square shaft walls, floor at z_top-depth. Returns floor z."""
     sm = soil_mat(tint)
     zc = z_top - depth / 2
@@ -32,9 +32,9 @@ def shaft(depth=24.0, w=1.8, z_top=0.0, tint=(0.5, 0.42, 0.35)):
     fl = Wd.box('Floor', (0, 0, z_top - depth - 0.2), (w + 0.8, w + 0.8, 0.4)); M.assign(fl, sm)
     return z_top - depth
 
-def platform(z, w=1.8, n=6, name='Log'):
+def platform(z, w=3.0, n=6, name='Log'):
     wm = wood_mat()
-    r = w / (n * 2) * 1.02
+    r = w / (n * 2) * 0.78
     for i in range(n):
         y = -w / 2 + r + i * (w - 2 * r) / (n - 1)
         cyl('%s%.1f_%d' % (name, z, i), (-w / 2 - 0.15, y, z), (w / 2 + 0.15, y, z), r, wm)
