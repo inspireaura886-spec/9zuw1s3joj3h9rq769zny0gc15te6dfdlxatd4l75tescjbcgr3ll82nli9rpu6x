@@ -24,6 +24,18 @@
   {
    "id": "fireplace",
    "res": "2k"
+  },
+  {
+   "id": "qwantani_dawn_puresky",
+   "res": "2k"
+  },
+  {
+   "id": "rogland_clear_night",
+   "res": "2k"
+  },
+  {
+   "id": "qwantani_night_puresky",
+   "res": "2k"
   }
  ],
  "textures": [
@@ -102,6 +114,33 @@
   {
    "id": "aerial_mud_1",
    "res": "2k",
+   "maps": [
+    "Diffuse",
+    "nor_gl",
+    "Rough"
+   ]
+  },
+  {
+   "id": "damp_beach_sand",
+   "res": "1k",
+   "maps": [
+    "Diffuse",
+    "nor_gl",
+    "Rough"
+   ]
+  },
+  {
+   "id": "rocky_terrain_02",
+   "res": "1k",
+   "maps": [
+    "Diffuse",
+    "nor_gl",
+    "Rough"
+   ]
+  },
+  {
+   "id": "dry_ground_rocks",
+   "res": "1k",
    "maps": [
     "Diffuse",
     "nor_gl",
