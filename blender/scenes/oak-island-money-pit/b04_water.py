@@ -4,12 +4,13 @@ from oc import *
 a = core.args(); NF = arg(a, '--nf', 165, int)
 sc = core.reset()
 setup(sc, exposure=0.55, vol=True, glare=0.5, vignette=0.4)
-Wd.hdri('moonless_golf', strength=0.05, bg_strength=0.0)
+Wd.hdri('moonless_golf', strength=0.05, bg_strength=0.5)
 D = 6.0
 fl = shaft(depth=D)
 platform(-2.2); 
 M.assign(bpy.data.objects['Floor'], M.texture_set('FloorStone', 'rough_concrete', scale=1.0, tint=(0.3, 0.3, 0.3), box=True))
 Wd.area('Sky', (0, 0, 2.5), (0, 0, -4), color=(0.7, 0.8, 1.0), power=500, size=2.4)
+bpy.data.objects['Sky'].visible_camera = False
 lan = Wd.point('Lantern', (0.5, -0.5, -1.2), color=(1.0, 0.62, 0.3), power=50, radius=0.15)
 CN.haze(center=(0, 0, -D / 2), size=(2.9, 2.9, D), density=0.035, color=(0.9, 0.82, 0.7), anisotropy=0.5, height_falloff=0.0)
 # crowbar

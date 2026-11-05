@@ -3,7 +3,7 @@ import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from oc import *
 a = core.args(); NF = arg(a, '--nf', 260, int)
 sc = core.reset()
-setup(sc, exposure=0.55, vol=True, glare=0.5, vignette=0.4)
+setup(sc, exposure=0.7, vol=True, glare=0.5, vignette=0.4)
 Wd.hdri('moonless_golf', strength=0.05, bg_strength=0.0)
 D = 33.0
 fl = shaft(depth=D)
