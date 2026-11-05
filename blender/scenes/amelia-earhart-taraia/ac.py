@@ -82,9 +82,10 @@ def water_surface(name='Water', z=0.0, size=12000.0, center=(0, 0), NF=100, tint
     df.inputs['Color'].default_value = (*tint, 1)
     gl = nb.n('ShaderNodeBsdfGlossy')
     gl.inputs['Roughness'].default_value = 0.035
-    lw = nb.n('ShaderNodeLayerWeight', Blend=0.12)
-    f2 = nb.math('MULTIPLY_ADD', lw.outputs['Fresnel'], vb=0.9)
-    f2.inputs[2].default_value = 0.07
+    lw = nb.n('ShaderNodeLayerWeight', Blend=0.5)
+    pw = nb.math('POWER', lw.outputs['Facing'], vb=5.0)
+    f2 = nb.math('MULTIPLY_ADD', pw.outputs[0], vb=0.95)
+    f2.inputs[2].default_value = 0.03
     f2.use_clamp = True
     mix1 = nb.n('ShaderNodeMixShader')
     mix1.inputs[0].default_value = body
