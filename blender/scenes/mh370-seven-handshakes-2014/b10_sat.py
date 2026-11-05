@@ -4,7 +4,7 @@ NF default 88. Earth texture: NASA Visible Earth Blue Marble (credit in descript
 import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
 a = core.args(); NF = arg(a, '--nf', 88, int)
-sc = core.reset(); look(sc, vol=False, glare=0.45, vignette=0.22)
+sc = core.reset(); look(sc, vol=False, glare=0.45, vignette=0.22, lift=(1.0, 1.0, 1.0), gain=(1.02, 1.0, 0.98))
 space_world(1.0)
 earth('Earth')
 S = lonlat(SUB_LON, 0, GEO_R)
@@ -32,4 +32,4 @@ p0 = S + n * 7.5 + Vector((0, 0, 1.6)) + side * 0.35
 p1 = S + n * 5.6 + Vector((0, 0, 1.2)) + side * 0.25
 lk = S - n * 30 + Vector((0, 0, -6))
 cam.shot(0, NF, C.dolly(p0, p1, look=lk), lens=35, fstop=8, focus=S)
-go(cam, NF, a, sc, meter=NF // 2, target=0.2)
+go(cam, NF, a, sc, meter=NF // 2, target=0.085)  # mostly black space: meter low so Earth is not blown out

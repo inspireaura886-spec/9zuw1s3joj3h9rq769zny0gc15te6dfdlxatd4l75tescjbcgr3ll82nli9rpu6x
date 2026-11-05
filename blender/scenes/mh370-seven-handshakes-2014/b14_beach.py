@@ -49,11 +49,26 @@ for j in range(ny):
 me = bpy.data.meshes.new('Panel'); bm.normal_update(); bm.to_mesh(me); bm.free()
 panel = link(bpy.data.objects.new('Panel', me))
 for p in me.polygons: p.use_smooth = True
-pm = M.principled('PanelPaint', base=(0.78, 0.78, 0.75), rough=0.5, grime=0.45, bump=0.25, bump_scale=60, rough_noise=0.15)
+pm = M.principled('PanelPaint', base=(0.74, 0.74, 0.71), rough=0.5, grime=0.5, rough_noise=0.15)
+_nt = pm.node_tree; _nb = M.NB(_nt); _b = _nt.nodes['Principled BSDF']
+_tc = _nb.n('ShaderNodeTexCoord'); _br = _nb.n('ShaderNodeTexBrick')
+_br.inputs['Scale'].default_value = 2.2; _br.inputs['Mortar Size'].default_value = 0.012; _br.inputs['Mortar Smooth'].default_value = 0.1
+_nb.l(_tc, 'Object', _br, 'Vector')
+_bp = _nb.n('ShaderNodeBump', Strength=0.35, Distance=0.01); _nb.l(_br, 'Fac', _bp, 'Height'); _nb.l(_bp, 'Normal', _b, 'Normal')
+# panel seams also darken the paint slightly (riveted skin read)
+_mx = _nb.n('ShaderNodeMix'); _mx.data_type = 'RGBA'; _mx.blend_type = 'MULTIPLY'; _mx.inputs['Factor'].default_value = 0.6
+_cr = [l.from_socket for l in _nt.links if l.to_socket == _b.inputs['Base Color']]
+if _cr: _nt.links.new(_cr[0], _mx.inputs[6])
+else: _mx.inputs[6].default_value = (0.74, 0.74, 0.71, 1)
+_nb.l(_br, 'Color', _mx, 7); _br.inputs['Color1'].default_value = (1, 1, 1, 1); _br.inputs['Color2'].default_value = (0.93, 0.93, 0.92, 1)
+_br.inputs['Mortar'].default_value = (0.35, 0.35, 0.36, 1)
+_nb.l(_mx, 2, _b, 'Base Color')
 panel.data.materials.append(pm)
 panel.location = (0.0, 2.0, 0.02)
-panel.rotation_euler = (math.radians(9), math.radians(-11), math.radians(28))
+panel.rotation_euler = (math.radians(15), math.radians(-12), math.radians(28))
 panel.location = (0.0, 2.0, 0.08)
+seal = cyl('Seal', (-1.2, 0.0, 0.0), (1.2, 0.0, 0.0), 0.11, M.principled('SealM', base=(0.05, 0.05, 0.055), rough=0.6))
+seal.parent = panel
 rk = M.texture_set('Basalt', 'rocky_terrain_02', scale=0.6, tint=(0.25, 0.24, 0.24), box=True)
 for k, (x, y, s) in enumerate(((-4.5, 6, 0.9), (5.2, 8, 1.3), (-8, 11, 1.6), (9, 3, 0.7), (2.5, 10, 0.6))):
     bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=4, radius=s, location=(x, y, s * 0.25 - (y - 2) * 0.0384))

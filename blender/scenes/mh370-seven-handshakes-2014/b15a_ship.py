@@ -50,6 +50,6 @@ for fr in range(0, NF + 1, 2):
     ship.keyframe_insert('location', frame=fr); ship.keyframe_insert('rotation_euler', frame=fr)
 Wd.point('DeckLamp', (0, -L2 + 4, DECK + 8), color=(1.0, 0.8, 0.55), power=3000, radius=0.3)
 cam = C.Cam(clip_end=60000)
-cam.shot(0, NF, C.dolly((38, -84, 10), (24, -64, 9), look=(2, -34, 5), look1=(0, -28, 5)), lens=28, fstop=8,
+cam.shot(0, NF, C.dolly((92, -128, 19), (74, -104, 16), look=(0, -14, 5), look1=(0, -8, 5)), lens=28, fstop=8,
          focus=Vector((0, -42, 6)))
 go(cam, NF, a, sc, meter=NF // 2, target=0.26)
