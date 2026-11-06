@@ -1,0 +1,20 @@
+"""usa-32-farrah-2026 b12_debris (35 mm, slow push-in; VO 'Or a tiny piece of untracked debris hit it,'): MEDIUM: a pin-point speck streaks in from the left and strikes the foil flank; a small flash and a handful of sparks.
+NF default 112 = words / 2.6 w/s at 30 fps + 8 handle frames."""
+import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from common import *
+a = core.args(); NF = arg(a, '--nf', 112, int)
+sc = core.reset(); look(sc, vol=False, glare=0.5)
+space(sun_az=90); earth()
+root, parts = satellite('USA32', (0, 0, 0), spin_deg=8, NF=NF)
+sp = sphere('Speck', (-70, -4, 6), 0.22, glow_mat('SpeckM', (1.0, 1.0, 1.0), 25.0), seg=12)
+fi = int(NF * 0.66)
+key_loc(sp, [(0, (-70, -4, 6)), (fi, (-3.2, -1.0, 0.8))], interp='LINEAR')
+sp.scale = (1, 1, 1)
+sp.keyframe_insert('scale', frame=fi)
+sp.scale = (0.01, 0.01, 0.01)
+sp.keyframe_insert('scale', frame=fi + 1)
+flash('Hit', (-3.2, -1.0, 0.8), fi, NF, r0=0.3, r1=2.8, color=(1.0, 0.9, 0.75), strength=18.0, dur=10)
+shards(36, (-3.2, -1.0, 0.8), fi, NF, spread=11.0, size=0.12, seed=31)
+cam = C.Cam(clip_end=9000)
+ease_cam(cam, NF, C.push_in((12, -24, 5), (-2, 0, 0), amount=0.2), 35, fstop=8, focus=24.0)
+go(cam, NF, a, sc, meter=int(NF * 0.8))

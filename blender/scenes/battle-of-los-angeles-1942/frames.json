@@ -1,0 +1,18 @@
+{
+ "b02_sky": 44,
+ "b03_antenna": 66,
+ "b04_ascope": 66,
+ "b05_sub": 123,
+ "b06_blackout": 44,
+ "b07_guns": 54,
+ "b08_beams": 89,
+ "b09_nobomb": 66,
+ "b10_noplane": 66,
+ "b11_navy": 146,
+ "b12_war": 146,
+ "b13_dawn": 66,
+ "b14_balloon": 146,
+ "b15_nerves": 44,
+ "b16_street": 170,
+ "b17_loop": 123
+}

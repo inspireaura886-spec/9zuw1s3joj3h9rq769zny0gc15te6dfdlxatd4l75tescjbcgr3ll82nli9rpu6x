@@ -1,0 +1,17 @@
+{
+ "b02_pressdesk": 89,
+ "b03_ranch": 146,
+ "b04_base": 112,
+ "b05_teletype": 54,
+ "b06_fortworth": 135,
+ "b07_flash": 66,
+ "b08_quiet": 77,
+ "b09_tape": 158,
+ "b10_books": 66,
+ "b11_archive": 89,
+ "b12_report": 112,
+ "b13_train": 112,
+ "b14_tapemacro": 146,
+ "b15_launch": 100,
+ "b16_loop": 123
+}
