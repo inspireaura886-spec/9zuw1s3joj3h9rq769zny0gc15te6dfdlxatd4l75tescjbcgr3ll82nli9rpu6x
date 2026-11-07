@@ -5,7 +5,9 @@ on:
       prompt_b64: {required: false, default: '', description: 'base64 prompt text'}
       prompt_ref: {required: false, default: '', description: 'branch:path of a prompt file (scratch branch)'}
       search: {required: false, default: '0', description: '1 = enable Google Search grounding'}
-      model: {required: false, default: 'gemini-3.8-flash', description: 'Gemini Flash model id (Flash only, never -pro)'}
+      model: {required: false, default: 'gemini-3.8-flash', description: 'Gemini Flash model id (Flash only, never pro)'}
+      job_type: {required: false, default: 'strict', description: 'brief | summary | second_opinion allow the Flash-Lite fallback on 429. code | review | script | factpack | strict (default) never fall back.'}
+      test_429: {required: false, default: '0', description: 'TEST ONLY: 1 = pretend the first model returned 429 (no call made to it)'}
 jobs:
   t:
     runs-on: ubuntu-latest
@@ -19,49 +21,83 @@ jobs:
           else BR="${PR%%:*}"; FP="${PR#*:}"; curl -sfL "https://raw.githubusercontent.com/$REPO/$BR/$FP" -o p.txt; fi
           wc -c p.txt
       - name: call
-        env: {K: '${{ secrets.GEMINI_API_KEY }}', S: '${{ inputs.search }}', M: '${{ inputs.model }}'}
+        env: {K: '${{ secrets.GEMINI_API_KEY }}', S: '${{ inputs.search }}', M: '${{ inputs.model }}', J: '${{ inputs.job_type }}', T429: '${{ inputs.test_429 }}'}
         run: |
           python3 - <<'PY'
           import json, os, time, urllib.request, urllib.error
+          # Rules (user): gemini-3.8-flash first. Only on HTTP 429 retry ONCE on Flash-Lite, and only for
+          # non-code text jobs (brief / summary / second_opinion). Never Lite for code, code review, scripts
+          # or fact packs ("dont have that newbie small model do coding for you"). Never any model with "pro".
+          FALLBACK = "gemini-3.5-flash-lite"
+          LITE_OK = {"brief", "summary", "second_opinion"}
           p = open('p.txt').read()
           k = os.environ.get("K", "").strip()
           print("key present:", "yes" if k else "NO (secret GEMINI_API_KEY empty or not visible)")
+          job = (os.environ.get("J") or "strict").strip().lower().replace("-", "_").replace(" ", "_")
+          test429 = os.environ.get("T429") == "1"
+          def clean(m):
+              m = (m or "").strip()
+              if m.startswith("models/"): m = m[7:]
+              return m
+          def guard(m):
+              ml = m.lower()
+              if "pro" in ml or "flash" not in ml or not all(c.isalnum() or c in "-." for c in m):
+                  raise SystemExit("refused model %r: Flash models only, never pro" % m)
+              if "lite" in ml and job not in LITE_OK:
+                  raise SystemExit("refused model %r for job_type %r: Flash-Lite never does code, review, scripts or fact packs" % (m, job))
+          m = clean(os.environ.get("M") or "gemini-3.8-flash")
+          guard(m); guard(FALLBACK) if job in LITE_OK else None
+          print("job_type:", job, "| model:", m, "| lite fallback on 429:", "allowed" if job in LITE_OK else "NO")
           body = {"contents": [{"role": "user", "parts": [{"text": p}]}],
                   "generationConfig": {"maxOutputTokens": 32000, "temperature": 0.7}}
           if os.environ.get('S') == '1':
               body["tools"] = [{"google_search": {}}]
-          m = (os.environ.get("M") or "gemini-3.8-flash").strip()
-          if m.startswith("models/"): m = m[7:]
-          if "flash" not in m or "pro" in m or not all(c.isalnum() or c in "-." for c in m):
-              raise SystemExit("refused model %r: Flash models only, never -pro" % m)
-          print("model:", m)
-          url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % m
-          st, txt, raw = None, "", {}
-          for wait in (0, 10, 30, 60):
-              time.sleep(wait)
+          def call(model):
+              url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % model
               req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
                     headers={"Content-Type": "application/json", "x-goog-api-key": k})
               try:
                   with urllib.request.urlopen(req, timeout=600) as r:
-                      st = r.status; raw = json.load(r)
+                      return r.status, json.load(r)
               except urllib.error.HTTPError as e:
-                  st = e.code
                   try: raw = json.loads(e.read().decode())
                   except Exception: raw = {}
-              print("HTTP", st)
-              if st not in (429, 500, 503): break
+                  return e.code, raw
+          st, raw, answered, fell_back, note = None, {}, m, False, ""
+          # first model: retry only transient 500/503 (10 s / 30 s / 60 s); a 429 stops the loop at once
+          for i, wait in enumerate((0, 10, 30, 60)):
+              time.sleep(wait)
+              if test429 and i == 0:
+                  st, raw = 429, {"error": {"code": 429, "status": "RESOURCE_EXHAUSTED", "message": "TEST: simulated 429"}}
+              else:
+                  st, raw = call(m)
+              print("HTTP", st, "from", m)
+              if st not in (500, 503): break
+          if st == 429:
+              if job in LITE_OK:
+                  print("429 on %s -> retrying once on %s (job_type %s)" % (m, FALLBACK, job))
+                  answered, fell_back = FALLBACK, True
+                  st, raw = call(FALLBACK)
+                  print("HTTP", st, "from", FALLBACK)
+              else:
+                  note = "429 quota on %s; job_type %s never falls back to Flash-Lite: FAILED, report it" % (m, job)
+                  print(note)
           if st == 200:
               try: txt = "".join(x.get("text", "") for x in raw["candidates"][0]["content"]["parts"])
               except Exception: txt = ""
           else:
-              txt = "ERROR HTTP %s\n%s" % (st, json.dumps(raw.get("error", {}), indent=1))
+              txt = "ERROR HTTP %s\n%s%s" % (st, (note + "\n") if note else "", json.dumps(raw.get("error", {}), indent=1))
           open("out/out.md", "w").write(txt)
-          meta = {"model": m, "status": st, "usage": raw.get("usageMetadata"),
+          meta = {"model": answered if st == 200 else None, "model_requested": m, "model_tried_last": answered,
+                  "fallback_used": fell_back, "job_type": job, "status": st, "note": note,
+                  "test_429": test429, "usage": raw.get("usageMetadata"),
                   "finish": (raw.get("candidates") or [{}])[0].get("finishReason"),
                   "grounding": (raw.get("candidates") or [{}])[0].get("groundingMetadata")}
           json.dump(meta, open("out/meta.json", "w"), indent=1)
+          print("ANSWERED_BY:", answered if st == 200 else "none (failed)", "| fallback:", fell_back, "| job_type:", job)
           print("status", st, "finish", meta["finish"], "chars", len(txt))
-          if st != 200: print(txt[:600])
+          if st != 200:
+              print(txt[:600]); raise SystemExit(1)
           PY
       - uses: actions/upload-artifact@v4
         if: always()
