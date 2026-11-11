@@ -128,6 +128,8 @@ def finish(sc, glare=0.55, glare_thr=1.2, glare_size=8, vignette=0.35, lens_dist
     L = nt.links.new
     rl = N('CompositorNodeRLayers')
     cur = rl.outputs['Image']
+    glare_thr = max(glare_thr, 1.2)  # escapement rule (2026-11-11): only real highlights may bloom, never mid-tones
+    glare = min(glare, 0.35)
     if glare > 0:
         g = N('CompositorNodeGlare')
         g.glare_type = 'FOG_GLOW'
