@@ -1,0 +1,247 @@
+name: daily-shorts
+run-name: daily shorts (${{ github.event_name }})
+# Makes 2 IA (@ia.unfolds) mystery Shorts a day, end to end, on free runners. Rules: PLAYBOOK.md.
+# write (OpenCode, free model) -> tts (Qwen3-TTS) -> plates_plan -> plates (Blender matrix) -> final (Remotion + shortqa) -> publish.
+# Output artifact: shorts-<YYYY-MM-DD> = <date>/<slug>/{final.mp4, yt_title.txt, yt_desc.txt, x_text.txt, x_thread.json, qa.json}.
+# Nothing is posted from here.
+on:
+  schedule:
+    - cron: '30 19 * * *'   # 01:00 IST
+  workflow_dispatch:
+    inputs:
+      model: {default: 'opencode/deepseek-v4.1-flash-free', description: 'first OpenCode model to try'}
+permissions:
+  contents: write
+  actions: write
+concurrency: {group: daily-shorts, cancel-in-progress: false}
+env:
+  BV: 4.2.9
+  BURL: https://download.blender.org/release/Blender4.2/blender-4.2.9-linux-x64.tar.xz
+  PIP_DISABLE_PIP_VERSION_CHECK: '1'
+jobs:
+  write:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    outputs:
+      slugs: ${{ steps.v.outputs.slugs }}
+      date: ${{ steps.d.outputs.date }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {sparse-checkout: "daily\n.github", fetch-depth: 1}
+      - id: d
+        run: echo "date=$(TZ=Asia/Kolkata date +%F)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: install opencode
+        run: npm i -g opencode-ai@latest >/dev/null 2>&1 && opencode --version
+      - name: write 2 Shorts (OpenCode)
+        env:
+          DATE: ${{ steps.d.outputs.date }}
+          FIRST_MODEL: ${{ inputs.model || 'opencode/deepseek-v4.1-flash-free' }}
+          PROMPT: |
+            You write the 2 daily mystery Shorts for the YouTube/X channel IA (@ia.unfolds). Today is ${{ steps.d.outputs.date }} (IST).
+            Work in the current repository. Do this exactly:
+            1. Read PLAYBOOK.md completely. It is binding. Then read daily/used_slugs.txt and daily/SCENES.tsv.
+            2. Make 2 NEW Shorts with alternating narrators: Short 1 narrator_m, Short 2 narrator_f, and two different caption schemes.
+               Pick topics per PLAYBOOK section 2: first unused verified packs in daily/ready/<slug>/ (slug not in daily/used_slugs.txt),
+               else daily/STORY_BANK.md, verifying every claim with webfetch on 2 reliable sources.
+               For each topic run: python3 daily/dedupe_check.py <slug> "<case name>" <alias...>  (exit 1 = repeat: choose another topic).
+               Never use titanic-californian-rockets-1912.
+            3. For each Short create daily/work/<slug>/ with plan.json, VERIFY.md, yt_title.txt, yt_desc.txt, x_text.txt, x_thread.json
+               exactly as PLAYBOOK sections 3-6 describe (120-145 words, last line ends "Nobody explained it.", 14-18 shots, each shot's
+               "scene" copied exactly from the first column of daily/SCENES.tsv).
+            4. Run: python3 daily/validate.py daily/work/<slug1> daily/work/<slug2>   and fix the files until both print PASS.
+            Do not render, do not git commit or push, do not post anything, and do not edit any file outside daily/work/.
+            The next jobs of this workflow render everything from your files: Qwen TTS voice, Blender plates, Remotion final,
+            the shortqa gate, out/<date>/<slug>/ with final.mp4 + packaging + qa.json, the used-slug commit and the artifact upload.
+        run: bash daily/write_shorts.sh
+      - id: v
+        run: |
+          python3 daily/validate.py daily/work/*/ || true
+          S=$(ls daily/work | python3 -c 'import sys,json;print(json.dumps(sys.stdin.read().split()))')
+          echo "slugs=$S" >> $GITHUB_OUTPUT; echo "slugs $S"
+          test "$S" != "[]"
+      - uses: actions/upload-artifact@v4
+        with: {name: plan, path: daily/work/, include-hidden-files: true, retention-days: 7}
+
+  tts:
+    needs: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        slug: ${{ fromJson(needs.write.outputs.slugs) }}
+    env:
+      QWEN_MODELS: /home/runner/qwen_models
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with: {sparse-checkout: "daily\n.github", fetch-depth: 1}
+      - uses: actions/checkout@v4
+        with: {repository: inspireaura886-spec/qwennyy, path: qwen, fetch-depth: 1}
+      - uses: actions/download-artifact@v4
+        with: {name: plan, path: daily/work}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/cache@v4
+        with: {path: ~/.cache/pip, key: 'pip-daily-tts-v1'}
+      - uses: actions/cache@v4
+        with: {path: /home/runner/qwen_models/Qwen3-TTS-12Hz-1.7B-Base, key: 'qwen-Qwen3-TTS-12Hz-1.7B-Base-v1'}
+      - uses: actions/cache@v4
+        with: {path: ~/.cache/huggingface, key: 'whisper-small.en-v1'}
+      - name: install
+        run: |
+          sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y --no-install-recommends ffmpeg sox >/dev/null
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q qwen-tts==0.1.1 huggingface_hub faster-whisper soundfile numpy scipy
+      - name: voice + timing + mix
+        run: |
+          S=${{ matrix.slug }}; W=daily/work/$S; C=case/$S; mkdir -p $C parts/p0
+          python3 daily/tts_job.py $W qwen $S
+          (cd qwen && python tts.py render --job jobs/$S.json --shard 0 --nshards 1 --model 1.7B --out ../parts/p0 && python tts.py join --job jobs/$S.json --parts ../parts --out ../tts)
+          python3 daily/vo_words.py $W tts/joined.wav tts/stats.json $C/vo.json
+          python3 daily/cues.py $W $C/vo.json $C/cues.json
+          python3 daily/mix.py tts/joined.wav $C/cues.json $C/final_audio.wav
+          cp tts/stats.json $C/tts_stats.json; ls -la $C
+      - uses: actions/upload-artifact@v4
+        with: {name: 'case-${{ matrix.slug }}', path: case/, retention-days: 5}
+
+  plates_plan:
+    needs: tts
+    if: ${{ !cancelled() && needs.write.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {sparse-checkout: "blender\ndaily\n.github", fetch-depth: 1}
+      - uses: actions/download-artifact@v4
+        with: {pattern: 'case-*', path: case, merge-multiple: true}
+      - id: cb
+        uses: actions/cache@v4
+        with: {path: ~/blender, key: 'blender-${{ env.BV }}'}
+      - if: steps.cb.outputs.cache-hit != 'true'
+        run: mkdir -p ~/blender && curl -sSL "$BURL" | tar -xJ -C ~/blender --strip-components=1
+      - uses: actions/cache@v4
+        with: {path: ~/ia3d_assets, key: "assets-${{ hashFiles('blender/kit/assets.json') }}", restore-keys: 'assets-'}
+      - run: python3 blender/kit/fetch_assets.py ~/ia3d_assets
+      - id: m
+        run: python3 daily/plates_matrix.py case >> $GITHUB_OUTPUT
+
+  plates:
+    needs: plates_plan
+    if: ${{ !cancelled() && needs.plates_plan.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJson(needs.plates_plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {sparse-checkout: "blender\n.github\nvendor", fetch-depth: 1}
+      - uses: actions/cache/restore@v4
+        with: {path: ~/blender, key: 'blender-${{ env.BV }}', fail-on-cache-miss: true}
+      - uses: actions/cache/restore@v4
+        with: {path: ~/ia3d_assets, key: "assets-${{ hashFiles('blender/kit/assets.json') }}", restore-keys: 'assets-'}
+      - run: |
+          sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y --no-install-recommends libxi6 libxxf86vm1 libxfixes3 libxrender1 libgl1 libegl1 libxkbcommon0 libsm6 libice6 ffmpeg >/dev/null
+          python3 blender/kit/fetch_assets.py ~/ia3d_assets
+          if [ -f vendor/ext/k1.zip ]; then ~/blender/blender --command extension install-file -r user_default -e vendor/ext/k1.zip 2>&1 | tail -n 3 || true; fi
+      - name: render
+        run: |
+          ~/blender/blender -b --factory-startup -noaudio -P "${{ matrix.scene }}" -- --start ${{ matrix.a }} --end ${{ matrix.b }} --out $PWD/frames --assets ~/ia3d_assets --pct 67 --nf ${{ matrix.nf }} 2>&1 | grep -v "^Fra:.*Sample\|Path Tracing" | tail -n 200
+          test -n "$(ls frames/*.png 2>/dev/null)"
+      - name: encode
+        run: |
+          I=$(printf %02d ${{ matrix.i }}); mkdir -p out
+          ffmpeg -v error -y -framerate 30 -start_number ${{ matrix.a }} -i frames/%05d.png -vf scale=1080:1920:flags=lanczos -c:v libx264 -preset medium -crf 10 -pix_fmt yuv420p -r 30 out/part_${{ matrix.slug }}_${{ matrix.shot }}_$I.mp4
+      - uses: actions/upload-artifact@v4
+        with: {name: 'p-${{ matrix.slug }}-${{ matrix.shot }}-${{ matrix.i }}', path: out/, retention-days: 2}
+
+  final:
+    needs: [write, tts, plates]
+    if: ${{ !cancelled() && needs.write.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        slug: ${{ fromJson(needs.write.outputs.slugs) }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {sparse-checkout: "rm/src\nrm/public/fonts\ndaily\n.github", fetch-depth: 1}
+      - uses: actions/download-artifact@v4
+        with: {name: plan, path: daily/work}
+      - uses: actions/download-artifact@v4
+        with: {name: 'case-${{ matrix.slug }}', path: case}
+      - uses: actions/download-artifact@v4
+        with: {pattern: 'p-${{ matrix.slug }}-*', path: parts, merge-multiple: true}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: |
+          sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y --no-install-recommends ffmpeg imagemagick >/dev/null
+          pip install -q numpy pillow
+      - name: plates + comp
+        id: c
+        run: |
+          S=${{ matrix.slug }}
+          python3 daily/assemble_plates.py $S parts case/$S/cues.json rm/public/real3d/$S
+          python3 daily/gen_comp.py daily/work/$S case/$S | tee comp.txt
+          grep -o 'COMP=[A-Za-z0-9]*' comp.txt | head -1 >> $GITHUB_OUTPUT
+      - uses: actions/setup-node@v4
+        with: {node-version: 20, cache: npm, cache-dependency-path: rm/package-lock.json}
+      - name: remotion render
+        working-directory: rm
+        run: |
+          npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+          npx remotion browser ensure
+          npx remotion render src/real3d/${{ matrix.slug }}/entry.jsx ${{ steps.c.outputs.COMP }} ../v.mp4 --muted --concurrency=4 --codec=h264 --crf=12 --jpeg-quality=95
+      - name: mux + shortqa + out folder
+        if: ${{ !cancelled() }}
+        run: |
+          S=${{ matrix.slug }}; D=${{ needs.write.outputs.date }}
+          if [ -s v.mp4 ]; then ffmpeg -v error -y -i v.mp4 -i case/$S/final_audio.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest final.mp4; fi
+          CUTS=$(python3 -c "import json;print(','.join(str(c) for c in json.load(open('case/$S/cues.json'))['cuts'][1:]))")
+          RC=1; if [ -s final.mp4 ]; then RC=0; python3 daily/scary-reels/pipeline/shortqa.py final.mp4 sqa --cuts "$CUTS" || RC=$?; fi
+          python3 daily/finalize.py daily/work/$S final.mp4 sqa $RC rm/public/real3d/$S.plates.json out/$D/$S
+          ls -la out/$D/$S
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: {name: 'short-${{ matrix.slug }}', path: out/, retention-days: 7}
+
+  publish:
+    needs: [write, final]
+    if: ${{ always() && needs.write.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: {sparse-checkout: "daily\n.github", fetch-depth: 1}
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with: {pattern: 'short-*', path: out, merge-multiple: true}
+      - name: summary + used slugs
+        run: |
+          D=${{ needs.write.outputs.date }}; mkdir -p out/$D
+          python3 - "$D" <<'PY'
+          import json, os, sys
+          d = sys.argv[1]; base = f'out/{d}'; S = []
+          for s in sorted(os.listdir(base)):
+              q = os.path.join(base, s, 'qa.json')
+              if os.path.isdir(os.path.join(base, s)):
+                  qa = json.load(open(q)) if os.path.exists(q) else {}
+                  S.append({'slug': s, 'final': os.path.exists(os.path.join(base, s, 'final.mp4')), 'pass': qa.get('pass', False), 'narrator': qa.get('narrator')})
+          json.dump({'date': d, 'run_id': os.environ.get('GITHUB_RUN_ID'), 'shorts': S}, open(f'{base}/summary.json', 'w'), indent=1)
+          print(json.dumps(S, indent=1))
+          with open('daily/used_slugs.txt', 'a') as f:
+              for x in S:
+                  if x['final']: f.write(f"{x['slug']}\trendered by daily-shorts {d} (pass={x['pass']})\n")
+          PY
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add daily/used_slugs.txt
+          if ! git diff --cached --quiet; then git commit -qm "daily-shorts $D: used slugs"; for k in 1 2 3; do git push -q origin HEAD:main && break; git pull -q --rebase origin main; done; fi
+      - uses: actions/upload-artifact@v4
+        with: {name: 'shorts-${{ needs.write.outputs.date }}', path: out/, if-no-files-found: warn, retention-days: 14}

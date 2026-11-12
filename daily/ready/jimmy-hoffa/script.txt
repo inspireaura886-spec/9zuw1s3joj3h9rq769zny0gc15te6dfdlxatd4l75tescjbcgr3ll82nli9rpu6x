@@ -1,0 +1,14 @@
+# jimmy-hoffa | VOICE narrator_m seed 41 | FORMAT CASE FILE (FBI) | target 45-55 s (LENGTH rule 2026-11-04; v2 extended 2026-11-04 IST, v1 30-35 s in v30_backup/) | source: ai-mode (Google AI Mode 2026-11-04, user-approved), Hark fact-checked
+# [t s] VO line   ||   on-screen / beat   (times estimated at 2.85 w/s; re-time from vo.json)
+[0.0] Jimmy Hoffa was last seen in a restaurant parking lot in 1975. Then he was gone.   || HOOK frame 0 = real LOC 1963 photo; chip 'LAST SEEN: 30 JULY 1975'
+[6.2] The former Teamsters boss had gone there to meet two reputed mobsters.   || two empty chairs at a table (no faces, no names)
+[10.6] From a pay phone, he called his wife. He said he'd been stood up.   || REAL3D: pay phone on a post, receiver swinging
+[15.7] His car was found in the lot.   || REAL3D: lone 1970s sedan in an empty lot, slow crane down
+[18.4] Weeks later, police dogs picked up his scent in a different car.   || MINI-REVEAL: back seat of a maroon 1970s sedan, chip 'AUG 21, 1975'
+[22.9] Seven years later he was declared legally dead. There was still no body.   || stamp 'DECLARED DEAD 1982' + 'BODY: NOT FOUND'
+[27.6] In 2001, DNA showed a hair found in that car was his.   || MINI-REVEAL: hair strand under lab light, chip 'DNA MATCH 2001'
+[33.5] In 2013, the FBI dug up a field near Detroit. Nothing.   || excavator shot, empty trench
+[38.6] Then a tip sent agents under a New Jersey bridge. Nothing of evidentiary value.   || TWIST: steel bridge underside at dusk, FBI quote slam
+[43.7] Fifty years on, the FBI says the case is still active.   || FBI 2025 statement recreation, chip 'CASE ACTIVE'
+[48.5] Nobody explained it.   || LOOP to the 1963 photo
+# 125 script words, ~135 spoken words, est. 49.8 s. TTS text in tts_script.json: plain names, no respellings (F B I spaced only). Close 'Nobody explained it.' loops into frame 0.

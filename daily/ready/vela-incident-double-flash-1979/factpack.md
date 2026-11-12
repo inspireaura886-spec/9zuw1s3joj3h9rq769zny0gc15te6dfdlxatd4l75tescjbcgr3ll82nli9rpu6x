@@ -1,0 +1,4 @@
+# vela-incident-double-flash-1979 (verified 2026-11-06)
+Hook: A US spy satellite saw the flash of a nuclear bomb over the empty southern ocean, and nobody ever claimed it.
+Facts: 22 Sep 1979, 00:53 UTC; Vela 6911 (old, officially retired) two bhangmeters; double flash = brief intense flash then longer second; est 2-3 kt; between Crozet and Prince Edward Islands (~47S 40E). The 41 double flashes before were all confirmed nuclear tests. Sheep in Victoria + Tasmania showed iodine-131; NZ sheep none. 1980 White House panel (Ruina): 'probably not' a nuclear explosion (sensor ratio oddity, meteoroid 'zoo' signal); Navy Research Lab hydrophone study (Ascension Island) said a bomb. Carter diary 27 Feb 1980 names Israel. 2018 study: radionuclide + hydroacoustic data 'virtually certain' nuclear. Contested, never proved who.
+Last line idea: Everything agrees something flashed. Only the label is still secret.

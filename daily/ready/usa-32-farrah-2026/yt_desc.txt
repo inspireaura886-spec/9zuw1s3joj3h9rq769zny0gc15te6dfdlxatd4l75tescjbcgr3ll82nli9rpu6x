@@ -1,0 +1,13 @@
+On 13 September 2026 at about 21:13 UTC, U.S. Space Forces-Space confirmed that USA 32 (#19460), a satellite launched in 1988 and identified by analysts as the NRO signals-intelligence satellite FARRAH III, fragmented in low Earth orbit at roughly 775 km. A Space Force spokesperson told Newsweek the cause is unknown. Independent analysts suggest an aged battery or tank rupture or a debris strike; no government has said it was destroyed on purpose.
+
+What do you think broke it apart?
+
+Sources:
+- Newsweek (S4S statement, cause unknown): https://www.newsweek.com/us-space-force-confirms-mystery-break-up-of-cold-war-era-spy-satellite-12520414
+- Live Science: https://www.livescience.com/space/space-exploration/an-american-cold-war-era-spy-satellite-just-exploded-above-earth-and-nobody-knows-why
+- SpaceNexus: https://spacenexus.us/blog/usa-32-farrah-spy-satellite-breakup-debris
+- OKAPI:Orbits breakup model (3,500 fragments is a model estimate): https://www.okapiorbits.space/en/blog/what-survives-a-breakup-modelling-the-fragmentation-of-usa-32
+
+Visuals: original 3D reconstruction by IA (@ia.unfolds), not real footage. Narration is an AI voice.
+
+#spysatellite #space #mystery #shorts

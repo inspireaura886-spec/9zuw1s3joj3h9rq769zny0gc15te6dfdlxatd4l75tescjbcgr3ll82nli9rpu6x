@@ -1,0 +1,16 @@
+# mh370-seven-handshakes-2014 | VOICE narrator_m seed 41 | FORMAT CASE FILE (what the data shows) 45-55 s | source: Gemini VIRAL-PICK GB-20261104-2100 #1, Hark fact-checked 2026-11-05 IST (user pick 09:52, TOP priority)
+# [t s] VO line   ||   on-screen / beat   (times estimated at ~2.85 spoken w/s; re-time from vo.json)
+[0.0] Flight MH370 vanished with 239 people aboard. Yet the silent jet kept answering a satellite. Seven times.   || HOOK frame 0 = real photo of 9M-MRO (Iemoto 2009, CC BY-SA 2.0); chip '8 MARCH 2014 · 239 ABOARD'; then a ping ring pulses x7 counter
+[6.4] At 1:19 a.m., the cockpit radioed: 'Good night, Malaysian three seven zero.'   || night cruise over the South China Sea; quote card 'GOOD NIGHT. MALAYSIAN THREE SEVEN ZERO.' chip '01:19 MYT'
+[11.0] Two minutes later, the transponder went dark.   || ATC scope: the MH370 label blinks out (chip '01:21')
+[13.6] But military radar kept watching. The jet turned back across Malaysia.   || TWIST / MINI-REVEAL 1: military radar room; green track bends into a U-turn over the peninsula
+[18.2] An hour later, it slipped off radar.   || wide over the Strait of Malacca / Andaman Sea at night; blip fades (chip '02:22 LAST RADAR')
+[20.8] Then a ground station in Perth pinged it by satellite. The jet answered.   || MINI-REVEAL 2: satellite over Earth; dish at a ground station; ping travels up and down
+[25.6] Each reply gave only a distance: a ring on the map.   || rings draw on the globe around the satellite's sub-point; real Inmarsat arc figure insert
+[29.6] The seventh reply, at 8:19 a.m., was the last.   || MINI-REVEAL 3: counter hits 7/7; chip '08:19 MYT · LAST TRANSMISSION'
+[33.4] Its ring crossed the southern Indian Ocean.   || wide: 7th arc glowing across an empty ocean seen from altitude
+[36.2] In 2015, part of its wing washed up on Réunion Island.   || MINI-REVEAL 4: flaperon-shaped panel on a black-sand beach at dawn (reconstruction); chip '29 JULY 2015'
+[40.6] Searches swept over 120,000 square kilometres of seafloor. Nothing.   || search ship on the swell, towed sonar; seafloor sonar wide; stamp 'NOT FOUND'
+[46.2] Malaysia has extended the hunt to June 2027.   || MINI-REVEAL 5: chip 'SEARCH DEAL EXTENDED TO 30 JUNE 2027 · 7,428 km² LEFT'
+[49.4] Nobody explained it.   || LOOP: dissolve back to the 9M-MRO photo at frame-0 framing
+# 125 script words, ~140 spoken words, est. ~51 s. TTS text in tts_script.json (numbers spelled out, 'Reunion' without accent). Close 'Nobody explained it.' loops into frame 0.

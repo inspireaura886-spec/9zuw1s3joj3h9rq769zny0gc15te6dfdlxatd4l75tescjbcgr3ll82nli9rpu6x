@@ -1,0 +1,16 @@
+# Fact pack: oak-island-money-pit (AI Mode 2026-11-04, user-approved; Hark fact-check)
+Verified facts (use only these, told as accounts where noted):
+- Treasure hunters have searched Oak Island, Nova Scotia since the late 18th century; accounts of the Money Pit published since 1857 (Wikipedia; Popular Mechanics: hunts date back to 1795; Smithsonian 1988: hunt of 193 years at that time).
+- Story: in 1795 a youth (Daniel McGinnis/McInnis) found a depression and dug with two friends (Wikipedia; Smithsonian; Popular Mechanics) - this is the retold account, not documented fact (Popular Mechanics: no direct evidence of excavation before the early 1860s records).
+- Log/oak platforms reported about every 10 feet (Wikipedia; Smithsonian; Popular Mechanics).
+- At about 90 feet, a flat stone inscribed with symbols (Smithsonian; Popular Mechanics). Caveat: stone not recorded until 1862, never sketched or photographed; today's rendering dates from 1949 (Popular Mechanics).
+- At 98 feet a probe struck something hard; next day the pit held 60 feet of water (Smithsonian "60 feet deep in water - salt water"; Popular Mechanics "filled with 60 feet of water").
+- Franklin D. Roosevelt took part in a 1909 expedition (Smithsonian 1988; NARA photo NAID 196803 dated Aug-Oct 1909).
+- No treasure recovered (Smithsonian 1988 "not one penny"; Popular Mechanics 2021 "no treasure has been found"; Wikipedia: excavations have not resolved the mystery).
+- Geologists (Steven Aitken; Gordon Fader) say the Money Pit is a natural sinkhole in soluble gypsum/limestone (karst); flooding natural (Popular Mechanics; CBC 2020 headline/teaser "There is no treasure at the money pit"). Smithsonian 1988: sinkhole theory would explain the log 'platforms' as blowdowns. Popular Mechanics: Fader on trees falling into sinkholes.
+Dropped / not voiced: any curse or 'kills anyone' / 'seven must die' claim (folklore; Popular Mechanics calls the curse unsubstantiated); the six deaths (true but drifts to curse framing); 'flood tunnels' as fact (contested); gold chain links (planted? disputed); 'severed hand' video (never recorded); Knights Templar / Kidd theories; 'Forty feet below two million pounds' translation (stone itself undocumented); 'seawater' wording (Wikipedia says seawater, Aitken says fresh water floods naturally - voiced as 'water'); 'not one coin' (the TV show found centuries-old coins on the island).
+
+FIRST 3 s ARTIFACT (real, public domain):
+- New York Herald headline about the Oak Island excavations, 2 Sep 1866: https://commons.wikimedia.org/wiki/File:Oak_Island_headline_1866_New_York_Herald.jpg (original https://upload.wikimedia.org/wikipedia/commons/f/f2/Oak_Island_headline_1866_New_York_Herald.jpg , 450x972). Licence: PD-1923 / PD US expired (published before 1931).
+- Second real artifact (~15.5 s): "Photograph of Franklin D. Roosevelt and Others at Oak Island in Nova Scotia", 1909, NARA NAID 196803: https://commons.wikimedia.org/wiki/File:Photograph_of_Franklin_D._Roosevelt_and_Others_at_Oak_Island_in_Nova_Scotia_-_NARA_-_196803.jpg . Licence: public domain (FDR Library public-domain photographs, PD Mark).
+- Avoid: 1931 McCully aerial photos on Commons (PD-Canada only, no US tag).

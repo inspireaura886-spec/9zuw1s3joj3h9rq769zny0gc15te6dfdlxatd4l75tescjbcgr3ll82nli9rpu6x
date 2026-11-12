@@ -1,0 +1,4 @@
+Verified 2026-11-03 20:15 IST (task B) against Wikipedia (1952 Washington D.C. UFO incident) + Washington City Paper "Saucers Full of Secrets" (2001), both fetched.
+OK: Nugent 11:40pm 7 objects 15 mi SSW, radar checked normal, Cocklin/Zacko tower blips + light, Pierman 14 min lights matching blips, blips vanish ~3am before F-94s arrive and return after jets left (Wikipedia; City Paper/Chop also), 3 radars same target vanished (Wikipedia/Ruppelt), Patterson quote (Chop, both), Truman aide call, 29 Jul biggest Pentagon press conference since WWII, Samford inversion explanation + Menzel/Klass, Holcomb judged inversion not strong enough.
+CAVEATS: Ruppelt says blips moved to Newport News not simply vanished; pilot letters to Klass say Patterson mistook ground-vehicle light; 7,000 mph dropped. "Two Air Force fighters" kept generic (F-94). Script voices official answer.
+Gemini GB-20261102-AM script + GB-20261101-AM C1 pack used.

@@ -1,0 +1,14 @@
+# taos-hum | VOICE narrator_f seed 51 | FORMAT MYTH VS FACT | target 45-55 s (LENGTH rule 2026-11-04; v2 extended 2026-11-04 IST, v1 30-35 s in v30_backup/) | source: ai-mode (Google AI Mode 2026-11-04, user-approved), Hark fact-checked
+# [t s] VO line   ||   on-screen / beat   (times estimated at 2.85 w/s; re-time from vo.json)
+[0.0] Scientists from Los Alamos and Sandia came to Taos to hunt a sound most people there cannot hear.   || HOOK frame 0 = real 1941 Ansel Adams/NARA Taos photo + OSTI record card
+[6.5] Hearers said it throbbed like an idling diesel engine.   || sub-bass rumble under VO (felt, not loud)
+[9.9] New Mexico's congressmen had asked for the hunt. An Air Force lab joined in.   || chips: 'CONGRESS REQUEST' / 'AIR FORCE PHILLIPS LAB'
+[15.0] The team set out microphones, seismic sensors, and magnetometers.   || instrument chips pop in
+[18.4] They caught lightning, the power grid, and a tunneling gopher. No hum.   || MINI-REVEAL: flat trace line + 'NO HUM' slam
+[22.9] Hearers matched it to tones from about thirty-three to eighty hertz.   || frequency dial 33-80 Hz
+[26.9] In 1993, their ear expert ruled out tinnitus. He wondered if their ears were making the sound.   || MINI-REVEAL: chip '1993: NOT TINNITUS'; ear diagram
+[33.5] But in 2026, a study of twenty-eight hearers blamed tinnitus, for many, not all.   || TWIST: text slam 'TINNITUS?' + hit; chip 'PLOS One 2026'
+[39.0] It found no sounds coming from their ears, either.   || ear-emission trace stays flat
+[42.3] And it couldn't rule out a real hum out there.   || MINI-REVEAL: split 1993 vs 2026, '?'
+[46.1] Nobody explained it.   || LOOP to the Taos photo
+# 126 script words, ~128 spoken words, est. 47.3 s. TTS text in tts_script.json: plain names, no respellings (F B I spaced only). Close 'Nobody explained it.' loops into frame 0.

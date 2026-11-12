@@ -1,0 +1,14 @@
+# oak-island-money-pit | VOICE narrator_m seed 41 | FORMAT TIMELINE (depth gauge) | target 45-55 s (LENGTH rule 2026-11-04; v2 extended 2026-11-04 IST, v1 30-35 s in v30_backup/) | source: ai-mode (Google AI Mode 2026-11-04, user-approved), Hark fact-checked
+# [t s] VO line   ||   on-screen / beat   (times estimated at 2.85 w/s; re-time from vo.json)
+[0.0] One hole on a Canadian island has swallowed two centuries of treasure hunts.   || HOOK frame 0 = real 1866 New York Herald headline; depth gauge '0 FT'
+[4.8] Diggers said they hit a log platform every ten feet.   || gauge ticks 10/20/30 FT with each platform
+[8.5] Some were topped with charcoal, putty, even coconut fiber.   || layer cross-section: charcoal / putty / coconut fiber chips
+[11.9] At ninety feet, a flat stone carved with strange symbols.   || gauge 90 FT
+[15.6] Then something hard at ninety-eight feet. By morning, the pit held sixty feet of water.   || MINI-REVEAL: water floods up the shaft; gauge 98 FT
+[21.1] A young Franklin Roosevelt dug here too.   || REAL NARA 1909 photo of FDR at Oak Island; chip '1909'
+[23.8] In 1971, a camera went down a shaft about 235 feet deep. None of what crews claimed to see was ever confirmed.   || MINI-REVEAL: camera descends a steel-cased shaft, murky monitor static; chip 'UNCONFIRMED'
+[32.8] But geologists say the Money Pit may be a natural sinkhole, and the logs, fallen trees.   || TWIST: text slam 'A NATURAL SINKHOLE?' + hit
+[38.6] And the carved stone? The only drawing of its symbols dates from 1949.   || MINI-REVEAL: blank stone, chip '1949 DRAWING'
+[43.7] Still, no treasure has ever come out of it.   || empty bucket rising out of the shaft
+[47.1] Nobody explained it.   || LOOP to the 1866 headline
+# 127 script words, ~131 spoken words, est. 48.4 s. TTS text in tts_script.json: plain names, no respellings (F B I spaced only). Close 'Nobody explained it.' loops into frame 0.

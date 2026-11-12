@@ -1,0 +1,124 @@
+# Slugs never to be made again (posted, banked, binned, rendered or reserved): slug<TAB>reason.
+# The daily workflow appends every slug it renders. Also run daily/dedupe_check.py on any new topic.
+_test-dyatlov	dedupe_check: already posted
+_v2-dyatlov	dedupe_check: already posted
+_v3-voynich	dedupe_check: already posted
+air-india-101	posted (CASE_ALIASES)
+airindia-101	dedupe_check: already posted
+alcatraz-escape-1962	rendered (CAPTION_LOG)
+amelia-earhart-taraia	rendered (CAPTION_LOG)
+bombay-docks	posted (CASE_ALIASES)
+booth-rules	rendered (CAPTION_LOG)
+brian-shaffer	posted (CASE_ALIASES)
+brown-mountain-lights	posted (CASE_ALIASES)
+carroll-a-deering	posted (CASE_ALIASES)
+dancing-plague	posted (CASE_ALIASES)
+db-cooper	posted (CASE_ALIASES)
+devils-footprints	posted (CASE_ALIASES)
+dyatlov-pass	posted (CASE_ALIASES)
+edmund-fitzgerald-1975	bank banked (md5 2a106f04fd707eff232cb79936bfe45a; voice narrator_m: never post adjacent to washington-dc-radar-1952 or nimitz-tictac-2004 (also narrator_m); target 2026-11-10 = 51st anniversary)
+eleven-customers	rendered (CAPTION_LOG)
+elisa-lam	posted (CASE_ALIASES)
+encephalitis-lethargica	posted (CASE_ALIASES)
+flannan-isles	posted (CASE_ALIASES)
+flannan-isles-remake	never-post (binned repeat 2026-10-31)
+flatwoods	posted (CASE_ALIASES)
+flatwoods-monster	bank posted
+flight-19	posted (CASE_ALIASES)
+floor-zero	rendered (CAPTION_LOG)
+franklin-expedition	posted (CASE_ALIASES)
+franklin-v4	dedupe_check: already posted
+ghost-rockets	bank posted
+gloria-ramirez	posted (CASE_ALIASES)
+hinterkaifeck	posted (CASE_ALIASES)
+hollow-lane	rendered (CAPTION_LOG)
+hopkinsville-goblins	dedupe_check: already posted
+isdal-woman	posted (CASE_ALIASES)
+jatinga	posted (CASE_ALIASES)
+jatinga-birds	dedupe_check: already posted
+jimmy-hoffa	rendered (CAPTION_LOG)
+joyita	posted (CASE_ALIASES)
+kaz-ii	posted (CASE_ALIASES)
+kaz-ii-ghost-yacht	never-post (binned repeat 2026-10-31)
+kecksburg	posted (CASE_ALIASES)
+kelly-hopkinsville	posted (CASE_ALIASES)
+kinross-1953	bank posted
+kodinhi	posted (CASE_ALIASES)
+kodinhi-twins	dedupe_check: already posted
+koepcke	posted (CASE_ALIASES)
+lake-nyos	posted (CASE_ALIASES)
+lakenheath-1956	rendered (CAPTION_LOG)
+lead-masks	posted (CASE_ALIASES)
+lf02-case-protocol	bank banked (PRIORITY next day slot)
+lf03-case-protocol	bank banked (PRIORITY next day slot)
+lf04-case-protocol	bank banked (PRIORITY next day slot)
+lf05-case-protocol	bank banked
+lf05-teaser	rendered (CAPTION_LOG)
+lf06-case-protocol	bank banked (PRIORITY next day slot)
+lf06-short	rendered (CAPTION_LOG)
+lf06-teaser	rendered (CAPTION_LOG)
+lf07-case-protocol	bank banked
+lf07-short	rendered (CAPTION_LOG)
+lf07-teaser	posted (CASE_ALIASES)
+louis-le-prince	rendered (CAPTION_LOG)
+manises	dedupe_check: already posted
+manises-1979	rendered (CAPTION_LOG)
+mary-celeste	posted (CASE_ALIASES)
+mary-celeste-1872	never-post (binned repeat 2026-10-31)
+mary-reeser	posted (CASE_ALIASES)
+max-headroom	posted (CASE_ALIASES)
+max-headroom-remake	never-post (binned repeat 2026-10-31)
+mh370-seven-handshakes-2014	rendered (CAPTION_LOG)
+nimitz-tictac-2004	rendered (CAPTION_LOG)
+oak-island-money-pit	rendered (CAPTION_LOG)
+omg-particle	posted (CASE_ALIASES)
+overtoun	posted (CASE_ALIASES)
+overtoun-dog-bridge	dedupe_check: already posted
+point-pleasant-mothman	posted (CASE_ALIASES)
+princes-tower	posted (CASE_ALIASES)
+pursue-07-triangle	rendered (CAPTION_LOG)
+purulia	posted (CASE_ALIASES)
+purulia-arms-drop	dedupe_check: already posted
+rendlesham	posted (CASE_ALIASES)
+rendlesham-forest	dedupe_check: already posted
+ricky-mccormick-notes	rendered (CAPTION_LOG)
+roanoke	posted (CASE_ALIASES)
+room-414	rendered (CAPTION_LOG)
+roopkund	posted (CASE_ALIASES)
+roswell-project-mogul-1947	posted (CASE_ALIASES)
+route-9	rendered (CAPTION_LOG)
+saiga-die-off	posted (CASE_ALIASES)
+second-voice	rendered (CAPTION_LOG)
+shag-harbour	bank posted
+socorro-zamora-1964	posted (CASE_ALIASES)
+solway-spaceman	posted (CASE_ALIASES)
+somerton-man	posted (CASE_ALIASES)
+ss-waratah	posted (CASE_ALIASES)
+star-dust-stendec	posted (CASE_ALIASES)
+taos-hum	rendered (CAPTION_LOG)
+tehran-1976	posted (CASE_ALIASES)
+teignmouth-electron-crowhurst-1969	bank banked
+thirteen-steps	rendered (CAPTION_LOG)
+titanic-californian-rockets-1912	never touch (user)
+trail-cam	rendered (CAPTION_LOG)
+tunguska	posted (CASE_ALIASES)
+unsolved-codes-lf06	posted (CASE_ALIASES)
+uss-cyclops	posted (CASE_ALIASES)
+uvb-76	posted (CASE_ALIASES)
+valentich	posted (CASE_ALIASES)
+valentich-1978	never-post (binned repeat 2026-10-31)
+varig-967	posted (CASE_ALIASES)
+vela-incident-double-flash-1979	made/in flight 2026-11
+voynich	posted (CASE_ALIASES)
+vrillon-broadcast	rendered (CAPTION_LOG)
+washington-dc-radar-1952	bank scheduled
+watcher-letters	posted (CASE_ALIASES)
+westall-1966	bank retired (Kokoro bm_lewis; replaced by westall-1966-qv 2026-11-03)
+westall-1966-qv	bank posted 2026-11-04 05:00 (yt https://www.youtube.com/shorts/tomsdfK_15Q ; x https://x.com/2003383454457847808/status/2117761452844953912)
+widecombe	posted (CASE_ALIASES)
+widecombe-1638	dedupe_check: already posted
+wishing-well	rendered (CAPTION_LOG)
+woolpit	posted (CASE_ALIASES)
+woolpit-green-children	bank posted
+wow-signal	posted (CASE_ALIASES)
+yuba-county-five	posted (CASE_ALIASES)
