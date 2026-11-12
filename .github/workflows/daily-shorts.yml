@@ -37,6 +37,7 @@ jobs:
       - name: write 2 Shorts (OpenCode)
         env:
           DATE: ${{ steps.d.outputs.date }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
           FIRST_MODEL: ${{ inputs.model || 'opencode/deepseek-v4.1-flash-free' }}
           PROMPT: |
             You write the 2 daily mystery Shorts for the YouTube/X channel IA (@ia.unfolds). Today is ${{ steps.d.outputs.date }} (IST).
