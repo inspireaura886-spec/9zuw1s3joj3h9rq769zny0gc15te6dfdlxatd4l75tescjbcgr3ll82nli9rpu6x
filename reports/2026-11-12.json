@@ -1,0 +1,164 @@
+{
+ "date": "2026-11-12",
+ "run_id": "43246183433",
+ "run_url": "https://github.com/inspireaura886-spec/9zuw1s3joj3h9rq769zny0gc15te6dfdlxatd4l75tescjbcgr3ll82nli9rpu6x/actions/runs/43246183433",
+ "model": "opencode/glm-5.3-flash-free",
+ "jobs": {
+  "write": "success",
+  "tts": "success",
+  "plates": "failure",
+  "final": "success"
+ },
+ "failures": [
+  "plates"
+ ],
+ "shorts": [
+  {
+   "slug": "pursue-gulf-of-oman-2021",
+   "case_name": "Gulf of Oman cold orbs",
+   "narrator": "narrator_m",
+   "scheme": "fog-blue",
+   "title": "25 Cold Orbs Over the Sea. 2 Left Fast. #shorts",
+   "final": true,
+   "shortqa_pass": false,
+   "post": false,
+   "shortqa_failed": [
+    "No dark stretch (YAVG<45 > 0.2 s): 0.30-1.17s, 1.30-1.57s, 2.07-2.90s, 28.77-31.03s, 37.60-38.00s, 45.73-48.37s"
+   ],
+   "plates_replaced": {},
+   "jev_script": {
+    "hook": 9.1,
+    "pacing": 8.8,
+    "payoff": 7.3,
+    "score": 8.4,
+    "go": false,
+    "unsupported_lines": [
+     5
+    ],
+    "uncertain_lines": [
+     0,
+     7
+    ],
+    "fixes": [
+     "line 5 has a claim the fact pack does not support (p=0.27): fix it or add the source to VERIFY.md",
+     "line 0: Jev is unsure the fact pack supports it (p=0.51); tighten the wording or cite it in VERIFY.md",
+     "line 7: Jev is unsure the fact pack supports it (p=0.67); tighten the wording or cite it in VERIFY.md"
+    ]
+   },
+   "jev_frames": {
+    "checked": 16,
+    "errors": 0,
+    "flagged_shots": [
+     2,
+     3,
+     5,
+     6,
+     15,
+     16
+    ],
+    "mean_interest": 5.9,
+    "mean_exposure": 5.1,
+    "frames_ok": false,
+    "flags": {
+     "2": [
+      "subject unclear"
+     ],
+     "3": [
+      "subject unclear"
+     ],
+     "5": [
+      "badly exposed"
+     ],
+     "6": [
+      "subject unclear"
+     ],
+     "15": [
+      "text not readable",
+      "subject unclear"
+     ],
+     "16": [
+      "subject unclear"
+     ]
+    }
+   },
+   "decision": "shortqa hard gate failed; Jev frame checks flagged shots [2, 3, 5, 6, 15, 16]; Jev script review no-go: line 5 has a claim the fact pack does not support (p=0.27): fix it or add the source to VERIFY.md; line 0: Jev is unsure the fact pack supports it (p=0.51); tighten the wording or cite it in VERIFY.md"
+  },
+  {
+   "slug": "sarah-joe-1979",
+   "case_name": "Disappearance of the Sarah Joe",
+   "narrator": "narrator_f",
+   "scheme": "dusty-teal",
+   "title": "5 Friends Vanished. 9 Years Later, a Grave. #shorts",
+   "final": true,
+   "shortqa_pass": false,
+   "post": false,
+   "shortqa_failed": [
+    "No dark stretch (YAVG<45 > 0.2 s): 10.97-11.20s, 29.27-29.83s, 32.10-32.67s, 43.67-45.10s, 46.30-46.60s, 47.13-49.77s"
+   ],
+   "plates_replaced": {
+    "s08": "s07",
+    "s15": "s14"
+   },
+   "jev_script": {
+    "hook": 8.8,
+    "pacing": 9.2,
+    "payoff": 9.2,
+    "score": 9.1,
+    "go": true,
+    "unsupported_lines": [],
+    "uncertain_lines": [
+     0,
+     1
+    ],
+    "fixes": [
+     "line 0: Jev is unsure the fact pack supports it (p=0.51); tighten the wording or cite it in VERIFY.md",
+     "line 1: Jev is unsure the fact pack supports it (p=0.6); tighten the wording or cite it in VERIFY.md"
+    ]
+   },
+   "jev_frames": {
+    "checked": 16,
+    "errors": 0,
+    "flagged_shots": [
+     1,
+     2,
+     7,
+     8,
+     9,
+     11,
+     13,
+     16
+    ],
+    "mean_interest": 6.1,
+    "mean_exposure": 4.8,
+    "frames_ok": false,
+    "flags": {
+     "1": [
+      "text not readable"
+     ],
+     "2": [
+      "subject unclear"
+     ],
+     "7": [
+      "subject unclear"
+     ],
+     "8": [
+      "subject unclear"
+     ],
+     "9": [
+      "subject unclear"
+     ],
+     "11": [
+      "text not readable"
+     ],
+     "13": [
+      "subject unclear"
+     ],
+     "16": [
+      "subject unclear"
+     ]
+    }
+   },
+   "decision": "shortqa hard gate failed; Jev frame checks flagged shots [1, 2, 7, 8, 9, 11, 13, 16]"
+  }
+ ]
+}

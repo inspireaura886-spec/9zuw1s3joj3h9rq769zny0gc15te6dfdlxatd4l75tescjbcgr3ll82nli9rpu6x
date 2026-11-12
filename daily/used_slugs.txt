@@ -152,3 +152,5 @@ sodder-children	already has a case or Blender scenes in the factory (made or in 
 stonehenge-altar-stone-2024	already has a case or Blender scenes in the factory (made or in progress)
 villisca	already has a case or Blender scenes in the factory (made or in progress)
 zodiac-340	already has a case or Blender scenes in the factory (made or in progress)
+pursue-gulf-of-oman-2021	rendered by daily-shorts 2026-11-12 (pass=False)
+sarah-joe-1979	rendered by daily-shorts 2026-11-12 (pass=False)
