@@ -11,7 +11,9 @@ import soundfile as sf
 info = sf.info(wav); dur = info.frames / info.samplerate
 from faster_whisper import WhisperModel
 m = WhisperModel('small.en', device='cpu', compute_type='int8')
-segs, _ = m.transcribe(wav, language='en', word_timestamps=True, beam_size=5, vad_filter=False)
+import subprocess, numpy as np
+audio = np.frombuffer(subprocess.run(['ffmpeg', '-v', 'error', '-i', wav, '-ac', '1', '-ar', '16000', '-f', 'f32le', '-'], capture_output=True, check=True).stdout, np.float32)
+segs, _ = m.transcribe(audio, language='en', word_timestamps=True, beam_size=5, vad_filter=False)
 H = [(w.word.strip(), w.start, w.end) for s in segs for w in s.words]
 S = []  # (token, line index)
 for li, l in enumerate(p['lines']):

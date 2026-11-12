@@ -1,5 +1,5 @@
 """Final self-QA gate for IA Shorts (adapted 2026-10-21 from petergyang/video-short scripts/qa.py + eval.md, MIT).
-usage: python3 shortqa.py VIDEO [OUTDIR] [--cuts t1,t2,...]
+usage: python3 shortqa.py VIDEO [OUTDIR] [--cuts t1,t2,...] [--jev]   (--jev: advisory Jev per-shot frame checks, needs JEV_API_KEY)
 Measures the render and exports frames for the agent to LOOK AT (read_file) before scoring:
   OUTDIR/contact.jpg  (2 frames/s), OUTDIR/opening.jpg (first 3 s at 6 fps), OUTDIR/cuts/*.jpg (5 frames either side of each scene cut),
   OUTDIR/report.md (machine checks + the eval checklist to answer yes/no).
@@ -16,6 +16,8 @@ def run(cmd):
 def main():
     args = [a for a in sys.argv[1:]]
     cuts = []
+    use_jev = '--jev' in args
+    if use_jev: args.remove('--jev')
     if '--cuts' in args:
         i = args.index('--cuts'); cuts = [float(x) for x in args[i + 1].split(',') if x]; del args[i:i + 2]
     if not args:
@@ -81,6 +83,16 @@ def main():
              os.path.join(out, 'cuts', f'cut_{t:.2f}.jpg')])
     L = [f'# Short QA: {os.path.basename(video)}', '']
     L += [f"- [{'x' if ok else ' '}] {nm}: {dt}" for nm, ok, dt in checks]
+    # --jev: advisory per-shot frame checks by Jev (tools/jev.py frames). Never changes the exit code; skipped without JEV_API_KEY.
+    if use_jev:
+        jp = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'tools', 'jev.py'))
+        jr = run([sys.executable, jp, 'frames', video, ','.join(f'{c:.3f}' for c in cuts), os.path.join(out, 'jev')])
+        try: jv = json.loads(jr.stdout.strip().splitlines()[-1])
+        except Exception: jv = {'ok': False, 'error': (jr.stderr or '?')[-200:]}
+        json.dump(jv, open(os.path.join(out, 'jev_frames.json'), 'w'), indent=1)
+        if jv.get('skipped'): L.append('- [i] Jev frame checks: skipped (JEV_API_KEY not set)'); print('WARNING: --jev skipped, JEV_API_KEY not set', file=sys.stderr)
+        elif not jv.get('ok'): L.append(f"- [i] Jev frame checks: error {jv.get('error', '')[:120]}")
+        else: L.append(f"- [i] Jev frame checks (advisory): {jv['checked']} shots, flagged {jv['flagged_shots'] or 'none'} (readable/exposure, caption box in x 162-918 / y<=1560), mean visual interest {jv['mean_interest']}/10")
     L += ['', 'LOOK at contact.jpg, opening.jpg and cuts/*.jpg, then answer every check yes/no; fix any no before scoring:',
           '1. Hook lands in the first 3 s, and the opening makes sense with the sound off (opening.jpg).',
           '2. The Short answers (or squarely poses) the question its hook raises; the ending question names only theories explained earlier.',

@@ -1,150 +1,188 @@
 #!/usr/bin/env python3
-"""Model helpers for the daily Shorts workflow (advisory layer; shortqa stays the hard gate).
-Keys (repo secrets, never printed): JEV_API_KEY for the jev-1.13-free decision calls (choose/review/decide);
-OPENCODE_API_KEY only for the vision models on the OpenCode Zen endpoint. A missing key = that step is SKIPPED with a
-warning ("skipped": true) and plain shortqa decides. Every command exits 0 and prints JSON ("ok": false on any error),
-so the run never fails because of this layer.
+"""Jev decision layer for the daily Shorts (TypeSafe System One, model jev-latest, called DIRECTLY via typesafe-sdk).
+Key: env JEV_API_KEY (repo secret; mapped to TYPESAFE_API_KEY for the SDK, never printed). Missing key -> every
+command prints {"ok": false, "skipped": true} with a warning on stderr and exits 0: plain shortqa decides.
+Any API error -> {"ok": false, "error": ...}, exit 0. The run never fails because of Jev. shortqa stays the hard gate.
+Questions are atomic (choice / score / noul / box) and live in tools/jev_questions.json; this file combines them.
 
-  python3 tools/jev.py choose  <candidates.json> [n=2]        -> {"ok", "picks": [slug...], "why"}       (a) topic choice
-  python3 tools/jev.py review  <work dir>                     -> {"ok", "hook": 0-10, "score": 0-10, "go": bool, "fixes": [...]}  (b) script go/no-go
-  python3 tools/jev.py vision  <contact.jpg> [opening.jpg]    -> {"ok", "exposure_ok", "captions_readable", "inside_safe_box", "notes"}  (visual check)
-  python3 tools/jev.py decide  <qa report.md> [visual.json] [review.json] -> {"ok", "post": bool, "why"}  (c) post/no-post
+  choose  <candidates.json> [n=2]   topic pick from verified candidates (choice; ranked by probability)
+  review  <work dir>                hook score + one noul per script line against the fact pack + pacing + payoff -> go/no-go
+  package <work dir>                title among 3-5 candidates (titles.json) + frame-0 hook text + palette + sound bed (choice)
+  narrators <work dir A> <work dir B>  which Short gets narrator_m (the other gets narrator_f; alternation kept)
+  frames  <final.mp4> <cuts,comma> <out dir>   per-shot frame checks: noul readable/exposure, box caption-in-safe-area, score interest
+  decide  <shortqa report.md> [frames.json] [review.json]   final post/no-post: shortqa hard gate AND Jev noul AND score floors
+"""
+import json, os, re, subprocess, sys
 
-Roles: decisions = jev-1.13-free via https://opencode.ai/inference/systemone/v1/systemone ;
-vision = nemotron-3.5-super-vl-free (fallback mimo-v2.6-flash-free) via the OpenCode Zen chat endpoint."""
-import base64, json, os, re, sys, urllib.request
-
-JEV_URL = os.environ.get('JEV_URL', 'https://opencode.ai/inference/systemone/v1/systemone')
-JEV_MODEL = os.environ.get('JEV_MODEL', 'jev-1.13-free')
-ZEN_URL = os.environ.get('ZEN_URL', 'https://opencode.ai/zen/v1/chat/completions')
-VISION_MODELS = [m for m in os.environ.get('VISION_MODELS', 'nemotron-3.5-super-vl-free,mimo-v2.6-flash-free').split(',') if m]
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+HERE = os.path.dirname(os.path.abspath(__file__))
+Q = json.load(open(os.path.join(HERE, 'jev_questions.json')))
+MODEL = os.environ.get('JEV_MODEL', 'jev-latest')
+SAFE = dict(left=162 / 1080, right=918 / 1080, bottom=1560 / 1920)
+SCHEMES = ['sage', 'dusty-teal', 'slate', 'clay', 'lavender', 'sand', 'dusk-rose', 'fog-blue', 'stone']
 
 
 class Skip(Exception):
-    """a key is missing: skip this advisory step (warning only), plain shortqa decides"""
+    pass
 
 
-def _post(url, body, timeout=180, key_env='OPENCODE_API_KEY'):
-    key = os.environ.get(key_env, '')
-    if not key: raise Skip(f'{key_env} not set')
-    req = urllib.request.Request(url, data=json.dumps(body).encode(), method='POST',
-                                 headers={'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json'})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return json.loads(r.read().decode())
+_client = None
+def client():
+    global _client
+    key = os.environ.get('JEV_API_KEY', '')
+    if not key: raise Skip('JEV_API_KEY not set')
+    if _client is None:
+        os.environ['TYPESAFE_API_KEY'] = key
+        try: from typesafe_sdk import TypeSafeClient
+        except ImportError:
+            subprocess.run([sys.executable, '-m', 'pip', 'install', '-q', 'typesafe-sdk'], check=True)
+            from typesafe_sdk import TypeSafeClient
+        _client = TypeSafeClient(api_key=key, model=MODEL, timeout=120)
+    return _client
 
 
-def _text(resp):
-    """pull the answer text out of an OpenAI-style, Anthropic-style or plain response"""
-    if isinstance(resp, str): return resp
-    try: return resp['choices'][0]['message']['content']
-    except Exception: pass
-    for k in ('output_text', 'text', 'output', 'answer', 'result', 'content', 'decision'):
-        v = resp.get(k) if isinstance(resp, dict) else None
-        if isinstance(v, str): return v
-        if isinstance(v, list):
-            parts = [x.get('text', '') if isinstance(x, dict) else str(x) for x in v]
-            if any(parts): return '\n'.join(parts)
-        if isinstance(v, dict): return json.dumps(v)
-    return json.dumps(resp)
+def q(group, name, **fmt):
+    d = dict(Q[group][name]); d['instructions'] = d['instructions'].format(**fmt) if fmt else d['instructions']
+    return d
 
 
-def _json(txt):
-    m = re.search(r'\{.*\}', txt, re.S)
-    if not m: raise ValueError('no JSON in answer: ' + txt[:200])
-    return json.loads(m.group(0))
-
-
-def jev(system, user):
-    """decision layer call; tries the chat-style body, then a plain input body"""
-    last = None
-    for body in ({'model': JEV_MODEL, 'messages': [{'role': 'system', 'content': system}, {'role': 'user', 'content': user}]},
-                 {'model': JEV_MODEL, 'input': system + '\n\n' + user}):
-        try: return _json(_text(_post(JEV_URL, body, key_env='JEV_API_KEY')))
-        except Skip: raise
-        except Exception as e: last = e
-    raise RuntimeError(f'jev failed: {last}')
-
-
-def vision(prompt, images):
-    content = [{'type': 'text', 'text': prompt}]
-    for p in images:
-        b = base64.b64encode(open(p, 'rb').read()).decode()
-        content.append({'type': 'image_url', 'image_url': {'url': 'data:image/jpeg;base64,' + b}})
-    last = None
-    for m in VISION_MODELS:
-        try:
-            r = _post(ZEN_URL, {'model': m, 'messages': [{'role': 'user', 'content': content}], 'max_tokens': 600})
-            out = _json(_text(r)); out['model'] = m; return out
-        except Skip: raise
-        except Exception as e: last = e
-    raise RuntimeError(f'vision failed: {last}')
-
-
-def rubric():
-    p = os.path.join(ROOT, 'daily', 'CRITIC_RUBRIC.md')
-    return open(p).read() if os.path.exists(p) else ''
-
-
-def cmd_choose(cands, n=2):
-    C = json.load(open(cands))
-    sys_ = ('You pick topics for a YouTube Shorts channel: "True mysteries science can\'t fully explain, in under 60 seconds." '
-            'Priority: UFO/radar/signals with an official record or hard number; aviation/maritime vanishings with a physical clue; '
-            'mass environmental anomalies with one hard number. Prefer strong frame-1 hooks, verified sources, nothing graphic. '
-            f'Answer ONLY JSON: {{"picks": [{n} slugs from the list, best first], "why": "one line"}}')
-    out = jev(sys_, json.dumps(C)[:12000])
-    slugs = {c['slug'] for c in C}
-    out['picks'] = [s for s in out.get('picks', []) if s in slugs][:n]
+def ask(state, questions):
+    """questions: {name: question dict}. Returns {name: simplified answer}."""
+    r = client().system_one(state=state, questions=questions)
+    out = {}
+    for k, a in r.answers.items():
+        t = a.type
+        if t == 'noul': out[k] = round(float(a.noul), 3)
+        elif t == 'choice': out[k] = {'choice': a.choice, 'confidence': round(a.confidence, 3), 'p': {x: round(v, 3) for x, v in a.probabilities.items()}}
+        elif t == 'score': out[k] = {'score': round(a.score, 2), 'confidence': round(a.confidence, 3), 'max': len(a.legend) - 1}
+        elif t == 'box': out[k] = {'top': a.box.top, 'bottom': a.box.bottom, 'left': a.box.left, 'right': a.box.right, 'confidence': a.confidence}
     return out
+
+
+def read(p, n=None):
+    return open(p).read()[:n] if os.path.exists(p) else ''
+
+
+# ---------------------------------------------------------------- commands
+def cmd_choose(cands, n=2):
+    C = json.load(open(cands))[:30]
+    crit = {c['slug']: f"{c.get('title', '')} | hook: {c.get('hook', '')} | {c.get('kind', '')}"[:400] for c in C}
+    a = ask({'candidates': 'Fresh, never-posted candidate topics for today.'}, {'pick': dict(q('topic', 'pick'), criteria=crit)})['pick']
+    ranked = sorted(a['p'], key=lambda s: -a['p'][s])
+    return {'picks': ranked[:int(n)], 'probabilities': a['p']}
+
+
+def fact_pack(work, plan):
+    slug = plan['slug']; root = os.path.dirname(HERE)
+    parts = [read(os.path.join(work, 'VERIFY.md'), 8000)]
+    for f in ('factpack.md', 'VERIFY.md'):
+        parts.append(read(os.path.join(root, 'daily', 'ready', slug, f), 8000))
+    return '\n\n'.join(p for p in parts if p)
 
 
 def cmd_review(work):
-    p = json.load(open(os.path.join(work, 'plan.json')))
-    title = open(os.path.join(work, 'yt_title.txt')).read().strip() if os.path.exists(os.path.join(work, 'yt_title.txt')) else ''
-    sys_ = ('You are a harsh fresh critic for mystery Shorts. Judge ONLY the script and shot plan against this rubric '
-            '(criteria 1 hook, 7 mini-reveals, 9 ending, 10 facts). Line 1 must state an exact number or named subject + impossible '
-            'evidence + concrete setting inside 2.5 s; a "But..." twist near 15-18 s; last line ends "Nobody explained it.".\n'
-            + rubric()[:3500] +
-            '\nAnswer ONLY JSON: {"hook": 0-10, "score": 0-10, "go": true|false, "fixes": ["max 3 concrete fixes"]}. go=false only if hook < 6 or score < 6.5.')
-    user = json.dumps({'title': title, 'lines': p['lines'], 'heads': [s.get('head') for s in p['shots']]})
-    return jev(sys_, user)
+    p = json.load(open(os.path.join(work, 'plan.json'))); lines = p['lines']
+    narration = '\n'.join(f'{i}: {l}' for i, l in enumerate(lines))
+    A = ask({'narration': narration, 'first_line': lines[0]},
+            {'hook': q('script', 'hook'), 'pacing': q('script', 'pacing'), 'payoff': q('script', 'payoff')})
+    fp = fact_pack(work, p)
+    claims = ask({'fact_pack': fp[:14000], 'narration': narration},
+                 {f'line_{i}': q('script', 'claim', line=f'line {i}: "{l}"') for i, l in enumerate(lines)})
+    weak = [i for i in range(len(lines)) if claims.get(f'line_{i}', 1) < 0.5]
+    h = A['hook']['score'] / A['hook']['max'] * 10; pc = A['pacing']['score'] / A['pacing']['max'] * 10; po = A['payoff']['score'] / A['payoff']['max'] * 10
+    fixes = []
+    if h < 6: fixes.append(f'hook too weak ({h:.1f}/10): line 0 needs an exact number/name + impossible evidence + setting')
+    if pc < 5: fixes.append(f'pacing weak ({pc:.1f}/10): a new concrete reveal every 10-12 s, cut filler')
+    if po < 5: fixes.append(f'payoff weak ({po:.1f}/10): end on the strongest unexplained detail + "Nobody explained it."')
+    for i in weak: fixes.append(f'line {i} has a claim the fact pack does not support (p={claims[f"line_{i}"]}): fix it or add the source to VERIFY.md')
+    go = h >= 6 and pc >= 5 and po >= 5 and not weak
+    return {'hook': round(h, 1), 'pacing': round(pc, 1), 'payoff': round(po, 1), 'score': round((h + pc + po) / 3, 1),
+            'claims': claims, 'unsupported_lines': weak, 'go': go, 'fixes': fixes}
 
 
-def cmd_vision(*imgs):
-    prompt = ('These are frames from a 1080x1920 vertical mystery Short (contact sheet: 2 frames per second; opening: first 3 s). '
-              'Check: exposure (no crushed/blown or near-black frames), on-screen text readable at phone size, captions/headlines '
-              'fully inside the safe box (x 162-918 of 1080 width, nothing below y 1560 of 1920), no yellow/red template captions, '
-              'no shaky/smeared frames. Answer ONLY JSON: {"exposure_ok": bool, "captions_readable": bool, "inside_safe_box": bool, '
-              '"notes": "max 3 short issues with tile positions"}')
-    return vision(prompt, [i for i in imgs if os.path.exists(i)])
+def cmd_package(work):
+    p = json.load(open(os.path.join(work, 'plan.json'))); story = '\n'.join(p['lines'])
+    T = json.load(open(os.path.join(work, 'titles.json'))) if os.path.exists(os.path.join(work, 'titles.json')) else {}
+    titles = [t for t in T.get('titles', []) if isinstance(t, str) and t.endswith('#shorts') and len(t) <= 100][:5]
+    thumbs = [t for t in T.get('thumb_texts', []) if isinstance(t, str) and len(t) <= 40][:5]
+    other = os.environ.get('OTHER_SCHEME', '')
+    qs = {'palette': dict(q('style', 'palette'), criteria={s: None for s in SCHEMES if s != other}), 'bed': q('style', 'bed')}
+    if len(titles) >= 2: qs['title'] = dict(q('packaging', 'title'), criteria={t: None for t in titles})
+    if len(thumbs) >= 2: qs['thumb'] = dict(q('packaging', 'thumb'), criteria={t: None for t in thumbs})
+    A = ask({'story': story, 'scenes': [s['scene'].split('/')[-2] + '/' + s['scene'].split('/')[-1] for s in p['shots']]}, qs)
+    return {k: v['choice'] for k, v in A.items()} | {'detail': A}
 
 
-def cmd_decide(report, visual=None, review=None):
-    rep = open(report).read() if os.path.exists(report) else 'NO QA REPORT (render failed)'
-    vis = json.load(open(visual)) if visual and os.path.exists(visual) else {}
-    rev = json.load(open(review)) if review and os.path.exists(review) else {}
-    sys_ = ('You make the final post/no-post call for a mystery Short. Machine QA (shortqa) is a HARD gate: any unchecked "- [ ]" '
-            'line means post=false. Otherwise weigh the visual check and the script review; refuse if captions leave the safe box, '
-            'text is unreadable, frames are badly exposed, or the hook is weak (< 6). Answer ONLY JSON: {"post": true|false, "why": "one line"}')
-    out = jev(sys_, json.dumps({'shortqa_report': rep[:6000], 'visual_check': vis, 'script_review': rev}))
-    if '- [ ]' in rep or 'NO QA REPORT' in rep: out['post'] = False   # shortqa stays the hard gate
-    return out
+def cmd_narrators(wa, wb):
+    pa = json.load(open(os.path.join(wa, 'plan.json'))); pb = json.load(open(os.path.join(wb, 'plan.json')))
+    crit = {'A_male': f"male narrator for '{pa['case_name']}', female for '{pb['case_name']}'",
+            'B_male': f"male narrator for '{pb['case_name']}', female for '{pa['case_name']}'"}
+    A = ask({'story_A': '\n'.join(pa['lines']), 'story_B': '\n'.join(pb['lines'])}, {'narrator': dict(q('style', 'narrator'), criteria=crit)})
+    return {'male': pa['slug'] if A['narrator']['choice'] == 'A_male' else pb['slug'], 'detail': A['narrator']}
+
+
+def cmd_frames(video, cuts, out):
+    from typesafe_sdk import Image
+    os.makedirs(out, exist_ok=True)
+    dur = float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', video], capture_output=True, text=True).stdout.strip() or 0)
+    cs = [0.0] + [float(c) for c in cuts.split(',') if c] + [dur]
+    shots = []
+    client()   # raise Skip before extracting frames when there is no key
+    for k in range(len(cs) - 1):
+        t = cs[k] + (cs[k + 1] - cs[k]) * 0.6; f = os.path.join(out, f'shot_{k + 1:02d}.jpg')
+        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', f'{t:.2f}', '-i', video, '-frames:v', '1', '-vf', 'scale=540:960', '-q:v', '3', f], check=True)
+        try:
+            A = ask({'frame': Image(open(f, 'rb').read()), 'note': f'Shot {k + 1} at {t:.1f} s of a 1080x1920 vertical Short.'},
+                    {'readable': q('frame', 'readable'), 'caption_box': q('frame', 'caption_box'), 'interest': q('frame', 'interest')})
+        except Skip: raise
+        except Exception as e:
+            shots.append({'shot': k + 1, 't': round(t, 2), 'error': str(e)[:160]}); continue
+        b = A.get('caption_box') or {}
+        inside = (not b) or (b.get('confidence') is not None and b['confidence'] < 0.3) or (
+            b['left'] >= SAFE['left'] - 0.01 and b['right'] <= SAFE['right'] + 0.01 and b['bottom'] <= SAFE['bottom'] + 0.005)
+        it = A.get('interest', {}); shots.append({'shot': k + 1, 't': round(t, 2), 'readable': A.get('readable'), 'caption_box': b,
+                                                   'inside_safe_area': bool(inside), 'interest': round(it.get('score', 0) / max(it.get('max', 4), 1) * 10, 1)})
+    ok = [s for s in shots if 'error' not in s]
+    bad = [s['shot'] for s in ok if (s['readable'] or 0) < 0.5 or not s['inside_safe_area']]
+    res = {'shots': shots, 'checked': len(ok), 'flagged_shots': bad,
+           'mean_interest': round(sum(s['interest'] for s in ok) / max(len(ok), 1), 1), 'frames_ok': len(ok) > 0 and len(bad) <= 2}
+    json.dump(res, open(os.path.join(out, 'jev_frames.json'), 'w'), indent=1)
+    return res
+
+
+def cmd_decide(report, frames=None, review=None):
+    rep = read(report) or 'NO QA REPORT (render failed)'
+    hard = '- [ ]' not in rep and 'NO QA REPORT' not in rep and '- [x]' in rep
+    fr = json.load(open(frames)) if frames and os.path.exists(frames) else {}
+    rv = json.load(open(review)) if review and os.path.exists(review) else {}
+    jev_ok = None; note = []
+    try:
+        A = ask({'shortqa_report': rep[:6000], 'frame_checks': {k: fr.get(k) for k in ('flagged_shots', 'mean_interest', 'frames_ok', 'checked')},
+                 'script_review': {k: rv.get(k) for k in ('hook', 'pacing', 'payoff', 'unsupported_lines', 'go')}},
+                {'post': q('final', 'post')})
+        jev_ok = A['post'] >= 0.5; note.append(f"jev post p={A['post']}")
+    except Skip: note.append('jev skipped (no key)')
+    except Exception as e: note.append('jev error: ' + str(e)[:120])
+    if fr and fr.get('frames_ok') is False: note.append(f"frames flagged {fr.get('flagged_shots')}")
+    if rv and rv.get('go') is False: note.append('script review no-go')
+    post = bool(hard and jev_ok is not False and fr.get('frames_ok', True) is not False and rv.get('go', True) is not False)
+    if not hard: note.insert(0, 'shortqa hard gate failed')
+    return {'post': post, 'shortqa_pass': hard, 'jev_post': jev_ok, 'why': '; '.join(note)}
 
 
 if __name__ == '__main__':
     if len(sys.argv) < 3: sys.exit(__doc__)
     cmd, args = sys.argv[1], sys.argv[2:]
+    F = {'choose': cmd_choose, 'review': cmd_review, 'package': cmd_package, 'narrators': cmd_narrators, 'frames': cmd_frames, 'decide': cmd_decide}
+    if cmd not in F: sys.exit(__doc__)
     try:
-        f = {'choose': cmd_choose, 'review': cmd_review, 'vision': cmd_vision, 'decide': cmd_decide}[cmd]
-        if cmd == 'choose' and len(args) > 1: args[1] = int(args[1])
-        res = f(*args); res['ok'] = True
-    except KeyError: sys.exit(__doc__)
+        res = F[cmd](*args); res['ok'] = True
     except Skip as e:
-        print(f'WARNING: jev.py {cmd} skipped: {e}; falling back to plain shortqa', file=sys.stderr)
+        print(f'WARNING: jev {cmd} skipped: {e}; plain shortqa decides', file=sys.stderr)
         res = {'ok': False, 'skipped': True, 'error': str(e)}
+        if cmd == 'decide':   # decide still applies the shortqa hard gate without Jev
+            os.environ.pop('JEV_API_KEY', None); res = cmd_decide(*args) | {'ok': False, 'skipped': True}
     except Exception as e:
-        msg = str(e)
-        for k in ('JEV_API_KEY', 'OPENCODE_API_KEY'):
-            if os.environ.get(k): msg = msg.replace(os.environ[k], '***')
+        msg = str(e); k = os.environ.get('JEV_API_KEY')
+        if k: msg = msg.replace(k, '***')
         res = {'ok': False, 'error': msg[:300]}
     print(json.dumps(res))

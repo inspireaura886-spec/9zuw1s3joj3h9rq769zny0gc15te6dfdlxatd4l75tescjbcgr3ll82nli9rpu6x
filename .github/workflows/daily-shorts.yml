@@ -30,6 +30,9 @@ jobs:
         with: {sparse-checkout: "daily\ntools\n.github", fetch-depth: 1}
       - id: d
         run: echo "date=$(TZ=Asia/Kolkata date +%F)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install -q typesafe-sdk
       - uses: actions/setup-node@v4
         with: {node-version: 22}
       - name: install opencode
@@ -38,7 +41,7 @@ jobs:
         env:
           DATE: ${{ steps.d.outputs.date }}
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
-          JEV_API_KEY: ${{ secrets.JEV_API_KEY }}
+          JEV_API_KEY: ${{ secrets.JEV_API_KEY }}         # Jev (TypeSafe direct): topic, script review, packaging choices
           FIRST_MODEL: ${{ inputs.model || 'opencode/glm-5.3-flash-free' }}
           PROMPT: |
             You write the 2 daily mystery Shorts for the YouTube/X channel IA (@ia.unfolds). Today is ${{ steps.d.outputs.date }} (IST).
@@ -51,7 +54,8 @@ jobs:
                Never use titanic-californian-rockets-1912.
             3. For each Short create daily/work/<slug>/ with plan.json, VERIFY.md, yt_title.txt, yt_desc.txt, x_text.txt, x_thread.json
                exactly as PLAYBOOK sections 3-6 describe (120-145 words, last line ends "Nobody explained it.", 14-18 shots, each shot's
-               "scene" copied exactly from the first column of daily/SCENES.tsv).
+               "scene" copied exactly from the first column of daily/SCENES.tsv). Also write titles.json:
+               {"titles": [3-5 candidate yt titles, each <= 100 chars ending " #shorts"], "thumb_texts": [3-5 frame-0 hook texts, 2-5 words]}.
             4. Run: python3 daily/validate.py daily/work/<slug1> daily/work/<slug2>   and fix the files until both print PASS.
             Do not render, do not git commit or push, do not post anything, and do not edit any file outside daily/work/.
             The next jobs of this workflow render everything from your files: Qwen TTS voice, Blender plates, Remotion final,
@@ -185,7 +189,7 @@ jobs:
         with: {python-version: '3.12'}
       - run: |
           sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y --no-install-recommends ffmpeg imagemagick >/dev/null
-          pip install -q numpy pillow
+          pip install -q numpy pillow typesafe-sdk
       - name: plates + comp
         id: c
         run: |
@@ -204,17 +208,15 @@ jobs:
       - name: mux + shortqa + out folder
         if: ${{ !cancelled() }}
         env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}   # vision models only
-          JEV_API_KEY: ${{ secrets.JEV_API_KEY }}             # jev-1.13-free decisions; missing = skipped, shortqa decides
+          JEV_API_KEY: ${{ secrets.JEV_API_KEY }}   # Jev (TypeSafe) frame checks + post decision; missing = skipped, shortqa decides
         run: |
           S=${{ matrix.slug }}; D=${{ needs.write.outputs.date }}
           if [ -s v.mp4 ]; then ffmpeg -v error -y -i v.mp4 -i case/$S/final_audio.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest final.mp4; fi
           CUTS=$(python3 -c "import json;print(','.join(str(c) for c in json.load(open('case/$S/cues.json'))['cuts'][1:]))")
-          RC=1; if [ -s final.mp4 ]; then RC=0; python3 daily/scary-reels/pipeline/shortqa.py final.mp4 sqa --cuts "$CUTS" || RC=$?; fi
+          RC=1; if [ -s final.mp4 ]; then RC=0; python3 daily/scary-reels/pipeline/shortqa.py final.mp4 sqa --cuts "$CUTS" --jev || RC=$?; fi
           mkdir -p sqa
-          # advisory layer: visual check (nemotron-3.5-super-vl-free / mimo-v2.6-flash-free) + final post/no-post (jev-1.13-free)
-          python3 tools/jev.py vision sqa/contact.jpg sqa/opening.jpg > sqa/visual.json || true; cat sqa/visual.json || true
-          python3 tools/jev.py decide sqa/report.md sqa/visual.json daily/work/$S/review.json > sqa/decision.json || true; cat sqa/decision.json || true
+          # Jev final decision: shortqa hard gate + Jev post noul + frame/script floors (skipped without JEV_API_KEY)
+          python3 tools/jev.py decide sqa/report.md sqa/jev_frames.json daily/work/$S/review.json > sqa/decision.json || true; cat sqa/decision.json || true
           python3 daily/finalize.py daily/work/$S final.mp4 sqa $RC rm/public/real3d/$S.plates.json out/$D/$S
           ls -la out/$D/$S
       - uses: actions/upload-artifact@v4

@@ -108,11 +108,11 @@ All on free ubuntu-latest runners (4 vCPU). Jobs are chained; each Short flows t
 
 | job | what it does | key commands |
 |---|---|---|
-| `write` | jev-1.13-free picks topics; the OpenCode coding agent (section 12) verifies, writes daily/work/<slug>/ and validates; jev reviews the scripts (go/no-go). | `bash daily/write_shorts.sh` -> artifact `plan` |
+| `write` | Jev picks topics; the OpenCode coding agent (section 12) verifies, writes daily/work/<slug>/ + titles.json and validates; Jev reviews the scripts (go/no-go) and picks narrator/title/frame-0 text/palette/bed. | `bash daily/write_shorts.sh` -> artifact `plan` |
 | `tts` (per slug) | Qwen3-TTS 1.7B voice clone on CPU from the public repo `inspireaura886-spec/qwennyy` (voices d = narrator_m, e = narrator_f), word timings (faster-whisper small.en aligned to the script), cues, horror mix to -14 LUFS. | `python3 daily/tts_job.py W qwen S`; `python tts.py render/join`; `daily/vo_words.py`; `daily/cues.py`; `daily/mix.py` -> artifact `case-<slug>` |
 | `plates_plan` | Caches Blender 4.2.9 + CC0 assets; splits every plate into <= 22-frame parts. | `python3 daily/plates_matrix.py case` |
 | `plates` (matrix, <= 20 parallel) | Renders each part: `blender -b --factory-startup -noaudio -P <scene> -- --start A --end B --out frames --assets ~/ia3d_assets --pct 67 --nf NF`, lanczos to 1080x1920, x264 CRF 10. | artifact `p-<slug>-<shot>-<i>` |
-| `final` (per slug) | Joins parts into plates (missing plate -> nearest neighbour, flagged in qa.json), generates the Remotion comp, renders 1080x1920 CRF 12, muxes audio (AAC 192k), runs the shortqa gate, writes the out folder. | `daily/assemble_plates.py`; `daily/gen_comp.py`; `npx remotion render src/real3d/<slug>/entry.jsx <Comp> v.mp4 --muted --crf=12 --jpeg-quality=95`; `python3 daily/scary-reels/pipeline/shortqa.py final.mp4 sqa --cuts ...`; `daily/finalize.py` |
+| `final` (per slug) | Joins parts into plates (missing plate -> nearest neighbour, flagged in qa.json), generates the Remotion comp, renders 1080x1920 CRF 12, muxes audio (AAC 192k), runs the shortqa gate, writes the out folder. | `daily/assemble_plates.py`; `daily/gen_comp.py`; `npx remotion render src/real3d/<slug>/entry.jsx <Comp> v.mp4 --muted --crf=12 --jpeg-quality=95`; `python3 daily/scary-reels/pipeline/shortqa.py final.mp4 sqa --cuts ... --jev`; `daily/finalize.py` |
 | `publish` (always) | Collects every finished Short into one artifact and commits rendered slugs to `daily/used_slugs.txt`. Runs even if a Short failed, so whatever passed is still uploaded. | artifact `shorts-<YYYY-MM-DD>` |
 
 Output layout (artifact `shorts-<date>`): `<date>/<slug>/final.mp4, yt_title.txt, yt_desc.txt, x_text.txt,
@@ -156,18 +156,25 @@ No low-poly, no stock footage, no AI faces. Never raise CRF, drop the denoiser o
 - final/publish: publish always runs and uploads whatever finished; Hark posts only `pass: true`.
 - Logs: Actions run page; per-Short `report.md` + `qa.json` in the artifact.
 
-## 12. Model roles (keys = repo secrets, never printed or committed: OPENCODE_API_KEY for the OpenCode agent + vision models, JEV_API_KEY for every jev-1.13-free call)
-| role | model | where |
+## 12. Model roles (keys = repo secrets, never printed or committed)
+| role | model / service | where |
 |---|---|---|
-| coding + script agent | `opencode/glm-5.3-flash-free`, then `opencode/minimax-m3.1-flash-free`, fallback `opencode/deepseek-v4.1-flash-free` (`big-pickle` last) | `write` job, `opencode run` in `daily/write_shorts.sh` |
-| decision layer (a) topic choice | `jev-1.13-free` via `https://opencode.ai/inference/systemone/v1/systemone` (Bearer JEV_API_KEY) | `python3 tools/jev.py choose <candidates.json> 2` on `daily/candidates.py` output; picks passed to the agent as a hint |
-| decision layer (b) script go/no-go | `jev-1.13-free` | `python3 tools/jev.py review daily/work/<slug>` -> review.json {hook, score, go, fixes}; a NO-GO gets one fix round |
-| visual check | `nemotron-3.5-super-vl-free` on contact.jpg + opening.jpg (fallback `mimo-v2.6-flash-free`) via the Zen chat endpoint | `python3 tools/jev.py vision sqa/contact.jpg sqa/opening.jpg` -> visual.json {exposure_ok, captions_readable, inside_safe_box, notes} |
-| decision layer (c) post/no-post | `jev-1.13-free` given the shortqa report + visual + review | `python3 tools/jev.py decide sqa/report.md sqa/visual.json review.json` -> decision.json |
-Rules: **shortqa stays the hard gate.** `qa.json.pass` = shortqa + every plate rendered. `qa.json.post` = pass AND jev did not
-veto; JEV_API_KEY missing = jev steps skipped with a warning; a model that is down or returns junk never blocks (tools/jev.py returns ok:false and the gate falls back to shortqa).
-The models can only veto, never override a failed shortqa. Hark posts only `post: true`.
+| coding + script agent | OpenCode `opencode/glm-5.3-flash-free`, then `opencode/minimax-m3.1-flash-free`, fallback `opencode/deepseek-v4.1-flash-free` (key OPENCODE_API_KEY) | `write` job, `opencode run` in `daily/write_shorts.sh`; it writes plans, packaging, titles.json and any code |
+| decision layer | **Jev** = TypeSafe System One, model `jev-latest`, called DIRECTLY (`POST https://api.typesafe.ai/v1/systemone`, Bearer JEV_API_KEY; SDK `typesafe-sdk`, JEV_API_KEY mapped to TYPESAFE_API_KEY) | `tools/jev.py` + question sets in `tools/jev_questions.json` |
+
+Jev is asked atomic questions (choice / score / noul / box; images go in `state`) and the code combines them:
+| judgment point | Jev questions | command |
+|---|---|---|
+| topic pick | one `choice` over the fresh verified candidates (ranked by probability) | `jev.py choose candidates.json 2` (candidates from `daily/candidates.py`; picks are a hint to the agent) |
+| script go/no-go | `score` hook (0-4), `score` pacing, `score` payoff, one `noul` per script line vs the fact pack (VERIFY.md + daily/ready factpack) | `jev.py review daily/work/<slug>` -> review.json; go = hook >= 6/10, pacing >= 5, payoff >= 5, no unsupported line; a no-go gets one fix round |
+| narrator | `choice` of which Short gets narrator_m (other gets narrator_f; alternation always kept) | `jev.py narrators A B` via `daily/apply_jev.py` |
+| title + frame-0 text | `choice` among the 3-5 candidates in titles.json (titles, thumb_texts) | `jev.py package` via `daily/apply_jev.py` |
+| caption palette + sound bed | `choice` over the 9 palettes (minus the other Short's) and `choice` heartbeat/drone bed (no music tracks: music gate) | same; reverted if it breaks validate.py |
+| per-shot frames | per shot (frame at 60 % of each shot): `noul` readable / not too dark / not blown out, `box` caption -> must sit in x 162-918, y <= 1560, `score` visual interest | `shortqa.py final.mp4 sqa --cuts ... --jev` (calls `jev.py frames`, writes sqa/jev_frames.json, advisory `- [i]` line) |
+| post / no-post | `noul` given shortqa report + frame checks + script review | `jev.py decide sqa/report.md sqa/jev_frames.json review.json` -> post = shortqa pass AND Jev yes AND <= 2 flagged frames AND script go |
+Rules: **shortqa stays the hard gate**; Jev can only veto. Missing JEV_API_KEY = every Jev step is skipped with a warning
+and plain shortqa decides; an API error never fails the run. Hark posts only `qa.json.post: true`.
 
 ## 13. Files in this repo used by the daily workflow
-`tools/jev.py` (model roles), `daily/` (scripts, candidates.py, CRITIC_RUBRIC.md, SCENES.tsv, used_slugs.txt, dedupe corpus, STORY_BANK.md, ready/ packs, tools/, shortqa),
+`tools/jev.py` + `tools/jev_questions.json` (Jev decision layer), `daily/apply_jev.py`, `daily/` (scripts, candidates.py, CRITIC_RUBRIC.md, SCENES.tsv, used_slugs.txt, dedupe corpus, STORY_BANK.md, ready/ packs, tools/, shortqa),
 `blender/` (kit + scenes), `rm/` (Remotion project, Real3DKit), `opencode.json`, this file.

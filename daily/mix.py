@@ -26,6 +26,7 @@ for h in C.get('hits', []):
     except Exception: pass
 rv = C.get('reveal', C['dur_video'] * 0.9)
 try:
+    if C.get('bed', 'heartbeat') != 'heartbeat': raise RuntimeError('bed=drone (Jev choice)')
     hb = H.heartbeat_layer(n, max(1.0, rv - 22), rv - 0.3)
     hb = np.asarray(hb, dtype=np.float64); hb = np.stack([hb, hb], 1) if hb.ndim == 1 else hb
     B[:len(hb)] += hb[:n] * 10 ** (-20 / 20)

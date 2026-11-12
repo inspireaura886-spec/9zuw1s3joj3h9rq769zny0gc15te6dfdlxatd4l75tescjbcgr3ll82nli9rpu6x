@@ -18,5 +18,5 @@ for k, s in enumerate(p['shots']):
     n = f's{k + 1:02d}'; plate_nf[n] = max(30, fr[k + 1] - fr[k] + 8); scenes[n] = s['scene']
 reveal = next((w[1] for w in reversed(W) if norm(w[0]) == 'nobody'), dur * 0.9)
 json.dump({'cuts': cuts, 'frames': FR, 'dur_video': round(FR / FPS, 3), 'voice_s': V['dur'], 'plate_nf': plate_nf,
-           'scenes': scenes, 'hook': 0.0, 'reveal': round(reveal, 3), 'hits': cuts[3::4]}, open(out, 'w'), indent=1)
+           'scenes': scenes, 'hook': 0.0, 'bed': p.get('bed', 'heartbeat'), 'reveal': round(reveal, 3), 'hits': cuts[3::4]}, open(out, 'w'), indent=1)
 print('shots', len(cuts), 'frames', FR, 'dur', round(FR / FPS, 2), 'reveal', round(reveal, 2))

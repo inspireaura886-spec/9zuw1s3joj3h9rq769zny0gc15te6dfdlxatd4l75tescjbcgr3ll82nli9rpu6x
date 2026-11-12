@@ -1,7 +1,8 @@
 #!/bin/bash
 # Write step of daily-shorts. Env: PROMPT, DATE, FIRST_MODEL, OPENCODE_API_KEY (never printed).
-# 1) jev-1.13-free picks topics from fresh candidates (advisory)  2) OpenCode coding agent writes + validates the plans
-# 3) jev reviews each script against CRITIC_RUBRIC (hook score, go/no-go); a no-go gets one fix round.
+# 1) Jev (TypeSafe jev-latest) picks topics from fresh candidates (advisory)  2) OpenCode coding agent writes + validates the plans
+# 3) Jev reviews each script (hook score, one noul per line vs the fact pack, pacing, payoff -> go/no-go); a no-go gets one fix round
+# 4) Jev picks narrator assignment, title, frame-0 text, palette and sound bed (daily/apply_jev.py). No JEV_API_KEY = steps skipped.
 set -u
 mkdir -p daily/work
 python3 daily/candidates.py > /tmp/cands.json
@@ -9,7 +10,7 @@ python3 tools/jev.py choose /tmp/cands.json 2 > daily/work/.choice.json; cat dai
 PICKS=$(python3 -c "import json;d=json.load(open('daily/work/.choice.json'));print(', '.join(d.get('picks',[])))" 2>/dev/null)
 HINT=""
 [ -n "$PICKS" ] && HINT="
-Decision layer (jev-1.13-free) picked these topics from the fresh candidates, best first: $PICKS. Use them unless dedupe or verification fails; then pick another fresh topic yourself."
+Decision layer (Jev) picked these topics from the fresh candidates, best first: $PICKS. Use them unless dedupe or verification fails; then pick another fresh topic yourself."
 AVAIL=$(timeout 120 opencode models opencode 2>/dev/null || true)
 echo "free models visible:"; echo "$AVAIL" | grep -i free | head -20
 MODELS=""
@@ -38,8 +39,8 @@ $ERR"; fi
       for d in $DIRS; do python3 tools/jev.py review $d > $d/review.json; echo "review $d: $(cat $d/review.json)"
         if python3 -c "import json,sys;r=json.load(open('$d/review.json'));sys.exit(0 if r.get('ok') and r.get('go') is False else 1)"; then
           NOGO=1; ERR="$ERR
-Critic (jev-1.13-free) says NO-GO for $d: $(cat $d/review.json). Rewrite that script's hook/lines to fix it (keep all PLAYBOOK rules)."; fi; done
-      if [ $NOGO = 0 ] || [ $REVIEWED = 1 ]; then echo "PLANS OK with $M"; echo "$M" > daily/work/.model; exit 0; fi
+Critic (Jev) says NO-GO for $d: $(cat $d/review.json). Rewrite that script's hook/lines to fix it (keep all PLAYBOOK rules)."; fi; done
+      if [ $NOGO = 0 ] || [ $REVIEWED = 1 ]; then echo "PLANS OK with $M"; echo "$M" > daily/work/.model; python3 daily/apply_jev.py $DIRS || true; python3 daily/validate.py $DIRS; exit 0; fi
       REVIEWED=1; continue
     fi
     [ "$N" -gt 2 ] && ERR="$ERR

@@ -22,12 +22,13 @@ qa = {'slug': p['slug'], 'narrator': p['narrator'], 'scheme': p['scheme'], 'shor
 def J(f):
     try: return json.load(open(f))
     except Exception: return {}
-qa['script_review'] = J(os.path.join(work, 'review.json'))          # jev-1.13-free hook score + go/no-go
-qa['visual_check'] = J(os.path.join(qd, 'visual.json'))             # nemotron-3.5-super-vl-free / mimo-v2.6-flash-free
-qa['decision'] = J(os.path.join(qd, 'decision.json'))               # jev-1.13-free post/no-post
+qa['script_review'] = J(os.path.join(work, 'review.json'))          # Jev: hook, per-line fact nouls, pacing, payoff, go/no-go
+qa['jev_package'] = J(os.path.join(work, 'jev_package.json'))      # Jev: title, frame-0 text, palette, bed choices
+qa['frame_checks'] = J(os.path.join(qd, 'jev_frames.json'))         # Jev: per-shot readable/exposure noul, caption box, interest
+qa['decision'] = J(os.path.join(qd, 'decision.json'))               # Jev + shortqa: post/no-post
 dec = qa['decision']
 # shortqa (pass) is the hard gate; the model decision can only veto, and is ignored when the model was unreachable
-qa['post'] = bool(qa['pass'] and not (dec.get('ok') and dec.get('post') is False))
-qa['note'] = 'pass = shortqa gate passed and every plate rendered (hard gate). post = pass unless jev-1.13-free vetoed. Hark posts only post=true.'
+qa['post'] = bool(qa['pass'] and dec.get('post', True) is not False)
+qa['note'] = 'pass = shortqa gate passed and every plate rendered (hard gate). post = pass AND tools/jev.py decide (shortqa hard gate + Jev post noul + frame/script floors; Jev skipped without JEV_API_KEY). Hark posts only post=true.'
 json.dump(qa, open(os.path.join(out, 'qa.json'), 'w'), indent=1)
 print(json.dumps({k: qa[k] for k in ('slug', 'pass', 'post', 'shortqa_exit', 'plates_replaced')}))
