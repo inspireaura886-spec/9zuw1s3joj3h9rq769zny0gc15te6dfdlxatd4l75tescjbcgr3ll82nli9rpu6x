@@ -1,5 +1,11 @@
 # IA (@ia.unfolds) daily mystery Shorts: PLAYBOOK (GitHub Actions edition)
 
+**Roles.** Hark is the director; the OpenCode agents on GitHub are the workers. This PLAYBOOK is the standing brief.
+Each day Hark may commit `briefs/YYYY-MM-DD.md` (IST date of the 01:00 run): 2 topics, angle, hook, narrator order and
+fixes from yesterday's QA. The `write` job hands it to the workers on top of this file; with no brief they fall back to
+section 2 (verified packs, then STORY_BANK). Every run commits `reports/YYYY-MM-DD.json` (slugs, shortqa result, Jev
+script scores + frame checks, failures, run id) for Hark to read next day and steer the next brief.
+
 Condensed from the factory rulebooks (FACTORY.md, REEL_RULES.md, REAL3D.md, NIGHTLY_SHORT_RUNBOOK.md, CRITIC_RUBRIC.md,
 STORY_BANK.md) on 2026-11-12. This file is the single source of rules for `.github/workflows/daily-shorts.yml`.
 Where an old rule and this file disagree, this file wins for the daily workflow.
@@ -160,7 +166,7 @@ No low-poly, no stock footage, no AI faces. Never raise CRF, drop the denoiser o
 | role | model / service | where |
 |---|---|---|
 | coding + script agent | OpenCode `opencode/glm-5.3-flash-free`, then `opencode/minimax-m3.1-flash-free`, fallback `opencode/deepseek-v4.1-flash-free` (key OPENCODE_API_KEY) | `write` job, `opencode run` in `daily/write_shorts.sh`; it writes plans, packaging, titles.json and any code |
-| decision layer | **Jev** = TypeSafe System One, model `jev-latest`, called DIRECTLY (`POST https://api.typesafe.ai/v1/systemone`, Bearer JEV_API_KEY; SDK `typesafe-sdk`, JEV_API_KEY mapped to TYPESAFE_API_KEY) | `tools/jev.py` + question sets in `tools/jev_questions.json` |
+| decision layer | **Jev** = TypeSafe System One, model `jev-latest`, called DIRECTLY (`POST https://api.typesafe.ai/v1/systemone`, multipart: `request` JSON first + one file part per image, header `TypeSafe-Danger-Zone-Images: true`; key env TYPESAFE_API_KEY mapped from repo secret `JEV`) | `tools/jev.py` + question sets in `tools/jev_questions.json` |
 
 Jev is asked atomic questions (choice / score / noul / box; images go in `state`) and the code combines them:
 | judgment point | Jev questions | command |
@@ -170,9 +176,9 @@ Jev is asked atomic questions (choice / score / noul / box; images go in `state`
 | narrator | `choice` of which Short gets narrator_m (other gets narrator_f; alternation always kept) | `jev.py narrators A B` via `daily/apply_jev.py` |
 | title + frame-0 text | `choice` among the 3-5 candidates in titles.json (titles, thumb_texts) | `jev.py package` via `daily/apply_jev.py` |
 | caption palette + sound bed | `choice` over the 9 palettes (minus the other Short's) and `choice` heartbeat/drone bed (no music tracks: music gate) | same; reverted if it breaks validate.py |
-| per-shot frames | per shot (frame at 60 % of each shot): `noul` readable / not too dark / not blown out, `box` caption -> must sit in x 162-918, y <= 1560, `score` visual interest | `shortqa.py final.mp4 sqa --cuts ... --jev` (calls `jev.py frames`, writes sqa/jev_frames.json, advisory `- [i]` line) |
-| post / no-post | `noul` given shortqa report + frame checks + script review | `jev.py decide sqa/report.md sqa/jev_frames.json review.json` -> post = shortqa pass AND Jev yes AND <= 2 flagged frames AND script go |
-Rules: **shortqa stays the hard gate**; Jev can only veto. Missing JEV_API_KEY = every Jev step is skipped with a warning
+| per-shot frames | per shot (frame at 60 % in, scaled to 882x1568): `noul` caption present + `box` caption (box always returns a box, so it is judged in code only when the noul says a caption is there: x 162-918, y <= 1560), `noul` text readable, `score` exposure, `noul` subject clear, `score` visual interest | `shortqa.py final.mp4 sqa --cuts ... --jev` (calls `jev.py frames`, writes sqa/jev_frames.json, advisory `- [i]` line) |
+| post / no-post | decided in CODE (no Jev question): post = shortqa pass AND <= 2 flagged shots AND script go | `jev.py decide sqa/report.md sqa/jev_frames.json review.json` |
+Rules: Jev makes judgments, code makes decisions; noul >= 0.7 = yes, <= 0.3 = no, between = uncertain (reported, not blocking). **shortqa stays the hard gate**; Jev can only veto. Missing TYPESAFE_API_KEY (secret JEV) = every Jev step is skipped with a warning
 and plain shortqa decides; an API error never fails the run. Hark posts only `qa.json.post: true`.
 
 ## 13. Files in this repo used by the daily workflow

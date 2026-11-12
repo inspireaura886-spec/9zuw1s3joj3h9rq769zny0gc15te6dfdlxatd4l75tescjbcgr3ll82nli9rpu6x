@@ -27,7 +27,7 @@ jobs:
       date: ${{ steps.d.outputs.date }}
     steps:
       - uses: actions/checkout@v4
-        with: {sparse-checkout: "daily\ntools\n.github", fetch-depth: 1}
+        with: {sparse-checkout: "daily\ntools\nbriefs\n.github", fetch-depth: 1}
       - id: d
         run: echo "date=$(TZ=Asia/Kolkata date +%F)" >> $GITHUB_OUTPUT
       - uses: actions/setup-python@v5
@@ -41,12 +41,14 @@ jobs:
         env:
           DATE: ${{ steps.d.outputs.date }}
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
-          JEV_API_KEY: ${{ secrets.JEV_API_KEY }}         # Jev (TypeSafe direct): topic, script review, packaging choices
+          TYPESAFE_API_KEY: ${{ secrets.JEV }}         # Jev (TypeSafe direct): topic, script review, packaging choices
           FIRST_MODEL: ${{ inputs.model || 'opencode/glm-5.3-flash-free' }}
           PROMPT: |
             You write the 2 daily mystery Shorts for the YouTube/X channel IA (@ia.unfolds). Today is ${{ steps.d.outputs.date }} (IST).
             Work in the current repository. Do this exactly:
-            1. Read PLAYBOOK.md completely. It is binding. Then read daily/used_slugs.txt and daily/SCENES.tsv.
+            1. Read PLAYBOOK.md completely (the standing brief; binding). If today's brief from Hark (the director) is appended below,
+               follow it: its topics, angles, hooks, narrator order and fixes win over your own choices (never over PLAYBOOK hard rules).
+               Then read daily/used_slugs.txt and daily/SCENES.tsv.
             2. Make 2 NEW Shorts with alternating narrators: Short 1 narrator_m, Short 2 narrator_f, and two different caption schemes.
                Pick topics per PLAYBOOK section 2: first unused verified packs in daily/ready/<slug>/ (slug not in daily/used_slugs.txt),
                else daily/STORY_BANK.md, verifying every claim with webfetch on 2 reliable sources.
@@ -60,7 +62,10 @@ jobs:
             Do not render, do not git commit or push, do not post anything, and do not edit any file outside daily/work/.
             The next jobs of this workflow render everything from your files: Qwen TTS voice, Blender plates, Remotion final,
             the shortqa gate, out/<date>/<slug>/ with final.mp4 + packaging + qa.json, the used-slug commit and the artifact upload.
-        run: bash daily/write_shorts.sh
+        run: |
+          B=briefs/${{ steps.d.outputs.date }}.md
+          if [ -f "$B" ]; then echo "using Hark's brief $B"; export BRIEF="$(cat $B)"; else echo "no brief for today: PLAYBOOK + STORY_BANK fallback"; fi
+          bash daily/write_shorts.sh
       - id: v
         run: |
           python3 daily/validate.py daily/work/*/ || true
@@ -208,14 +213,14 @@ jobs:
       - name: mux + shortqa + out folder
         if: ${{ !cancelled() }}
         env:
-          JEV_API_KEY: ${{ secrets.JEV_API_KEY }}   # Jev (TypeSafe) frame checks + post decision; missing = skipped, shortqa decides
+          TYPESAFE_API_KEY: ${{ secrets.JEV }}   # Jev (TypeSafe direct) frame checks; missing = skipped, shortqa decides
         run: |
           S=${{ matrix.slug }}; D=${{ needs.write.outputs.date }}
           if [ -s v.mp4 ]; then ffmpeg -v error -y -i v.mp4 -i case/$S/final_audio.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest final.mp4; fi
           CUTS=$(python3 -c "import json;print(','.join(str(c) for c in json.load(open('case/$S/cues.json'))['cuts'][1:]))")
           RC=1; if [ -s final.mp4 ]; then RC=0; python3 daily/scary-reels/pipeline/shortqa.py final.mp4 sqa --cuts "$CUTS" --jev || RC=$?; fi
           mkdir -p sqa
-          # Jev final decision: shortqa hard gate + Jev post noul + frame/script floors (skipped without JEV_API_KEY)
+          # Jev final decision: shortqa hard gate + Jev post noul + frame/script floors (code decision; Jev parts skipped without the JEV secret)
           python3 tools/jev.py decide sqa/report.md sqa/jev_frames.json daily/work/$S/review.json > sqa/decision.json || true; cat sqa/decision.json || true
           python3 daily/finalize.py daily/work/$S final.mp4 sqa $RC rm/public/real3d/$S.plates.json out/$D/$S
           ls -la out/$D/$S
@@ -224,17 +229,22 @@ jobs:
         with: {name: 'short-${{ matrix.slug }}', path: out/, retention-days: 7}
 
   publish:
-    needs: [write, final]
+    needs: [write, tts, plates, final]
     if: ${{ always() && needs.write.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-        with: {sparse-checkout: "daily\n.github", fetch-depth: 1}
+        with: {sparse-checkout: "daily\nreports\n.github", fetch-depth: 1}
       - uses: actions/download-artifact@v4
         continue-on-error: true
         with: {pattern: 'short-*', path: out, merge-multiple: true}
-      - name: summary + used slugs
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with: {name: plan, path: plan}
+      - name: summary + report + used slugs
+        env:
+          NEEDS: ${{ toJson(needs) }}
         run: |
           D=${{ needs.write.outputs.date }}; mkdir -p out/$D
           python3 - "$D" <<'PY'
@@ -252,7 +262,8 @@ jobs:
                   if x['final']: f.write(f"{x['slug']}\trendered by daily-shorts {d} (pass={x['pass']})\n")
           PY
           git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add daily/used_slugs.txt
-          if ! git diff --cached --quiet; then git commit -qm "daily-shorts $D: used slugs"; for k in 1 2 3; do git push -q origin HEAD:main && break; git pull -q --rebase origin main; done; fi
+          python3 daily/report.py "$D" out/$D plan "${{ github.run_id }}" "$NEEDS" > /dev/null
+          git add daily/used_slugs.txt reports/$D.json
+          if ! git diff --cached --quiet; then git commit -qm "daily-shorts $D: report + used slugs"; for k in 1 2 3; do git push -q origin HEAD:main && break; git pull -q --rebase origin main; done; fi
       - uses: actions/upload-artifact@v4
         with: {name: 'shorts-${{ needs.write.outputs.date }}', path: out/, if-no-files-found: warn, retention-days: 14}

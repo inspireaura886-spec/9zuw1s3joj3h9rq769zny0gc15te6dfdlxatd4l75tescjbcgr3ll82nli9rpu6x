@@ -1,14 +1,19 @@
 #!/bin/bash
 # Write step of daily-shorts. Env: PROMPT, DATE, FIRST_MODEL, OPENCODE_API_KEY (never printed).
-# 1) Jev (TypeSafe jev-latest) picks topics from fresh candidates (advisory)  2) OpenCode coding agent writes + validates the plans
+# 0) briefs/<date>.md from Hark (env BRIEF) wins; else 1) Jev (TypeSafe jev-latest) picks topics from fresh candidates (advisory)  2) OpenCode coding agent writes + validates the plans
 # 3) Jev reviews each script (hook score, one noul per line vs the fact pack, pacing, payoff -> go/no-go); a no-go gets one fix round
-# 4) Jev picks narrator assignment, title, frame-0 text, palette and sound bed (daily/apply_jev.py). No JEV_API_KEY = steps skipped.
+# 4) Jev picks narrator assignment, title, frame-0 text, palette and sound bed (daily/apply_jev.py). No TYPESAFE_API_KEY (secret JEV) = steps skipped.
 set -u
 mkdir -p daily/work
+HINT=""
+if [ -n "${BRIEF:-}" ]; then HINT="
+
+=== TODAY'S BRIEF FROM HARK (director) ===
+$BRIEF
+=== END BRIEF ==="; PICKS=""; else
 python3 daily/candidates.py > /tmp/cands.json
 python3 tools/jev.py choose /tmp/cands.json 2 > daily/work/.choice.json; cat daily/work/.choice.json
-PICKS=$(python3 -c "import json;d=json.load(open('daily/work/.choice.json'));print(', '.join(d.get('picks',[])))" 2>/dev/null)
-HINT=""
+PICKS=$(python3 -c "import json;d=json.load(open('daily/work/.choice.json'));print(', '.join(d.get('picks',[])))" 2>/dev/null); fi
 [ -n "$PICKS" ] && HINT="
 Decision layer (Jev) picked these topics from the fresh candidates, best first: $PICKS. Use them unless dedupe or verification fails; then pick another fresh topic yourself."
 AVAIL=$(timeout 120 opencode models opencode 2>/dev/null || true)

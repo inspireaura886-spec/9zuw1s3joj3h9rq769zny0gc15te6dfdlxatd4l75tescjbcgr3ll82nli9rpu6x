@@ -1,37 +1,120 @@
 {
-  "_doc": "Atomic Jev (TypeSafe System One, model jev-latest) questions used by tools/jev.py. {placeholders} are filled in code. Types: choice, score (criteria = rubric levels from 0), noul (yes/no probability), box (bounding box in the state image).",
-  "topic": {
-    "pick": {"type": "choice", "instructions": "Pick the best topic for a YouTube Short on a channel whose motto is 'True mysteries science can't fully explain, in under 60 seconds'. Prefer: UFO/radar/signals with an official record or a hard number; aviation or maritime vanishings with a physical clue; mass environmental anomalies with one hard number. Prefer a strong frame-one hook, verified sources, nothing graphic or exploitative."}
-  },
-  "script": {
-    "hook": {"type": "score", "instructions": "How strong is the FIRST line as a scroll-stopping hook for a mystery Short? A strong hook states an exact number or a named subject, plus impossible physical evidence, plus a concrete setting, inside 2.5 seconds, with no date/place preamble and no vague 'something'.",
-             "criteria": ["0: no hook, context or preamble", "1: vague mood line", "2: a fact but no impossibility", "3: named subject and a strange detail", "4: number or name + impossible evidence + setting, instantly gripping"]},
-    "pacing": {"type": "score", "instructions": "Rate the pacing of this ~50-second narration: a new concrete reveal every 10-12 seconds, a 'But...' twist around 15-18 seconds, no filler, wrap-up or padding.",
-               "criteria": ["0: flat, padded or confusing", "1: slow with dead stretches", "2: acceptable", "3: tight with regular reveals", "4: relentless, every line adds a new concrete fact"]},
-    "payoff": {"type": "score", "instructions": "Rate the ending: the last line should deliver the strongest unexplained detail and end on 'Nobody explained it.', looping back to the hook, with no moral and no call to action.",
-               "criteria": ["0: no payoff or a CTA", "1: weak wrap-up", "2: fine", "3: strong unexplained detail", "4: chilling payoff that loops straight back to line one"]},
-    "claim": {"type": "noul", "instructions": "Is every factual claim in this narration line ({line}) supported by the fact pack in the state? Answer no if a number, name, date or event in the line is missing from or contradicts the fact pack.",
-              "criteria": {"true": "Every claim in the line is supported by the fact pack.", "false": "At least one claim is unsupported or contradicted."}}
-  },
-  "packaging": {
-    "title": {"type": "choice", "instructions": "Which YouTube Shorts title will earn the most clicks while staying truthful? Best: 38-48 characters before ' #shorts', two clauses 'Fact. Twist.', a concrete number or object, never the answer, never '| Case Name'."},
-    "thumb": {"type": "choice", "instructions": "Which 2-5 word on-screen hook text for frame 0 would stop a scroller fastest for this story, while staying truthful?"}
-  },
-  "style": {
-    "narrator": {"type": "choice", "instructions": "Two Shorts are made today and the narrators must alternate: one gets the male narrator, the other the female narrator. Which assignment suits the two stories better?"},
-    "palette": {"type": "choice", "instructions": "Which muted caption palette best suits this story's mood and its night-time 3D plates while staying readable over them?"},
-    "bed": {"type": "choice", "instructions": "Which synthesized sound bed suits this story (no music tracks are allowed)?",
-            "criteria": {"heartbeat": "low drone plus a heartbeat that accelerates into the final reveal (tension, danger, vanishings)", "drone": "low drone only, colder and quieter (space, signals, archaeology, eerie calm)"}}
-  },
-  "frame": {
-    "readable": {"type": "noul", "instructions": "Is this frame from a vertical mystery Short well exposed (not too dark, not blown out) and is all on-screen text clearly readable at phone size?",
-                 "criteria": {"true": "Well exposed and every text element is readable.", "false": "Too dark, blown out, or some text is hard to read."}},
-    "caption_box": {"type": "box", "instructions": "Locate all on-screen caption and headline text in this frame (one box around all text)."},
-    "interest": {"type": "score", "instructions": "How visually interesting is this frame as a still from a cinematic 3D mystery Short?",
-                 "criteria": ["0: empty or broken", "1: dull", "2: fine", "3: atmospheric and clear", "4: striking, would stop a scroll"]}
-  },
-  "final": {
-    "post": {"type": "noul", "instructions": "Given the machine QA metrics and the Jev scores in the state, should this Short be posted to a channel that values quality? Answer no if any hard metric failed, the hook is weak, facts are unsupported, or several frames are unreadable or have text outside the safe area.",
-             "criteria": {"true": "Post it.", "false": "Do not post it."}}
+ "_doc": "Atomic Jev questions (TypeSafe System One, model jev-latest). Jev makes judgments; tools/jev.py makes decisions in code (noul >= 0.7 yes, <= 0.3 no, between = uncertain). {placeholders} are filled in code. Questions refer to state fields in backticks.",
+ "topic": {
+  "pick": {
+   "type": "choice",
+   "instructions": "Pick the best topic for a YouTube Short on a channel whose motto is 'True mysteries science can't fully explain, in under 60 seconds'. Prefer: UFO/radar/signals with an official record or a hard number; aviation or maritime vanishings with a physical clue; mass environmental anomalies with one hard number. Prefer a strong frame-one hook, verified sources, nothing graphic or exploitative."
   }
+ },
+ "script": {
+  "hook": {
+   "type": "score",
+   "instructions": "How strong is `first_line` as a scroll-stopping hook for a mystery Short? A strong hook states an exact number or a named subject, plus impossible physical evidence, plus a concrete setting, inside 2.5 seconds, with no date/place preamble and no vague 'something'.",
+   "criteria": [
+    "0: no hook, context or preamble",
+    "1: vague mood line",
+    "2: a fact but no impossibility",
+    "3: named subject and a strange detail",
+    "4: number or name + impossible evidence + setting, instantly gripping"
+   ]
+  },
+  "pacing": {
+   "type": "score",
+   "instructions": "Rate the pacing of this ~50-second narration: a new concrete reveal every 10-12 seconds, a 'But...' twist around 15-18 seconds, no filler, wrap-up or padding.",
+   "criteria": [
+    "0: flat, padded or confusing",
+    "1: slow with dead stretches",
+    "2: acceptable",
+    "3: tight with regular reveals",
+    "4: relentless, every line adds a new concrete fact"
+   ]
+  },
+  "payoff": {
+   "type": "score",
+   "instructions": "Rate the ending: the last line should deliver the strongest unexplained detail and end on 'Nobody explained it.', looping back to the hook, with no moral and no call to action.",
+   "criteria": [
+    "0: no payoff or a CTA",
+    "1: weak wrap-up",
+    "2: fine",
+    "3: strong unexplained detail",
+    "4: chilling payoff that loops straight back to line one"
+   ]
+  },
+  "claim": {
+   "type": "noul",
+   "instructions": "Is every factual claim in narration line {line} supported by `fact_pack`? A number, name, date or event missing from or contradicting `fact_pack` means no.",
+   "criteria": {
+    "true": "Every claim in the line is supported by the fact pack.",
+    "false": "At least one claim is unsupported or contradicted."
+   }
+  }
+ },
+ "packaging": {
+  "title": {
+   "type": "choice",
+   "instructions": "Which YouTube Shorts title will earn the most clicks while staying truthful? Best: 38-48 characters before ' #shorts', two clauses 'Fact. Twist.', a concrete number or object, never the answer, never '| Case Name'."
+  },
+  "thumb": {
+   "type": "choice",
+   "instructions": "Which 2-5 word on-screen hook text for frame 0 would stop a scroller fastest for this story, while staying truthful?"
+  }
+ },
+ "style": {
+  "narrator": {
+   "type": "choice",
+   "instructions": "Two Shorts are made today and the narrators must alternate: one gets the male narrator, the other the female narrator. Which assignment suits the two stories better?"
+  },
+  "palette": {
+   "type": "choice",
+   "instructions": "Which muted caption palette best suits this story's mood and its night-time 3D plates while staying readable over them?"
+  },
+  "bed": {
+   "type": "choice",
+   "instructions": "Which synthesized sound bed suits this story (no music tracks are allowed)?",
+   "criteria": {
+    "heartbeat": "low drone plus a heartbeat that accelerates into the final reveal (tension, danger, vanishings)",
+    "drone": "low drone only, colder and quieter (space, signals, archaeology, eerie calm)"
+   }
+  }
+ },
+ "frame": {
+  "caption_present": {
+   "type": "noul",
+   "instructions": "Is there any caption, headline or label text overlaid on the video frame in `frame`?"
+  },
+  "caption_box": {
+   "type": "box",
+   "instructions": "Locate all overlaid caption, headline and label text in `frame` (one box around all of it)."
+  },
+  "readable": {
+   "type": "noul",
+   "instructions": "Is every piece of overlaid text in `frame` clearly readable at phone size (sharp, enough contrast, not clipped at an edge)?"
+  },
+  "exposure": {
+   "type": "score",
+   "instructions": "How well exposed is the picture in `frame`?",
+   "criteria": [
+    "0: nearly black or completely blown out",
+    "1: too dark or washed out to see the subject",
+    "2: dim or bright but usable",
+    "3: well exposed",
+    "4: well exposed with rich, controlled contrast"
+   ]
+  },
+  "subject_clear": {
+   "type": "noul",
+   "instructions": "Is the main subject of the scene in `frame` clearly visible and recognisable?"
+  },
+  "interest": {
+   "type": "score",
+   "instructions": "How visually interesting is `frame` as a still from a cinematic 3D mystery Short?",
+   "criteria": [
+    "0: empty or broken",
+    "1: dull",
+    "2: fine",
+    "3: atmospheric and clear",
+    "4: striking, would stop a scroll"
+   ]
+  }
+ }
 }
