@@ -108,7 +108,7 @@ All on free ubuntu-latest runners (4 vCPU). Jobs are chained; each Short flows t
 
 | job | what it does | key commands |
 |---|---|---|
-| `write` | OpenCode (free model, no key) picks 2 fresh topics, verifies, writes daily/work/<slug>/ and validates. Model order: `opencode/deepseek-v4.1-flash-free`, `opencode/glm-5.3-flash-free`, `opencode/big-pickle`. | `bash daily/write_shorts.sh` -> artifact `plan` |
+| `write` | jev-1.13-free picks topics; the OpenCode coding agent (section 12) verifies, writes daily/work/<slug>/ and validates; jev reviews the scripts (go/no-go). | `bash daily/write_shorts.sh` -> artifact `plan` |
 | `tts` (per slug) | Qwen3-TTS 1.7B voice clone on CPU from the public repo `inspireaura886-spec/qwennyy` (voices d = narrator_m, e = narrator_f), word timings (faster-whisper small.en aligned to the script), cues, horror mix to -14 LUFS. | `python3 daily/tts_job.py W qwen S`; `python tts.py render/join`; `daily/vo_words.py`; `daily/cues.py`; `daily/mix.py` -> artifact `case-<slug>` |
 | `plates_plan` | Caches Blender 4.2.9 + CC0 assets; splits every plate into <= 22-frame parts. | `python3 daily/plates_matrix.py case` |
 | `plates` (matrix, <= 20 parallel) | Renders each part: `blender -b --factory-startup -noaudio -P <scene> -- --start A --end B --out frames --assets ~/ia3d_assets --pct 67 --nf NF`, lanczos to 1080x1920, x264 CRF 10. | artifact `p-<slug>-<shot>-<i>` |
@@ -117,8 +117,8 @@ All on free ubuntu-latest runners (4 vCPU). Jobs are chained; each Short flows t
 
 Output layout (artifact `shorts-<date>`): `<date>/<slug>/final.mp4, yt_title.txt, yt_desc.txt, x_text.txt,
 x_thread.json, qa.json, VERIFY.md, contact.jpg, opening.jpg, report.md`.
-`qa.json.pass` = shortqa machine checks all passed AND every plate rendered. Hark posts only `pass: true` Shorts
-(after a look at contact.jpg), at 13:15 IST and 21:30 IST only, YouTube + X via Buffer, never Instagram.
+`qa.json.pass` = shortqa machine checks all passed AND every plate rendered. Hark posts only `post: true` Shorts
+(pass + no model veto, after a look at contact.jpg), at 13:15 IST and 21:30 IST only, YouTube + X via Buffer, never Instagram.
 
 Manual run: Actions -> daily-shorts -> Run workflow (or `apicall github workflow_dispatch ... workflow_id=daily-shorts.yml`).
 Hark side: `bash /workspace/work/close2/pull_daily.sh <YYYY-MM-DD>` downloads the newest successful run's artifact.
@@ -156,6 +156,18 @@ No low-poly, no stock footage, no AI faces. Never raise CRF, drop the denoiser o
 - final/publish: publish always runs and uploads whatever finished; Hark posts only `pass: true`.
 - Logs: Actions run page; per-Short `report.md` + `qa.json` in the artifact.
 
-## 12. Files in this repo used by the daily workflow
-`daily/` (scripts, SCENES.tsv, used_slugs.txt, dedupe corpus, STORY_BANK.md, ready/ packs, tools/, shortqa),
+## 12. Model roles (OpenCode free models; key = repo secret OPENCODE_API_KEY, never printed or committed)
+| role | model | where |
+|---|---|---|
+| coding + script agent | `opencode/glm-5.3-flash-free`, then `opencode/minimax-m3.1-flash-free`, fallback `opencode/deepseek-v4.1-flash-free` (`big-pickle` last) | `write` job, `opencode run` in `daily/write_shorts.sh` |
+| decision layer (a) topic choice | `jev-1.13-free` via `https://opencode.ai/inference/systemone/v1/systemone` (Bearer key) | `python3 tools/jev.py choose <candidates.json> 2` on `daily/candidates.py` output; picks passed to the agent as a hint |
+| decision layer (b) script go/no-go | `jev-1.13-free` | `python3 tools/jev.py review daily/work/<slug>` -> review.json {hook, score, go, fixes}; a NO-GO gets one fix round |
+| visual check | `nemotron-3.5-super-vl-free` on contact.jpg + opening.jpg (fallback `mimo-v2.6-flash-free`) via the Zen chat endpoint | `python3 tools/jev.py vision sqa/contact.jpg sqa/opening.jpg` -> visual.json {exposure_ok, captions_readable, inside_safe_box, notes} |
+| decision layer (c) post/no-post | `jev-1.13-free` given the shortqa report + visual + review | `python3 tools/jev.py decide sqa/report.md sqa/visual.json review.json` -> decision.json |
+Rules: **shortqa stays the hard gate.** `qa.json.pass` = shortqa + every plate rendered. `qa.json.post` = pass AND jev did not
+veto; a model that is down or returns junk never blocks (tools/jev.py returns ok:false and the gate falls back to shortqa).
+The models can only veto, never override a failed shortqa. Hark posts only `post: true`.
+
+## 13. Files in this repo used by the daily workflow
+`tools/jev.py` (model roles), `daily/` (scripts, candidates.py, CRITIC_RUBRIC.md, SCENES.tsv, used_slugs.txt, dedupe corpus, STORY_BANK.md, ready/ packs, tools/, shortqa),
 `blender/` (kit + scenes), `rm/` (Remotion project, Real3DKit), `opencode.json`, this file.

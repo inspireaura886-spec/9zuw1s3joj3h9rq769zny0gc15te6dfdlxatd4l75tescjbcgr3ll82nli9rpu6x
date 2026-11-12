@@ -18,6 +18,16 @@ pl = json.load(open(plates)) if os.path.exists(plates) else {}
 p = json.load(open(os.path.join(work, 'plan.json')))
 qa = {'slug': p['slug'], 'narrator': p['narrator'], 'scheme': p['scheme'], 'shortqa_exit': int(rc),
       'pass': int(rc) == 0 and os.path.exists(final) and not pl.get('replaced'), 'checks': checks,
-      'plates_replaced': pl.get('replaced', {}), 'note': 'pass = shortqa gate passed and every plate rendered; Hark still looks at contact.jpg before posting'}
+      'plates_replaced': pl.get('replaced', {})}
+def J(f):
+    try: return json.load(open(f))
+    except Exception: return {}
+qa['script_review'] = J(os.path.join(work, 'review.json'))          # jev-1.13-free hook score + go/no-go
+qa['visual_check'] = J(os.path.join(qd, 'visual.json'))             # nemotron-3.5-super-vl-free / mimo-v2.6-flash-free
+qa['decision'] = J(os.path.join(qd, 'decision.json'))               # jev-1.13-free post/no-post
+dec = qa['decision']
+# shortqa (pass) is the hard gate; the model decision can only veto, and is ignored when the model was unreachable
+qa['post'] = bool(qa['pass'] and not (dec.get('ok') and dec.get('post') is False))
+qa['note'] = 'pass = shortqa gate passed and every plate rendered (hard gate). post = pass unless jev-1.13-free vetoed. Hark posts only post=true.'
 json.dump(qa, open(os.path.join(out, 'qa.json'), 'w'), indent=1)
-print(json.dumps({k: qa[k] for k in ('slug', 'pass', 'shortqa_exit', 'plates_replaced')}))
+print(json.dumps({k: qa[k] for k in ('slug', 'pass', 'post', 'shortqa_exit', 'plates_replaced')}))

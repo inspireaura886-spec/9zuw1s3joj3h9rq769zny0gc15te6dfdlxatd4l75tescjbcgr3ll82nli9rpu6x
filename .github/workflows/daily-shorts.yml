@@ -9,7 +9,7 @@ on:
     - cron: '30 19 * * *'   # 01:00 IST
   workflow_dispatch:
     inputs:
-      model: {default: 'opencode/deepseek-v4.1-flash-free', description: 'first OpenCode model to try'}
+      model: {default: 'opencode/glm-5.3-flash-free', description: 'first OpenCode coding model to try (then minimax-m3.1, deepseek-v4.1)'}
 permissions:
   contents: write
   actions: write
@@ -21,13 +21,13 @@ env:
 jobs:
   write:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 150
     outputs:
       slugs: ${{ steps.v.outputs.slugs }}
       date: ${{ steps.d.outputs.date }}
     steps:
       - uses: actions/checkout@v4
-        with: {sparse-checkout: "daily\n.github", fetch-depth: 1}
+        with: {sparse-checkout: "daily\ntools\n.github", fetch-depth: 1}
       - id: d
         run: echo "date=$(TZ=Asia/Kolkata date +%F)" >> $GITHUB_OUTPUT
       - uses: actions/setup-node@v4
@@ -38,7 +38,7 @@ jobs:
         env:
           DATE: ${{ steps.d.outputs.date }}
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
-          FIRST_MODEL: ${{ inputs.model || 'opencode/deepseek-v4.1-flash-free' }}
+          FIRST_MODEL: ${{ inputs.model || 'opencode/glm-5.3-flash-free' }}
           PROMPT: |
             You write the 2 daily mystery Shorts for the YouTube/X channel IA (@ia.unfolds). Today is ${{ steps.d.outputs.date }} (IST).
             Work in the current repository. Do this exactly:
@@ -173,7 +173,7 @@ jobs:
         slug: ${{ fromJson(needs.write.outputs.slugs) }}
     steps:
       - uses: actions/checkout@v4
-        with: {sparse-checkout: "rm/src\nrm/public/fonts\ndaily\n.github", fetch-depth: 1}
+        with: {sparse-checkout: "rm/src\nrm/public/fonts\ndaily\ntools\n.github", fetch-depth: 1}
       - uses: actions/download-artifact@v4
         with: {name: plan, path: daily/work}
       - uses: actions/download-artifact@v4
@@ -202,11 +202,17 @@ jobs:
           npx remotion render src/real3d/${{ matrix.slug }}/entry.jsx ${{ steps.c.outputs.COMP }} ../v.mp4 --muted --concurrency=4 --codec=h264 --crf=12 --jpeg-quality=95
       - name: mux + shortqa + out folder
         if: ${{ !cancelled() }}
+        env:
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         run: |
           S=${{ matrix.slug }}; D=${{ needs.write.outputs.date }}
           if [ -s v.mp4 ]; then ffmpeg -v error -y -i v.mp4 -i case/$S/final_audio.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest final.mp4; fi
           CUTS=$(python3 -c "import json;print(','.join(str(c) for c in json.load(open('case/$S/cues.json'))['cuts'][1:]))")
           RC=1; if [ -s final.mp4 ]; then RC=0; python3 daily/scary-reels/pipeline/shortqa.py final.mp4 sqa --cuts "$CUTS" || RC=$?; fi
+          mkdir -p sqa
+          # advisory layer: visual check (nemotron-3.5-super-vl-free / mimo-v2.6-flash-free) + final post/no-post (jev-1.13-free)
+          python3 tools/jev.py vision sqa/contact.jpg sqa/opening.jpg > sqa/visual.json || true; cat sqa/visual.json || true
+          python3 tools/jev.py decide sqa/report.md sqa/visual.json daily/work/$S/review.json > sqa/decision.json || true; cat sqa/decision.json || true
           python3 daily/finalize.py daily/work/$S final.mp4 sqa $RC rm/public/real3d/$S.plates.json out/$D/$S
           ls -la out/$D/$S
       - uses: actions/upload-artifact@v4
@@ -234,7 +240,7 @@ jobs:
               q = os.path.join(base, s, 'qa.json')
               if os.path.isdir(os.path.join(base, s)):
                   qa = json.load(open(q)) if os.path.exists(q) else {}
-                  S.append({'slug': s, 'final': os.path.exists(os.path.join(base, s, 'final.mp4')), 'pass': qa.get('pass', False), 'narrator': qa.get('narrator')})
+                  S.append({'slug': s, 'final': os.path.exists(os.path.join(base, s, 'final.mp4')), 'pass': qa.get('pass', False), 'post': qa.get('post', False), 'narrator': qa.get('narrator')})
           json.dump({'date': d, 'run_id': os.environ.get('GITHUB_RUN_ID'), 'shorts': S}, open(f'{base}/summary.json', 'w'), indent=1)
           print(json.dumps(S, indent=1))
           with open('daily/used_slugs.txt', 'a') as f:
