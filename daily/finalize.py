@@ -29,6 +29,6 @@ qa['decision'] = J(os.path.join(qd, 'decision.json'))               # Jev + shor
 dec = qa['decision']
 # shortqa (pass) is the hard gate; the model decision can only veto, and is ignored when the model was unreachable
 qa['post'] = bool(qa['pass'] and dec.get('post', True) is not False)
-qa['note'] = 'pass = shortqa gate passed and every plate rendered (hard gate). post = pass AND tools/jev.py decide (shortqa hard gate + Jev post noul + frame/script floors; Jev skipped without JEV_API_KEY). Hark posts only post=true.'
+qa['note'] = 'pass = shortqa gate passed and every plate rendered (hard gate). post = pass AND tools/jev.py decide (code: shortqa hard gate AND Jev frame checks AND script go; Jev parts skipped without secret JEV). Hark posts only post=true.'
 json.dump(qa, open(os.path.join(out, 'qa.json'), 'w'), indent=1)
 print(json.dumps({k: qa[k] for k in ('slug', 'pass', 'post', 'shortqa_exit', 'plates_replaced')}))

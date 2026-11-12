@@ -3,7 +3,7 @@
 usage: python3 daily/apply_jev.py daily/work/<slugA> [daily/work/<slugB>]
 - narrators: Jev picks which Short gets narrator_m (the other narrator_f) -> alternation is kept
 - per Short: title (from titles.json candidates), frame-0 hook text (shot 0 head), caption palette (different from the
-  other Short), synth sound bed. Writes daily/work/<slug>/jev_package.json. Missing JEV_API_KEY = nothing changes."""
+  other Short), synth sound bed. Writes daily/work/<slug>/jev_package.json. Missing TYPESAFE_API_KEY (secret JEV) = nothing changes."""
 import json, os, shutil, subprocess, sys
 D = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(D)
 def jev(*a, env=None):
