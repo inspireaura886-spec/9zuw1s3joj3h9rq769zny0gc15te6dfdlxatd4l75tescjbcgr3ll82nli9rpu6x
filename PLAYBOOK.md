@@ -156,16 +156,16 @@ No low-poly, no stock footage, no AI faces. Never raise CRF, drop the denoiser o
 - final/publish: publish always runs and uploads whatever finished; Hark posts only `pass: true`.
 - Logs: Actions run page; per-Short `report.md` + `qa.json` in the artifact.
 
-## 12. Model roles (OpenCode free models; key = repo secret OPENCODE_API_KEY, never printed or committed)
+## 12. Model roles (keys = repo secrets, never printed or committed: OPENCODE_API_KEY for the OpenCode agent + vision models, JEV_API_KEY for every jev-1.13-free call)
 | role | model | where |
 |---|---|---|
 | coding + script agent | `opencode/glm-5.3-flash-free`, then `opencode/minimax-m3.1-flash-free`, fallback `opencode/deepseek-v4.1-flash-free` (`big-pickle` last) | `write` job, `opencode run` in `daily/write_shorts.sh` |
-| decision layer (a) topic choice | `jev-1.13-free` via `https://opencode.ai/inference/systemone/v1/systemone` (Bearer key) | `python3 tools/jev.py choose <candidates.json> 2` on `daily/candidates.py` output; picks passed to the agent as a hint |
+| decision layer (a) topic choice | `jev-1.13-free` via `https://opencode.ai/inference/systemone/v1/systemone` (Bearer JEV_API_KEY) | `python3 tools/jev.py choose <candidates.json> 2` on `daily/candidates.py` output; picks passed to the agent as a hint |
 | decision layer (b) script go/no-go | `jev-1.13-free` | `python3 tools/jev.py review daily/work/<slug>` -> review.json {hook, score, go, fixes}; a NO-GO gets one fix round |
 | visual check | `nemotron-3.5-super-vl-free` on contact.jpg + opening.jpg (fallback `mimo-v2.6-flash-free`) via the Zen chat endpoint | `python3 tools/jev.py vision sqa/contact.jpg sqa/opening.jpg` -> visual.json {exposure_ok, captions_readable, inside_safe_box, notes} |
 | decision layer (c) post/no-post | `jev-1.13-free` given the shortqa report + visual + review | `python3 tools/jev.py decide sqa/report.md sqa/visual.json review.json` -> decision.json |
 Rules: **shortqa stays the hard gate.** `qa.json.pass` = shortqa + every plate rendered. `qa.json.post` = pass AND jev did not
-veto; a model that is down or returns junk never blocks (tools/jev.py returns ok:false and the gate falls back to shortqa).
+veto; JEV_API_KEY missing = jev steps skipped with a warning; a model that is down or returns junk never blocks (tools/jev.py returns ok:false and the gate falls back to shortqa).
 The models can only veto, never override a failed shortqa. Hark posts only `post: true`.
 
 ## 13. Files in this repo used by the daily workflow

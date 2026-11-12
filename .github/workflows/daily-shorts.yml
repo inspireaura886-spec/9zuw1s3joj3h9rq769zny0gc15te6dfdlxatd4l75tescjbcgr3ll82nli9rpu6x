@@ -38,6 +38,7 @@ jobs:
         env:
           DATE: ${{ steps.d.outputs.date }}
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          JEV_API_KEY: ${{ secrets.JEV_API_KEY }}
           FIRST_MODEL: ${{ inputs.model || 'opencode/glm-5.3-flash-free' }}
           PROMPT: |
             You write the 2 daily mystery Shorts for the YouTube/X channel IA (@ia.unfolds). Today is ${{ steps.d.outputs.date }} (IST).
@@ -203,7 +204,8 @@ jobs:
       - name: mux + shortqa + out folder
         if: ${{ !cancelled() }}
         env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}   # vision models only
+          JEV_API_KEY: ${{ secrets.JEV_API_KEY }}             # jev-1.13-free decisions; missing = skipped, shortqa decides
         run: |
           S=${{ matrix.slug }}; D=${{ needs.write.outputs.date }}
           if [ -s v.mp4 ]; then ffmpeg -v error -y -i v.mp4 -i case/$S/final_audio.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest final.mp4; fi

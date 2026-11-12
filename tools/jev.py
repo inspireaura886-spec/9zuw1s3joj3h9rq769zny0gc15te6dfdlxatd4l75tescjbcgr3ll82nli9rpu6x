@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Model helpers for the daily Shorts workflow (advisory layer; shortqa stays the hard gate).
-Key: env OPENCODE_API_KEY (repo secret). Never printed. Every command degrades gracefully: on any API error it
-prints a JSON result with "ok": false and exits 0, so the pipeline never stops because a model is down.
+Keys (repo secrets, never printed): JEV_API_KEY for the jev-1.13-free decision calls (choose/review/decide);
+OPENCODE_API_KEY only for the vision models on the OpenCode Zen endpoint. A missing key = that step is SKIPPED with a
+warning ("skipped": true) and plain shortqa decides. Every command exits 0 and prints JSON ("ok": false on any error),
+so the run never fails because of this layer.
 
   python3 tools/jev.py choose  <candidates.json> [n=2]        -> {"ok", "picks": [slug...], "why"}       (a) topic choice
   python3 tools/jev.py review  <work dir>                     -> {"ok", "hook": 0-10, "score": 0-10, "go": bool, "fixes": [...]}  (b) script go/no-go
@@ -19,9 +21,13 @@ VISION_MODELS = [m for m in os.environ.get('VISION_MODELS', 'nemotron-3.5-super-
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def _post(url, body, timeout=180):
-    key = os.environ.get('OPENCODE_API_KEY', '')
-    if not key: raise RuntimeError('OPENCODE_API_KEY not set')
+class Skip(Exception):
+    """a key is missing: skip this advisory step (warning only), plain shortqa decides"""
+
+
+def _post(url, body, timeout=180, key_env='OPENCODE_API_KEY'):
+    key = os.environ.get(key_env, '')
+    if not key: raise Skip(f'{key_env} not set')
     req = urllib.request.Request(url, data=json.dumps(body).encode(), method='POST',
                                  headers={'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json'})
     with urllib.request.urlopen(req, timeout=timeout) as r:
@@ -54,7 +60,8 @@ def jev(system, user):
     last = None
     for body in ({'model': JEV_MODEL, 'messages': [{'role': 'system', 'content': system}, {'role': 'user', 'content': user}]},
                  {'model': JEV_MODEL, 'input': system + '\n\n' + user}):
-        try: return _json(_text(_post(JEV_URL, body)))
+        try: return _json(_text(_post(JEV_URL, body, key_env='JEV_API_KEY')))
+        except Skip: raise
         except Exception as e: last = e
     raise RuntimeError(f'jev failed: {last}')
 
@@ -69,6 +76,7 @@ def vision(prompt, images):
         try:
             r = _post(ZEN_URL, {'model': m, 'messages': [{'role': 'user', 'content': content}], 'max_tokens': 600})
             out = _json(_text(r)); out['model'] = m; return out
+        except Skip: raise
         except Exception as e: last = e
     raise RuntimeError(f'vision failed: {last}')
 
@@ -131,6 +139,12 @@ if __name__ == '__main__':
         if cmd == 'choose' and len(args) > 1: args[1] = int(args[1])
         res = f(*args); res['ok'] = True
     except KeyError: sys.exit(__doc__)
+    except Skip as e:
+        print(f'WARNING: jev.py {cmd} skipped: {e}; falling back to plain shortqa', file=sys.stderr)
+        res = {'ok': False, 'skipped': True, 'error': str(e)}
     except Exception as e:
-        res = {'ok': False, 'error': str(e).replace(os.environ.get('OPENCODE_API_KEY', '\0') or '\0', '***')[:300]}
+        msg = str(e)
+        for k in ('JEV_API_KEY', 'OPENCODE_API_KEY'):
+            if os.environ.get(k): msg = msg.replace(os.environ[k], '***')
+        res = {'ok': False, 'error': msg[:300]}
     print(json.dumps(res))
