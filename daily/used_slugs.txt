@@ -154,3 +154,5 @@ villisca	already has a case or Blender scenes in the factory (made or in progres
 zodiac-340	already has a case or Blender scenes in the factory (made or in progress)
 pursue-gulf-of-oman-2021	rendered by daily-shorts 2026-11-12 (pass=False)
 sarah-joe-1979	rendered by daily-shorts 2026-11-12 (pass=False)
+high-aim-6	rendered by daily-shorts 2026-11-13 (pass=False)
+stephenville-lights-2008	rendered by daily-shorts 2026-11-13 (pass=False)

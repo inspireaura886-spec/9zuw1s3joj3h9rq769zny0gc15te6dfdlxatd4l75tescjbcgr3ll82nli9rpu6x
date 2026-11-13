@@ -1,0 +1,146 @@
+{
+ "date": "2026-11-13",
+ "run_id": "43338760199",
+ "run_url": "https://github.com/inspireaura886-spec/9zuw1s3joj3h9rq769zny0gc15te6dfdlxatd4l75tescjbcgr3ll82nli9rpu6x/actions/runs/43338760199",
+ "model": "opencode/glm-5.3-flash-free",
+ "jobs": {
+  "write": "success",
+  "tts": "success",
+  "plates": "success",
+  "final": "success"
+ },
+ "failures": [],
+ "shorts": [
+  {
+   "slug": "high-aim-6",
+   "case_name": "High Aim 6 ghost ship",
+   "narrator": "narrator_m",
+   "scheme": "fog-blue",
+   "title": "7 Toothbrushes Stayed. The Crew Vanished. #shorts",
+   "final": true,
+   "shortqa_pass": false,
+   "post": false,
+   "shortqa_failed": [
+    "No dark stretch (YAVG<45 > 0.2 s): 19.67-20.13s, 31.67-34.03s"
+   ],
+   "plates_replaced": {},
+   "jev_script": {
+    "hook": 9.6,
+    "pacing": 9.2,
+    "payoff": 9.5,
+    "score": 9.4,
+    "go": true,
+    "unsupported_lines": [],
+    "uncertain_lines": [
+     2,
+     8
+    ],
+    "fixes": [
+     "line 2: Jev is unsure the fact pack supports it (p=0.68); tighten the wording or cite it in VERIFY.md",
+     "line 8: Jev is unsure the fact pack supports it (p=0.67); tighten the wording or cite it in VERIFY.md"
+    ]
+   },
+   "jev_frames": {
+    "checked": 18,
+    "errors": 0,
+    "flagged_shots": [
+     2,
+     4,
+     6,
+     10,
+     15,
+     16
+    ],
+    "mean_interest": 5.9,
+    "mean_exposure": 5.2,
+    "frames_ok": false,
+    "flags": {
+     "2": [
+      "subject unclear"
+     ],
+     "4": [
+      "badly exposed"
+     ],
+     "6": [
+      "badly exposed",
+      "subject unclear"
+     ],
+     "10": [
+      "subject unclear"
+     ],
+     "15": [
+      "subject unclear"
+     ],
+     "16": [
+      "subject unclear"
+     ]
+    }
+   },
+   "decision": "shortqa hard gate failed; Jev frame checks flagged shots [2, 4, 6, 10, 15, 16]"
+  },
+  {
+   "slug": "stephenville-lights-2008",
+   "case_name": "Stephenville lights",
+   "narrator": "narrator_f",
+   "scheme": "slate",
+   "title": "Dozens Saw It. The Air Force Denied It. #shorts",
+   "final": true,
+   "shortqa_pass": false,
+   "post": false,
+   "shortqa_failed": [
+    "No dark stretch (YAVG<45 > 0.2 s): 24.33-27.30s, 30.70-35.50s"
+   ],
+   "plates_replaced": {},
+   "jev_script": {
+    "hook": 8.1,
+    "pacing": 9.4,
+    "payoff": 7.6,
+    "score": 8.4,
+    "go": false,
+    "unsupported_lines": [
+     8
+    ],
+    "uncertain_lines": [
+     4
+    ],
+    "fixes": [
+     "line 8 has a claim the fact pack does not support (p=0.23): fix it or add the source to VERIFY.md",
+     "line 4: Jev is unsure the fact pack supports it (p=0.57); tighten the wording or cite it in VERIFY.md"
+    ]
+   },
+   "jev_frames": {
+    "checked": 18,
+    "errors": 0,
+    "flagged_shots": [
+     3,
+     7,
+     11,
+     15,
+     16
+    ],
+    "mean_interest": 5.8,
+    "mean_exposure": 5.1,
+    "frames_ok": false,
+    "flags": {
+     "3": [
+      "text not readable"
+     ],
+     "7": [
+      "subject unclear"
+     ],
+     "11": [
+      "subject unclear"
+     ],
+     "15": [
+      "subject unclear"
+     ],
+     "16": [
+      "badly exposed",
+      "subject unclear"
+     ]
+    }
+   },
+   "decision": "shortqa hard gate failed; Jev frame checks flagged shots [3, 7, 11, 15, 16]; Jev script review no-go: line 8 has a claim the fact pack does not support (p=0.23): fix it or add the source to VERIFY.md; line 4: Jev is unsure the fact pack supports it (p=0.57); tighten the wording or cite it in VERIFY.md"
+  }
+ ]
+}
