@@ -1,0 +1,8 @@
+#!/bin/sh
+'''exec' /home/runner/work/9zuw1s3joj3h9rq769zny0gc15te6dfdlxatd4l75tescjbcgr3ll82nli9rpu6x/9zuw1s3joj3h9rq769zny0gc15te6dfdlxatd4l75tescjbcgr3ll82nli9rpu6x/gta/.venv/bin/python3 "$0" "$@"
+' '''
+import sys
+from idna.cli import main
+if __name__ == '__main__':
+    sys.argv[0] = sys.argv[0].removesuffix('.exe')
+    sys.exit(main())
