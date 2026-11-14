@@ -1,0 +1,54 @@
+name: opencode-dev
+run-name: opencode dev (${{ inputs.task }})
+# Hark (director) writes a task file in tasks/; an OpenCode free coding model carries it out in this repo and commits the result.
+on:
+  workflow_dispatch:
+    inputs:
+      task: {description: 'task file in tasks/', required: true}
+      model: {default: 'opencode/glm-5.3-flash-free', description: 'first model (then minimax-m3.1, deepseek-v4.1, big-pickle)'}
+permissions: {contents: write, actions: write}
+concurrency: {group: opencode-dev, cancel-in-progress: false}
+jobs:
+  dev:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: |
+          sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y --no-install-recommends ffmpeg imagemagick >/dev/null
+          pip install -q numpy pillow typesafe-sdk
+          npm i -g opencode-ai@latest >/dev/null 2>&1 && opencode --version
+      - name: OpenCode works the task
+        env:
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          TYPESAFE_API_KEY: ${{ secrets.JEV }}
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          FIRST: ${{ inputs.model }}
+          TASK: tasks/${{ inputs.task }}
+        run: |
+          test -f "$TASK"
+          P="$(cat $TASK)
+
+          Rules: work in this repository. You may read GitHub Actions artifacts and logs with curl and \$GH_TOKEN (repo \$GITHUB_REPOSITORY).
+          Never print secrets. Never post anything anywhere. Do not git commit or push (the workflow commits for you).
+          You cannot edit files under .github/workflows/ (the token cannot push them): if a workflow change is needed, write the exact
+          new file content to tasks/WORKFLOW_PATCH/<same file name> and explain it in tasks/RESULT.md; Hark applies it.
+          Finish by writing tasks/RESULT.md: what you built, how you tested it (with real numbers), what is still broken."
+          for M in "$FIRST" opencode/glm-5.3-flash-free opencode/minimax-m3.1-flash-free opencode/deepseek-v4.1-flash-free opencode/big-pickle; do
+            echo "=== $M ==="; timeout 5400 opencode run --model "$M" "$P" 2>&1 | tail -n 200 && test -s tasks/RESULT.md && break
+          done
+      - name: commit
+        if: ${{ !cancelled() }}
+        run: |
+          git config user.name opencode-dev; git config user.email opencode-dev@users.noreply.github.com
+          git reset -q -- .github 2>/dev/null; git checkout -q -- .github 2>/dev/null || true
+          git add -A -- . ':!.github' ':!**/__pycache__' && git commit -qm "opencode-dev: ${{ inputs.task }}" && git pull -q --rebase && git push -q || echo "nothing to commit"
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: {name: 'dev-result', path: tasks/, retention-days: 14}
