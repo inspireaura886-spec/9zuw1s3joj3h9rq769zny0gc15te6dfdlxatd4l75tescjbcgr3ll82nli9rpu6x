@@ -1,0 +1,25 @@
+name: gta-clip
+# Makes GTA 6 vertical clips with gta/run.sh (built by OpenCode). Clips are uploaded as artifacts; nothing is posted.
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch: {}
+permissions: {contents: read}
+jobs:
+  clip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: run
+        env:
+          TYPESAFE_API_KEY: ${{ secrets.JEV }}
+        run: |
+          if [ ! -x gta/run.sh ] && [ ! -f gta/run.sh ]; then echo "gta/run.sh not built yet"; exit 0; fi
+          sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y --no-install-recommends ffmpeg >/dev/null
+          bash gta/run.sh
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('gta/out/**') != '' }}
+        with: {name: 'gta-clips', path: gta/out/, retention-days: 7}

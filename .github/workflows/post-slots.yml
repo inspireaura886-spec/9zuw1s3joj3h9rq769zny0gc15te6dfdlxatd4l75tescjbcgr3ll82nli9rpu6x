@@ -1,0 +1,33 @@
+name: post-slots
+# Posts one ready Short per slot (13:15 and 21:30 IST) via daily/post_slot.py, which OpenCode builds and maintains.
+on:
+  schedule:
+    - cron: '25 7 * * *'    # 12:55 IST, schedules the 13:15 IST post
+    - cron: '40 15 * * *'   # 21:10 IST, schedules the 21:30 IST post
+  workflow_dispatch:
+    inputs:
+      dry_run: {default: 'false'}
+permissions: {contents: write, actions: read}
+concurrency: {group: post-slots, cancel-in-progress: false}
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: post
+        env:
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          if [ ! -f daily/post_slot.py ]; then echo "post_slot.py not built yet"; exit 0; fi
+          A=""; [ "${{ inputs.dry_run }}" = "true" ] && A="--dry-run"
+          python3 daily/post_slot.py $A
+      - name: commit log
+        if: ${{ !cancelled() }}
+        run: |
+          git config user.name post-slots; git config user.email post-slots@users.noreply.github.com
+          git add reports/ 2>/dev/null && git commit -qm "post-slots log" && git pull -q --rebase && git push -q || true
