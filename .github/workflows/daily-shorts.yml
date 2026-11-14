@@ -152,7 +152,7 @@ jobs:
       matrix: ${{ fromJson(needs.plates_plan.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
-        with: {sparse-checkout: "blender\n.github\nvendor", fetch-depth: 1}
+        with: {sparse-checkout: "blender\ndaily\n.github\nvendor", fetch-depth: 1}
       - uses: actions/cache/restore@v4
         with: {path: ~/blender, key: 'blender-${{ env.BV }}', fail-on-cache-miss: true}
       - uses: actions/cache/restore@v4
@@ -161,14 +161,29 @@ jobs:
           sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y --no-install-recommends libxi6 libxxf86vm1 libxfixes3 libxrender1 libgl1 libegl1 libxkbcommon0 libsm6 libice6 ffmpeg >/dev/null
           python3 blender/kit/fetch_assets.py ~/ia3d_assets
           if [ -f vendor/ext/k1.zip ]; then ~/blender/blender --command extension install-file -r user_default -e vendor/ext/k1.zip 2>&1 | tail -n 3 || true; fi
-      - name: render
+      - name: render (retry the Blender shot once)
         run: |
-          ~/blender/blender -b --factory-startup -noaudio -P "${{ matrix.scene }}" -- --start ${{ matrix.a }} --end ${{ matrix.b }} --out $PWD/frames --assets ~/ia3d_assets --pct 67 --nf ${{ matrix.nf }} 2>&1 | grep -v "^Fra:.*Sample\|Path Tracing" | tail -n 200
+          render() {
+            ~/blender/blender -b --factory-startup -noaudio -P "${{ matrix.scene }}" -- --start ${{ matrix.a }} --end ${{ matrix.b }} --out $PWD/frames --assets ~/ia3d_assets --pct 67 --nf ${{ matrix.nf }} 2>&1 | grep -v "^Fra:.*Sample\|Path Tracing" | tail -n 200
+          }
+          if ! render; then
+            echo "plate render failed: clearing frames and retrying ONCE"
+            rm -rf frames; render
+          fi
           test -n "$(ls frames/*.png 2>/dev/null)"
       - name: encode
         run: |
           I=$(printf %02d ${{ matrix.i }}); mkdir -p out
           ffmpeg -v error -y -framerate 30 -start_number ${{ matrix.a }} -i frames/%05d.png -vf scale=1080:1920:flags=lanczos -c:v libx264 -preset medium -crf 10 -pix_fmt yuv420p -r 30 out/part_${{ matrix.slug }}_${{ matrix.shot }}_$I.mp4
+      - name: plate YAVG guard (re-render once with +1 EV if too dark)
+        env:
+          PLATE_GUARD_MIN: '45'
+          PLATE_GUARD_MEAN: '55'
+          PLATE_GUARD_EV: '1.0'
+        run: |
+          I=$(printf %02d ${{ matrix.i }})
+          export BLENDER="$HOME/blender/blender"
+          python3 daily/plate_guard.py "out/part_${{ matrix.slug }}_${{ matrix.shot }}_$I.mp4" "${{ matrix.scene }}" ${{ matrix.a }} ${{ matrix.b }} ${{ matrix.nf }} out frames "$HOME/ia3d_assets" 67 || true
       - uses: actions/upload-artifact@v4
         with: {name: 'p-${{ matrix.slug }}-${{ matrix.shot }}-${{ matrix.i }}', path: out/, retention-days: 2}
 
@@ -210,19 +225,33 @@ jobs:
           npm ci --no-audit --no-fund || npm install --no-audit --no-fund
           npx remotion browser ensure
           npx remotion render src/real3d/${{ matrix.slug }}/entry.jsx ${{ steps.c.outputs.COMP }} ../v.mp4 --muted --concurrency=4 --codec=h264 --crf=12 --jpeg-quality=95
-      - name: mux + shortqa + out folder
+      - name: mux + shortqa + heal + out folder
         if: ${{ !cancelled() }}
         env:
           TYPESAFE_API_KEY: ${{ secrets.JEV }}   # Jev (TypeSafe direct) frame checks; missing = skipped, shortqa decides
         run: |
-          S=${{ matrix.slug }}; D=${{ needs.write.outputs.date }}
+          S=${{ matrix.slug }}; D=${{ needs.write.outputs.date }}; HEALED=0
           if [ -s v.mp4 ]; then ffmpeg -v error -y -i v.mp4 -i case/$S/final_audio.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest final.mp4; fi
           CUTS=$(python3 -c "import json;print(','.join(str(c) for c in json.load(open('case/$S/cues.json'))['cuts'][1:]))")
           RC=1; if [ -s final.mp4 ]; then RC=0; python3 daily/scary-reels/pipeline/shortqa.py final.mp4 sqa --cuts "$CUTS" --jev || RC=$?; fi
           mkdir -p sqa
+          # Self-heal after a hard-gate failure (dark ranges, frozen/replaced plates, unreadable captions, audio).
+          # heal.py re-runs the SAME shortqa gate after every round (<= 3); it never loosens a threshold.
+          if [ -s final.mp4 ] && [ "$RC" != "0" ]; then
+            echo "shortqa failed (exit $RC): running daily/heal.py"
+            python3 daily/heal.py "$S" . sqa --cuts "$CUTS" --max-rounds 3 || true
+            if [ -f sqa/heal.json ] && python3 -c "import json,sys;sys.exit(0 if json.load(open('sqa/heal.json')).get('pass') else 1)"; then
+              HEALED=1
+              RC=0; python3 daily/scary-reels/pipeline/shortqa.py final.mp4 sqa --cuts "$CUTS" --jev || RC=$?
+              echo "heal.py passed; refreshed sqa report (shortqa exit $RC)"
+            else
+              echo "heal.py could not make it pass; keeping the original failure"
+            fi
+          fi
           # Jev final decision: shortqa hard gate + Jev post noul + frame/script floors (code decision; Jev parts skipped without the JEV secret)
           python3 tools/jev.py decide sqa/report.md sqa/jev_frames.json daily/work/$S/review.json > sqa/decision.json || true; cat sqa/decision.json || true
-          python3 daily/finalize.py daily/work/$S final.mp4 sqa $RC rm/public/real3d/$S.plates.json out/$D/$S
+          POSTFLAG=""; [ "$HEALED" = "1" ] && [ "$RC" = "0" ] && POSTFLAG="--post"
+          python3 daily/finalize.py daily/work/$S final.mp4 sqa $RC rm/public/real3d/$S.plates.json out/$D/$S $POSTFLAG
           ls -la out/$D/$S
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
