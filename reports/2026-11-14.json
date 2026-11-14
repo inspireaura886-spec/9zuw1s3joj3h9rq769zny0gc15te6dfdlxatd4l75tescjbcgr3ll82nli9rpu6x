@@ -1,0 +1,146 @@
+{
+ "date": "2026-11-14",
+ "run_id": "43534163443",
+ "run_url": "https://github.com/inspireaura886-spec/9zuw1s3joj3h9rq769zny0gc15te6dfdlxatd4l75tescjbcgr3ll82nli9rpu6x/actions/runs/43534163443",
+ "model": "opencode/glm-5.3-flash-free",
+ "jobs": {
+  "write": "success",
+  "tts": "success",
+  "plates": "failure",
+  "final": "success"
+ },
+ "failures": [
+  "plates"
+ ],
+ "shorts": [
+  {
+   "slug": "jim-thompson",
+   "case_name": "Disappearance of Jim Thompson",
+   "narrator": "narrator_m",
+   "scheme": "fog-blue",
+   "title": "He Walked Out at Lunch. 500 Found Nothing. #shorts",
+   "final": true,
+   "shortqa_pass": false,
+   "post": false,
+   "shortqa_failed": [
+    "No dark stretch (YAVG<45 > 0.2 s): 0.23-2.67s, 3.23-5.07s, 6.73-7.20s, 8.40-8.63s",
+    "No frozen stretch > 1.5 s: 5.966667"
+   ],
+   "plates_replaced": {
+    "s01": "s02",
+    "s03": "s02",
+    "s11": "s10",
+    "s12": "s10",
+    "s13": "s14"
+   },
+   "jev_script": {
+    "hook": 7.1,
+    "pacing": 8.7,
+    "payoff": 8.0,
+    "score": 7.9,
+    "go": true,
+    "unsupported_lines": [],
+    "uncertain_lines": [],
+    "fixes": []
+   },
+   "jev_frames": {
+    "checked": 17,
+    "errors": 0,
+    "flagged_shots": [
+     1,
+     2,
+     3,
+     5,
+     7,
+     10,
+     11
+    ],
+    "mean_interest": 5.7,
+    "mean_exposure": 5.3,
+    "frames_ok": false,
+    "flags": {
+     "1": [
+      "subject unclear"
+     ],
+     "2": [
+      "subject unclear"
+     ],
+     "3": [
+      "text not readable",
+      "subject unclear"
+     ],
+     "5": [
+      "subject unclear"
+     ],
+     "7": [
+      "subject unclear"
+     ],
+     "10": [
+      "subject unclear"
+     ],
+     "11": [
+      "subject unclear"
+     ]
+    }
+   },
+   "decision": "shortqa hard gate failed; Jev frame checks flagged shots [1, 2, 3, 5, 7, 10, 11]"
+  },
+  {
+   "slug": "oakville-blobs-1994",
+   "case_name": "Oakville blobs",
+   "narrator": "narrator_f",
+   "scheme": "dusty-teal",
+   "title": "Goo Fell 6 Times. Every Sample Is Gone. #shorts",
+   "final": true,
+   "shortqa_pass": false,
+   "post": false,
+   "shortqa_failed": [
+    "No dark stretch (YAVG<45 > 0.2 s): 22.87-25.93s"
+   ],
+   "plates_replaced": {},
+   "jev_script": {
+    "hook": 9.6,
+    "pacing": 9.2,
+    "payoff": 7.5,
+    "score": 8.7,
+    "go": true,
+    "unsupported_lines": [],
+    "uncertain_lines": [
+     1
+    ],
+    "fixes": [
+     "line 1: Jev is unsure the fact pack supports it (p=0.61); tighten the wording or cite it in VERIFY.md"
+    ]
+   },
+   "jev_frames": {
+    "checked": 16,
+    "errors": 0,
+    "flagged_shots": [
+     4,
+     7,
+     11,
+     14
+    ],
+    "mean_interest": 6.0,
+    "mean_exposure": 5.1,
+    "frames_ok": false,
+    "flags": {
+     "4": [
+      "badly exposed",
+      "subject unclear"
+     ],
+     "7": [
+      "subject unclear"
+     ],
+     "11": [
+      "subject unclear"
+     ],
+     "14": [
+      "subject unclear"
+     ]
+    }
+   },
+   "decision": "shortqa hard gate failed; Jev frame checks flagged shots [4, 7, 11, 14]"
+  }
+ ]
+}
