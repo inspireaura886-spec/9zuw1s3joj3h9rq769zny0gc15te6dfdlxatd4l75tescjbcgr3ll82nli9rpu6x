@@ -44,9 +44,14 @@ def main():
         if val >= 45 and start is not None:
             if (k - start) / FPS > 0.2: dark.append((start / FPS, k / FPS))
             start = None
+    dark_json = [{'start': round(s, 3), 'end': round(e, 3), 'min_yavg': round(min(vals[int(s * FPS):max(int(s * FPS) + 1, int(e * FPS))]), 1),
+                  'mean_yavg': round(sum(vals[int(s * FPS):max(int(s * FPS) + 1, int(e * FPS))]) / max(1, int(e * FPS) - int(s * FPS)), 1)}
+                 for s, e in dark]
     # frozen stretches (no change for > 1.5 s)
     fz = run(['ffmpeg', '-i', video, '-vf', 'freezedetect=n=0.003:d=1.5', '-an', '-f', 'null', '-']).stderr
     frozen = re.findall(r'freeze_start: ([\d.]+)', fz)
+    _fs = re.findall(r'freeze_start: ([\d.]+).*?freeze_duration: ([\d.]+)', fz, re.S)
+    frozen_json = [{'start': round(float(s), 3), 'duration': round(float(dd), 3), 'end': round(float(s) + float(dd), 3)} for s, dd in _fs]
     checks = [
         ('Size is 1080x1920', v['width'] == W and v['height'] == H, f"{v['width']}x{v['height']}"),
         ('Frame rate is 30', n / d == FPS, f'{n / d:g} fps'),
@@ -84,12 +89,16 @@ def main():
     L = [f'# Short QA: {os.path.basename(video)}', '']
     L += [f"- [{'x' if ok else ' '}] {nm}: {dt}" for nm, ok, dt in checks]
     # --jev: advisory per-shot frame checks by Jev (tools/jev.py frames). Never changes the exit code; skipped without TYPESAFE_API_KEY.
+    jev_json = None
+    try: jev_json = json.load(open(os.path.join(out, 'jev_frames.json')))   # from a previous --jev run (heal rounds reuse it)
+    except Exception: pass
     if use_jev:
         jp = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'tools', 'jev.py'))
         jr = run([sys.executable, jp, 'frames', video, ','.join(f'{c:.3f}' for c in cuts), os.path.join(out, 'jev')])
         try: jv = json.loads(jr.stdout.strip().splitlines()[-1])
         except Exception: jv = {'ok': False, 'error': (jr.stderr or '?')[-200:]}
         json.dump(jv, open(os.path.join(out, 'jev_frames.json'), 'w'), indent=1)
+        jev_json = jv
         if jv.get('skipped'): L.append('- [i] Jev frame checks: skipped (TYPESAFE_API_KEY not set)'); print('WARNING: --jev skipped, TYPESAFE_API_KEY not set', file=sys.stderr)
         elif not jv.get('ok'): L.append(f"- [i] Jev frame checks: error {jv.get('error', '')[:120]}")
         else: L.append(f"- [i] Jev frame checks (advisory): {jv['checked']} shots, flagged {jv['flagged_shots'] or 'none'} (readable/exposure, caption box in x 162-918 / y<=1560), mean visual interest {jv['mean_interest']}/10")
@@ -106,6 +115,15 @@ def main():
           '10. Sources on screen; no realistic AI faces/imagery (AI_TAG=false).',
           'Then give the harsh score (hook, clarity, animation, overall). Post only at >= 7/10.']
     open(os.path.join(out, 'report.md'), 'w').write('\n'.join(L) + '\n')
+    # machine-readable report for heal.py (same thresholds as the checks above; nothing is loosened)
+    rep = {'video': os.path.abspath(video), 'duration_s': round(dur, 3), 'video_dur_s': round(vdur, 3), 'audio_dur_s': round(adur, 3),
+           'width': v['width'], 'height': v['height'], 'fps': round(n / d, 3), 'bitrate_mbps': round(int(v.get('bit_rate', 0) or 0) / 1e6, 2),
+           'lufs': lufs, 'true_peak_dbfs': peak, 'pass': all(ok for _, ok, _ in checks),
+           'dark_ranges': dark_json, 'frozen_ranges': frozen_json,
+           'checks': [{'name': nm, 'ok': ok, 'detail': dt} for nm, ok, dt in checks],
+           'failed': [nm for nm, ok, _ in checks if not ok],
+           'osc_frames': _of, 'exposure': _ev, 'jev': jev_json}
+    json.dump(rep, open(os.path.join(out, 'report.json'), 'w'), indent=1)
     print('\n'.join(L)); print(f'\nfiles in {out}')
     sys.exit(0 if all(ok for _, ok, _ in checks) else 1)
 

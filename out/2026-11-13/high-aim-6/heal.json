@@ -1,0 +1,120 @@
+{
+ "slug": "high-aim-6",
+ "rounds": [
+  {
+   "round": 1,
+   "changes": [
+    "lifted dark ranges 19.67-20.13s YAVG 42.9 -> target >= 56; 31.67-34.03s YAVG 28.7 -> target >= 56"
+   ],
+   "before": {
+    "lufs": -14.0,
+    "tp": -1.4,
+    "dark": [
+     {
+      "start": 19.667,
+      "end": 20.133,
+      "min_yavg": 42.9,
+      "mean_yavg": 43.9
+     },
+     {
+      "start": 31.667,
+      "end": 34.033,
+      "min_yavg": 28.7,
+      "mean_yavg": 34.9
+     }
+    ],
+    "frozen": [],
+    "pass": false
+   },
+   "after": {
+    "lufs": -14.0,
+    "tp": -1.4,
+    "dark": [],
+    "frozen": [],
+    "pass": true,
+    "shortqa_exit": 0
+   }
+  }
+ ],
+ "pass": true,
+ "rounds_used": 1,
+ "notes": [
+  "round 1 attempt 1: re-graded [(19.67, 48.7), (31.67, 43.2)]",
+  "round 1 attempt 2: re-graded [(19.67, 45.7), (31.67, 33.6)]",
+  "round 1: shortqa exit 0, pass=True"
+ ],
+ "final": {
+  "video": "/home/runner/work/_temp/heal-43338760199-high-aim-6/final.mp4",
+  "lufs": -14.0,
+  "tp": -1.4,
+  "dark": [],
+  "frozen": [],
+  "checks": [
+   {
+    "name": "Size is 1080x1920",
+    "ok": true,
+    "detail": "1080x1920"
+   },
+   {
+    "name": "Frame rate is 30",
+    "ok": true,
+    "detail": "30 fps"
+   },
+   {
+    "name": "Length <= 59.0 s (motto)",
+    "ok": true,
+    "detail": "51.40 s"
+   },
+   {
+    "name": "Has audio",
+    "ok": true,
+    "detail": "yes"
+   },
+   {
+    "name": "Audio and video lengths match within 2 frames",
+    "ok": true,
+    "detail": "video 51.400, audio 51.400"
+   },
+   {
+    "name": "Loudness -15 to -13 LUFS",
+    "ok": true,
+    "detail": "-14.0 LUFS"
+   },
+   {
+    "name": "True peak <= -1.0 dBFS",
+    "ok": true,
+    "detail": "-1.4 dBFS"
+   },
+   {
+    "name": "No dark stretch (YAVG<45 > 0.2 s)",
+    "ok": true,
+    "detail": "none"
+   },
+   {
+    "name": "No frozen stretch > 1.5 s",
+    "ok": true,
+    "detail": "none"
+   },
+   {
+    "name": "Video bitrate >= 6 Mbps (full-quality master)",
+    "ok": true,
+    "detail": "13.4 Mbps"
+   },
+   {
+    "name": "No yellow/red template caption colours (tools/palette_check.py)",
+    "ok": true,
+    "detail": "pixel check ok (51 frames, no template yellow in text bands)"
+   },
+   {
+    "name": "No camera shake/wobble (tools/shake_check.py, osc_frames <= 300)",
+    "ok": true,
+    "detail": "osc_frames=0"
+   },
+   {
+    "name": "Exposure per shot (tools/shot_exposure.py: no clipping, no washed blacks, <= 2 bad shots)",
+    "ok": true,
+    "detail": "1 of 18 shots hard-fail"
+   }
+  ]
+ }
+}

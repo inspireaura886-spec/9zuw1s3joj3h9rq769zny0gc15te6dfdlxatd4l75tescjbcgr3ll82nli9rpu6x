@@ -1,0 +1,517 @@
+{
+ "slug": "high-aim-6",
+ "narrator": "narrator_m",
+ "scheme": "fog-blue",
+ "shortqa_exit": 0,
+ "pass": true,
+ "checks": [
+  {
+   "check": "Size is 1080x1920",
+   "ok": true,
+   "detail": "1080x1920"
+  },
+  {
+   "check": "Frame rate is 30",
+   "ok": true,
+   "detail": "30 fps"
+  },
+  {
+   "check": "Length <= 59.0 s (motto)",
+   "ok": true,
+   "detail": "51.40 s"
+  },
+  {
+   "check": "Has audio",
+   "ok": true,
+   "detail": "yes"
+  },
+  {
+   "check": "Audio and video lengths match within 2 frames",
+   "ok": true,
+   "detail": "video 51.400, audio 51.400"
+  },
+  {
+   "check": "Loudness -15 to -13 LUFS",
+   "ok": true,
+   "detail": "-14.0 LUFS"
+  },
+  {
+   "check": "True peak <= -1.0 dBFS",
+   "ok": true,
+   "detail": "-1.4 dBFS"
+  },
+  {
+   "check": "No dark stretch (YAVG<45 > 0.2 s)",
+   "ok": true,
+   "detail": "none"
+  },
+  {
+   "check": "No frozen stretch > 1.5 s",
+   "ok": true,
+   "detail": "none"
+  },
+  {
+   "check": "Video bitrate >= 6 Mbps (full-quality master)",
+   "ok": true,
+   "detail": "13.4 Mbps"
+  },
+  {
+   "check": "No yellow/red template caption colours (tools/palette_check.py)",
+   "ok": true,
+   "detail": "pixel check ok (51 frames, no template yellow in text bands)"
+  },
+  {
+   "check": "No camera shake/wobble (tools/shake_check.py, osc_frames <= 300)",
+   "ok": true,
+   "detail": "osc_frames=0"
+  },
+  {
+   "check": "Exposure per shot (tools/shot_exposure.py",
+   "ok": true,
+   "detail": "no clipping, no washed blacks, <= 2 bad shots): 1 of 18 shots hard-fail"
+  }
+ ],
+ "plates_replaced": {},
+ "plates_missing": [],
+ "healed": true,
+ "script_review": {
+  "hook": 9.6,
+  "pacing": 9.2,
+  "payoff": 9.5,
+  "score": 9.4,
+  "claims": {
+   "line_0": 0.95,
+   "line_1": 0.94,
+   "line_2": 0.68,
+   "line_3": 0.91,
+   "line_4": 0.9,
+   "line_5": 0.84,
+   "line_6": 0.9,
+   "line_7": 0.97,
+   "line_8": 0.67
+  },
+  "unsupported_lines": [],
+  "uncertain_lines": [
+   2,
+   8
+  ],
+  "go": true,
+  "fixes": [
+   "line 2: Jev is unsure the fact pack supports it (p=0.68); tighten the wording or cite it in VERIFY.md",
+   "line 8: Jev is unsure the fact pack supports it (p=0.67); tighten the wording or cite it in VERIFY.md"
+  ],
+  "ok": true
+ },
+ "jev_package": {
+  "palette": "fog-blue",
+  "bed": "heartbeat",
+  "title": "7 Toothbrushes Stayed. The Crew Vanished. #shorts",
+  "thumb": "7 toothbrushes",
+  "detail": {
+   "palette": {
+    "choice": "fog-blue",
+    "confidence": 0.42,
+    "p": {
+     "sage": 0.0,
+     "dusty-teal": 0.23,
+     "slate": 0.22,
+     "clay": 0.0,
+     "lavender": 0.01,
+     "sand": 0.0,
+     "dusk-rose": 0.01,
+     "fog-blue": 0.48,
+     "stone": 0.05
+    }
+   },
+   "bed": {
+    "choice": "heartbeat",
+    "confidence": 0.3,
+    "p": {
+     "heartbeat": 0.65,
+     "drone": 0.35
+    }
+   },
+   "title": {
+    "choice": "7 Toothbrushes Stayed. The Crew Vanished. #shorts",
+    "confidence": 0.6,
+    "p": {
+     "7 Toothbrushes Stayed. The Crew Vanished. #shorts": 0.68,
+     "A Ghost Ship Drifted In. His Phone Rang On. #shorts": 0.13,
+     "The Ship Was Found. The Crew Never Was. #shorts": 0.02,
+     "The Tuna Rotted. No One Was Ever Found. #shorts": 0.07,
+     "One Crewman Confessed. No Motive Was Given. #shorts": 0.1
+    }
+   },
+   "thumb": {
+    "choice": "7 toothbrushes",
+    "confidence": 0.32,
+    "p": {
+     "7 toothbrushes": 0.46,
+     "crew vanished": 0.17,
+     "his phone rang": 0.14,
+     "ghost ship": 0.17,
+     "nobody aboard": 0.06
+    }
+   }
+  },
+  "ok": true
+ },
+ "frame_checks": {
+  "shots": [
+   {
+    "shot": 1,
+    "t": 1.64,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.79,
+     "left": 0.15,
+     "right": 0.82,
+     "confidence": 0.62
+    },
+    "inside_safe_area": true,
+    "readable": 0.42,
+    "exposure": 4.8,
+    "subject_clear": 0.88,
+    "interest": 6.8,
+    "flags": []
+   },
+   {
+    "shot": 2,
+    "t": 5.26,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.78,
+     "left": 0.16,
+     "right": 0.81,
+     "confidence": 0.68
+    },
+    "inside_safe_area": true,
+    "readable": 0.69,
+    "exposure": 4.7,
+    "subject_clear": 0.16,
+    "interest": 4.5,
+    "flags": [
+     "subject unclear"
+    ]
+   },
+   {
+    "shot": 3,
+    "t": 8.44,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.76,
+     "left": 0.15,
+     "right": 0.82,
+     "confidence": 0.65
+    },
+    "inside_safe_area": true,
+    "readable": 0.57,
+    "exposure": 4.2,
+    "subject_clear": 0.78,
+    "interest": 6.3,
+    "flags": []
+   },
+   {
+    "shot": 4,
+    "t": 10.79,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.77,
+     "left": 0.26,
+     "right": 0.74,
+     "confidence": 0.59
+    },
+    "inside_safe_area": true,
+    "readable": 0.6,
+    "exposure": 3.5,
+    "subject_clear": 0.46,
+    "interest": 5.8,
+    "flags": [
+     "badly exposed"
+    ]
+   },
+   {
+    "shot": 5,
+    "t": 14.05,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.68,
+     "left": 0.15,
+     "right": 0.82,
+     "confidence": 0.68
+    },
+    "inside_safe_area": true,
+    "readable": 0.62,
+    "exposure": 7.3,
+    "subject_clear": 0.76,
+    "interest": 6.3,
+    "flags": []
+   },
+   {
+    "shot": 6,
+    "t": 17.2,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.8,
+     "left": 0.15,
+     "right": 0.82,
+     "confidence": 0.68
+    },
+    "inside_safe_area": true,
+    "readable": 0.72,
+    "exposure": 3.3,
+    "subject_clear": 0.18,
+    "interest": 5.1,
+    "flags": [
+     "badly exposed",
+     "subject unclear"
+    ]
+   },
+   {
+    "shot": 7,
+    "t": 19.53,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.69,
+     "left": 0.22,
+     "right": 0.76,
+     "confidence": 0.61
+    },
+    "inside_safe_area": true,
+    "readable": 0.72,
+    "exposure": 5.1,
+    "subject_clear": 0.76,
+    "interest": 6.5,
+    "flags": []
+   },
+   {
+    "shot": 8,
+    "t": 21.95,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.12,
+     "bottom": 0.75,
+     "left": 0.28,
+     "right": 0.68,
+     "confidence": 0.66
+    },
+    "inside_safe_area": true,
+    "readable": 0.66,
+    "exposure": 5.2,
+    "subject_clear": 0.32,
+    "interest": 5.4,
+    "flags": []
+   },
+   {
+    "shot": 9,
+    "t": 25.25,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.81,
+     "left": 0.15,
+     "right": 0.84,
+     "confidence": 0.47
+    },
+    "inside_safe_area": true,
+    "readable": 0.77,
+    "exposure": 5.2,
+    "subject_clear": 0.69,
+    "interest": 4.5,
+    "flags": []
+   },
+   {
+    "shot": 10,
+    "t": 28.0,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.78,
+     "left": 0.15,
+     "right": 0.81,
+     "confidence": 0.76
+    },
+    "inside_safe_area": true,
+    "readable": 0.69,
+    "exposure": 6.8,
+    "subject_clear": 0.16,
+    "interest": 3.6,
+    "flags": [
+     "subject unclear"
+    ]
+   },
+   {
+    "shot": 11,
+    "t": 30.53,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.79,
+     "left": 0.15,
+     "right": 0.81,
+     "confidence": 0.65
+    },
+    "inside_safe_area": true,
+    "readable": 0.73,
+    "exposure": 5.9,
+    "subject_clear": 0.76,
+    "interest": 6.7,
+    "flags": []
+   },
+   {
+    "shot": 12,
+    "t": 33.1,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.7,
+     "left": 0.25,
+     "right": 0.73,
+     "confidence": 0.72
+    },
+    "inside_safe_area": true,
+    "readable": 0.7,
+    "exposure": 6.5,
+    "subject_clear": 0.56,
+    "interest": 6.2,
+    "flags": []
+   },
+   {
+    "shot": 13,
+    "t": 35.85,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.12,
+     "bottom": 0.78,
+     "left": 0.15,
+     "right": 0.84,
+     "confidence": 0.77
+    },
+    "inside_safe_area": true,
+    "readable": 0.64,
+    "exposure": 5.8,
+    "subject_clear": 0.42,
+    "interest": 5.4,
+    "flags": []
+   },
+   {
+    "shot": 14,
+    "t": 38.75,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.76,
+     "left": 0.15,
+     "right": 0.82,
+     "confidence": 0.74
+    },
+    "inside_safe_area": true,
+    "readable": 0.65,
+    "exposure": 6.2,
+    "subject_clear": 0.73,
+    "interest": 5.7,
+    "flags": []
+   },
+   {
+    "shot": 15,
+    "t": 41.16,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.77,
+     "left": 0.22,
+     "right": 0.77,
+     "confidence": 0.62
+    },
+    "inside_safe_area": true,
+    "readable": 0.59,
+    "exposure": 4.3,
+    "subject_clear": 0.28,
+    "interest": 4.8,
+    "flags": [
+     "subject unclear"
+    ]
+   },
+   {
+    "shot": 16,
+    "t": 43.61,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.79,
+     "left": 0.24,
+     "right": 0.74,
+     "confidence": 0.63
+    },
+    "inside_safe_area": true,
+    "readable": 0.43,
+    "exposure": 4.0,
+    "subject_clear": 0.2,
+    "interest": 6.5,
+    "flags": [
+     "subject unclear"
+    ]
+   },
+   {
+    "shot": 17,
+    "t": 46.46,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.12,
+     "bottom": 0.78,
+     "left": 0.25,
+     "right": 0.74,
+     "confidence": 0.79
+    },
+    "inside_safe_area": true,
+    "readable": 0.68,
+    "exposure": 4.9,
+    "subject_clear": 0.78,
+    "interest": 6.3,
+    "flags": []
+   },
+   {
+    "shot": 18,
+    "t": 49.9,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.78,
+     "left": 0.2,
+     "right": 0.78,
+     "confidence": 0.71
+    },
+    "inside_safe_area": true,
+    "readable": 0.41,
+    "exposure": 4.9,
+    "subject_clear": 0.9,
+    "interest": 7.2,
+    "flags": []
+   }
+  ],
+  "checked": 18,
+  "errors": 0,
+  "flagged_shots": [
+   2,
+   4,
+   6,
+   10,
+   15,
+   16
+  ],
+  "mean_interest": 5.8,
+  "mean_exposure": 5.1,
+  "frames_ok": false,
+  "ok": true
+ },
+ "decision": {},
+ "post": true,
+ "note": "pass = shortqa gate passed and every plate rendered (hard gate). post = pass AND tools/jev.py decide (code: shortqa hard gate AND Jev frame checks AND script go; Jev parts skipped without secret JEV). --post is only used after heal.py re-passed shortqa. Hark posts only post=true."
+}

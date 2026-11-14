@@ -273,7 +273,9 @@ def _luma_png(path):
 
 def autoexpose(sc, a, frame, target=LUMA_TARGET, iters=3):
     """Meter a small deterministic render of `frame` and set view exposure so mean display luma ~= target.
-    Same frame + seed + samples on every GitHub part -> identical exposure (no part-to-part jumps)."""
+    Same frame + seed + samples on every GitHub part -> identical exposure (no part-to-part jumps).
+    A 0.24 luma floor keeps every new plate at YAVG >= ~60 (shortqa dark gate is YAVG < 45)."""
+    target = max(float(target), 0.24)
     if '--exposure' in a.extra:
         sc.view_settings.exposure = float(a.extra[a.extra.index('--exposure') + 1])
         REPORT['exposure'] = dict(mode='pinned', ev=sc.view_settings.exposure)

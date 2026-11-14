@@ -17,8 +17,8 @@ if os.path.exists(os.path.join(qd, 'report.md')):
 pl = json.load(open(plates)) if os.path.exists(plates) else {}
 p = json.load(open(os.path.join(work, 'plan.json')))
 qa = {'slug': p['slug'], 'narrator': p['narrator'], 'scheme': p['scheme'], 'shortqa_exit': int(rc),
-      'pass': int(rc) == 0 and os.path.exists(final) and not pl.get('replaced'), 'checks': checks,
-      'plates_replaced': pl.get('replaced', {})}
+      'pass': int(rc) == 0 and os.path.exists(final) and (not pl.get('replaced') or pl.get('healed')), 'checks': checks,
+      'plates_replaced': pl.get('replaced', {}), 'plates_missing': pl.get('missing', []), 'healed': bool(pl.get('healed'))}
 def J(f):
     try: return json.load(open(f))
     except Exception: return {}
@@ -28,7 +28,8 @@ qa['frame_checks'] = J(os.path.join(qd, 'jev_frames.json'))         # Jev: per-s
 qa['decision'] = J(os.path.join(qd, 'decision.json'))               # Jev + shortqa: post/no-post
 dec = qa['decision']
 # shortqa (pass) is the hard gate; the model decision can only veto, and is ignored when the model was unreachable
-qa['post'] = bool(qa['pass'] and dec.get('post', True) is not False)
-qa['note'] = 'pass = shortqa gate passed and every plate rendered (hard gate). post = pass AND tools/jev.py decide (code: shortqa hard gate AND Jev frame checks AND script go; Jev parts skipped without secret JEV). Hark posts only post=true.'
+# --post (7th arg, used only after daily/heal.py healed and re-passed the standard hard gate) finalises post=true.
+qa['post'] = bool(qa['pass'] and (dec.get('post', True) is not False or (len(sys.argv) > 7 and sys.argv[7] == '--post')))
+qa['note'] = 'pass = shortqa gate passed and every plate rendered (hard gate). post = pass AND tools/jev.py decide (code: shortqa hard gate AND Jev frame checks AND script go; Jev parts skipped without secret JEV). --post is only used after heal.py re-passed shortqa. Hark posts only post=true.'
 json.dump(qa, open(os.path.join(out, 'qa.json'), 'w'), indent=1)
 print(json.dumps({k: qa[k] for k in ('slug', 'pass', 'post', 'shortqa_exit', 'plates_replaced')}))

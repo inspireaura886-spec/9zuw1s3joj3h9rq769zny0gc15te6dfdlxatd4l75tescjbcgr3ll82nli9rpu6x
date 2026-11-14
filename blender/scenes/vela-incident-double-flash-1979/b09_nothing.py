@@ -9,4 +9,4 @@ cyl('Filter', (0, 0.85, top + 0.021), (0, 0.85, top + 0.026), 0.11, M.principled
 cyl('Tweezer', (0.16, 0.7, top + 0.024), (0.3, 0.82, top + 0.024), 0.003, M.principled('Tw', base=(0.7, 0.7, 0.72), rough=0.2, metal=1.0), 6)
 cam = C.Cam()
 wide(cam, NF, C.push_in((0.0, 0.2, top + 0.45), (0, 0.85, top + 0.02), amount=0.3), lens=35, fstop=4.0, focus='Filter')
-go(cam, NF, a, sc, meter=int(NF * 0.6), target=0.2)
+go(cam, NF, a, sc, meter=int(NF * 0.6), target=0.27)

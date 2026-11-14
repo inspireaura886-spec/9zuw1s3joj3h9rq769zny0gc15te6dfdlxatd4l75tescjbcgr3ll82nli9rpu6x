@@ -1,0 +1,44 @@
+name: heal-short
+run-name: heal ${{ inputs.slug }} from run ${{ inputs.run_id }}
+# Rescue a finished Short from a past daily-shorts run (Hark task 2026-11-14).
+# Downloads short-<slug> + case-<slug> (+ plan), runs daily/heal.py with the SAME shortqa hard gate,
+# writes out/<date>/<slug>/ exactly like finalize.py, and uploads artifact healed-<slug>.
+# Nothing is posted by this workflow.
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'daily-shorts run id that produced the Short (e.g. 43534163443)'
+        required: true
+        type: string
+      slug:
+        description: 'Short slug (e.g. jim-thompson)'
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+jobs:
+  heal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: ffmpeg
+        run: sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y --no-install-recommends ffmpeg >/dev/null
+      - name: heal the artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          TYPESAFE_API_KEY: ${{ secrets.JEV }}   # optional Jev frame advice; missing = plain shortqa decides
+        run: bash daily/heal_artifact.sh "${{ inputs.run_id }}" "${{ inputs.slug }}"
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: 'healed-${{ inputs.slug }}'
+          path: out/
+          if-no-files-found: warn
+          retention-days: 14

@@ -9,4 +9,4 @@ scope_screen('Scope', (0, 1.05, top + 0.26), NF, f0=int(NF * 0.15), f1=int(NF * 
 paper_stack('Sheets', (-0.55, 0.8, top + 0.001), 12, 4, d)
 cam = C.Cam()
 wide(cam, NF, C.push_in((0.15, -0.3, top + 0.42), (0, 1.0, top + 0.26), amount=0.3), lens=35, fstop=4.0, focus='ScopeGlass')
-go(cam, NF, a, sc, meter=int(NF * 0.8), target=0.17)
+go(cam, NF, a, sc, meter=int(NF * 0.8), target=0.27)

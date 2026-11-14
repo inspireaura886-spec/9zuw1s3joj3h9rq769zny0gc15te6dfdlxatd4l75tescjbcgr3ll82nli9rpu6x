@@ -7,4 +7,4 @@ jungle(NF, seed=1, n_trees=110, n_palms=24, area=(-260, 260, -60, 520), lane=lam
 river('River', -80, 560, width=30, bend=18)
 cam = C.Cam(clip_end=60000)
 wide(cam, NF, C.crane((-60, -160, 190), (10, 260, 10), dz=-70, dlook=0), lens=24, fstop=16)
-go(cam, NF, a, sc, meter=NF // 2)
+go(cam, NF, a, sc, meter=NF // 2, target=0.30)

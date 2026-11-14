@@ -1055,6 +1055,6 @@ def desk_lamp_set(d=None, top=0.76):
     Wd.hdri('fireplace', strength=0.04, bg_strength=0.03)
     boxm('Desk', (0, 0.9, top - 0.025), (1.8, 0.9, 0.05), d['wood'], 0.01)
     sph('LampBulb', (0.6, 1.15, top + 0.45), 0.03, M.emission('StudyBulb', (1.0, 0.8, 0.5), 20.0), 10, 6)
-    Wd.spot('StudyKey', (0.55, 1.05, top + 0.5), (0.1, 0.8, top), color=(1.0, 0.74, 0.45), power=60, size_deg=80, blend=0.7, radius=0.04)
+    Wd.spot('StudyKey', (0.55, 1.05, top + 0.5), (0.1, 0.8, top), color=(1.0, 0.74, 0.45), power=90, size_deg=80, blend=0.7, radius=0.04)
     return top
 

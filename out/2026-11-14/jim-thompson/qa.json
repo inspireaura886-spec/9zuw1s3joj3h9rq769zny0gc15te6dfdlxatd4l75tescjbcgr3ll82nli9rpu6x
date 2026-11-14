@@ -1,0 +1,499 @@
+{
+ "slug": "jim-thompson",
+ "narrator": "narrator_m",
+ "scheme": "fog-blue",
+ "shortqa_exit": 0,
+ "pass": true,
+ "checks": [
+  {
+   "check": "Size is 1080x1920",
+   "ok": true,
+   "detail": "1080x1920"
+  },
+  {
+   "check": "Frame rate is 30",
+   "ok": true,
+   "detail": "30 fps"
+  },
+  {
+   "check": "Length <= 59.0 s (motto)",
+   "ok": true,
+   "detail": "47.10 s"
+  },
+  {
+   "check": "Has audio",
+   "ok": true,
+   "detail": "yes"
+  },
+  {
+   "check": "Audio and video lengths match within 2 frames",
+   "ok": true,
+   "detail": "video 47.100, audio 47.100"
+  },
+  {
+   "check": "Loudness -15 to -13 LUFS",
+   "ok": true,
+   "detail": "-14.1 LUFS"
+  },
+  {
+   "check": "True peak <= -1.0 dBFS",
+   "ok": true,
+   "detail": "-1.3 dBFS"
+  },
+  {
+   "check": "No dark stretch (YAVG<45 > 0.2 s)",
+   "ok": true,
+   "detail": "none"
+  },
+  {
+   "check": "No frozen stretch > 1.5 s",
+   "ok": true,
+   "detail": "none"
+  },
+  {
+   "check": "Video bitrate >= 6 Mbps (full-quality master)",
+   "ok": true,
+   "detail": "9.9 Mbps"
+  },
+  {
+   "check": "No yellow/red template caption colours (tools/palette_check.py)",
+   "ok": true,
+   "detail": "pixel check ok (47 frames, no template yellow in text bands)"
+  },
+  {
+   "check": "No camera shake/wobble (tools/shake_check.py, osc_frames <= 300)",
+   "ok": true,
+   "detail": "osc_frames=3"
+  },
+  {
+   "check": "Exposure per shot (tools/shot_exposure.py",
+   "ok": true,
+   "detail": "no clipping, no washed blacks, <= 2 bad shots): 1 of 17 shots hard-fail"
+  }
+ ],
+ "plates_replaced": {
+  "s01": "s02",
+  "s03": "s02",
+  "s11": "s10",
+  "s12": "s10",
+  "s13": "s14"
+ },
+ "plates_missing": [],
+ "healed": true,
+ "script_review": {
+  "hook": 7.1,
+  "pacing": 8.7,
+  "payoff": 8.0,
+  "score": 7.9,
+  "claims": {
+   "line_0": 0.88,
+   "line_1": 0.95,
+   "line_2": 0.96,
+   "line_3": 0.89,
+   "line_4": 0.95,
+   "line_5": 0.93,
+   "line_6": 0.74,
+   "line_7": 0.95,
+   "line_8": 0.8
+  },
+  "unsupported_lines": [],
+  "uncertain_lines": [],
+  "go": true,
+  "fixes": [],
+  "ok": true
+ },
+ "jev_package": {
+  "palette": "fog-blue",
+  "bed": "heartbeat",
+  "title": "He Walked Out at Lunch. 500 Found Nothing. #shorts",
+  "thumb": "HE NEVER CAME BACK",
+  "detail": {
+   "palette": {
+    "choice": "fog-blue",
+    "confidence": 0.19,
+    "p": {
+     "sage": 0.01,
+     "dusty-teal": 0.24,
+     "slate": 0.23,
+     "clay": 0.01,
+     "lavender": 0.01,
+     "sand": 0.02,
+     "dusk-rose": 0.02,
+     "fog-blue": 0.28,
+     "stone": 0.18
+    }
+   },
+   "bed": {
+    "choice": "heartbeat",
+    "confidence": 0.52,
+    "p": {
+     "heartbeat": 0.76,
+     "drone": 0.24
+    }
+   },
+   "title": {
+    "choice": "He Walked Out at Lunch. 500 Found Nothing. #shorts",
+    "confidence": 0.53,
+    "p": {
+     "The Silk King Vanished. 500 Found Nothing. #shorts": 0.19,
+     "He Walked Out at Lunch. 500 Found Nothing. #shorts": 0.65,
+     "Eleven Days of Searching. Not One Clue. #shorts": 0.08,
+     "The Hunt Found Nothing. The File Stays Open. #shorts": 0.08
+    }
+   },
+   "thumb": {
+    "choice": "HE NEVER CAME BACK",
+    "confidence": 0.23,
+    "p": {
+     "THE SILK KING": 0.2,
+     "500 FOUND NOTHING": 0.02,
+     "NO BODY, NO CLUE": 0.36,
+     "HE NEVER CAME BACK": 0.42
+    }
+   }
+  },
+  "ok": true
+ },
+ "frame_checks": {
+  "shots": [
+   {
+    "shot": 1,
+    "t": 1.79,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.75,
+     "left": 0.25,
+     "right": 0.74,
+     "confidence": 0.61
+    },
+    "inside_safe_area": true,
+    "readable": 0.74,
+    "exposure": 5.6,
+    "subject_clear": 0.11,
+    "interest": 5.8,
+    "flags": [
+     "subject unclear"
+    ]
+   },
+   {
+    "shot": 2,
+    "t": 4.42,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.78,
+     "left": 0.34,
+     "right": 0.66,
+     "confidence": 0.56
+    },
+    "inside_safe_area": true,
+    "readable": 0.79,
+    "exposure": 5.0,
+    "subject_clear": 0.21,
+    "interest": 5.8,
+    "flags": [
+     "subject unclear"
+    ]
+   },
+   {
+    "shot": 3,
+    "t": 8.41,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.7,
+     "left": 0.16,
+     "right": 0.82,
+     "confidence": 0.7
+    },
+    "inside_safe_area": true,
+    "readable": 0.4,
+    "exposure": 4.0,
+    "subject_clear": 0.16,
+    "interest": 4.0,
+    "flags": [
+     "subject unclear"
+    ]
+   },
+   {
+    "shot": 4,
+    "t": 12.03,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.75,
+     "left": 0.18,
+     "right": 0.8,
+     "confidence": 0.77
+    },
+    "inside_safe_area": true,
+    "readable": 0.69,
+    "exposure": 5.6,
+    "subject_clear": 0.5,
+    "interest": 4.2,
+    "flags": []
+   },
+   {
+    "shot": 5,
+    "t": 14.57,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.76,
+     "left": 0.25,
+     "right": 0.76,
+     "confidence": 0.71
+    },
+    "inside_safe_area": true,
+    "readable": 0.72,
+    "exposure": 4.5,
+    "subject_clear": 0.24,
+    "interest": 4.4,
+    "flags": [
+     "subject unclear"
+    ]
+   },
+   {
+    "shot": 6,
+    "t": 16.82,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.77,
+     "left": 0.14,
+     "right": 0.85,
+     "confidence": 0.7
+    },
+    "inside_safe_area": true,
+    "readable": 0.58,
+    "exposure": 6.2,
+    "subject_clear": 0.85,
+    "interest": 6.8,
+    "flags": []
+   },
+   {
+    "shot": 7,
+    "t": 19.16,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.76,
+     "left": 0.33,
+     "right": 0.67,
+     "confidence": 0.65
+    },
+    "inside_safe_area": true,
+    "readable": 0.71,
+    "exposure": 4.0,
+    "subject_clear": 0.13,
+    "interest": 5.0,
+    "flags": [
+     "subject unclear"
+    ]
+   },
+   {
+    "shot": 8,
+    "t": 20.99,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.77,
+     "left": 0.2,
+     "right": 0.79,
+     "confidence": 0.77
+    },
+    "inside_safe_area": true,
+    "readable": 0.74,
+    "exposure": 5.8,
+    "subject_clear": 0.52,
+    "interest": 6.8,
+    "flags": []
+   },
+   {
+    "shot": 9,
+    "t": 22.88,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.79,
+     "left": 0.19,
+     "right": 0.79,
+     "confidence": 0.86
+    },
+    "inside_safe_area": true,
+    "readable": 0.69,
+    "exposure": 6.0,
+    "subject_clear": 0.47,
+    "interest": 7.1,
+    "flags": []
+   },
+   {
+    "shot": 10,
+    "t": 24.83,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.76,
+     "left": 0.15,
+     "right": 0.81,
+     "confidence": 0.68
+    },
+    "inside_safe_area": true,
+    "readable": 0.46,
+    "exposure": 4.8,
+    "subject_clear": 0.19,
+    "interest": 4.3,
+    "flags": [
+     "subject unclear"
+    ]
+   },
+   {
+    "shot": 11,
+    "t": 27.65,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.77,
+     "left": 0.18,
+     "right": 0.8,
+     "confidence": 0.73
+    },
+    "inside_safe_area": true,
+    "readable": 0.7,
+    "exposure": 5.3,
+    "subject_clear": 0.27,
+    "interest": 5.6,
+    "flags": [
+     "subject unclear"
+    ]
+   },
+   {
+    "shot": 12,
+    "t": 30.34,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.12,
+     "bottom": 0.74,
+     "left": 0.27,
+     "right": 0.68,
+     "confidence": 0.62
+    },
+    "inside_safe_area": true,
+    "readable": 0.57,
+    "exposure": 5.1,
+    "subject_clear": 0.34,
+    "interest": 5.4,
+    "flags": []
+   },
+   {
+    "shot": 13,
+    "t": 33.85,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.76,
+     "left": 0.25,
+     "right": 0.7,
+     "confidence": 0.66
+    },
+    "inside_safe_area": true,
+    "readable": 0.49,
+    "exposure": 5.8,
+    "subject_clear": 0.85,
+    "interest": 5.6,
+    "flags": []
+   },
+   {
+    "shot": 14,
+    "t": 37.87,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.77,
+     "left": 0.23,
+     "right": 0.76,
+     "confidence": 0.71
+    },
+    "inside_safe_area": true,
+    "readable": 0.6,
+    "exposure": 6.1,
+    "subject_clear": 0.79,
+    "interest": 5.3,
+    "flags": []
+   },
+   {
+    "shot": 15,
+    "t": 40.64,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.77,
+     "left": 0.15,
+     "right": 0.81,
+     "confidence": 0.77
+    },
+    "inside_safe_area": true,
+    "readable": 0.62,
+    "exposure": 5.5,
+    "subject_clear": 0.51,
+    "interest": 5.9,
+    "flags": []
+   },
+   {
+    "shot": 16,
+    "t": 42.68,
+    "caption_present": 1.0,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.75,
+     "left": 0.14,
+     "right": 0.84,
+     "confidence": 0.77
+    },
+    "inside_safe_area": true,
+    "readable": 0.77,
+    "exposure": 5.2,
+    "subject_clear": 0.61,
+    "interest": 6.5,
+    "flags": []
+   },
+   {
+    "shot": 17,
+    "t": 45.65,
+    "caption_present": 0.99,
+    "caption_box": {
+     "top": 0.13,
+     "bottom": 0.77,
+     "left": 0.24,
+     "right": 0.77,
+     "confidence": 0.74
+    },
+    "inside_safe_area": true,
+    "readable": 0.65,
+    "exposure": 6.9,
+    "subject_clear": 0.69,
+    "interest": 7.3,
+    "flags": []
+   }
+  ],
+  "checked": 17,
+  "errors": 0,
+  "flagged_shots": [
+   1,
+   2,
+   3,
+   5,
+   7,
+   10,
+   11
+  ],
+  "mean_interest": 5.6,
+  "mean_exposure": 5.4,
+  "frames_ok": false,
+  "ok": true
+ },
+ "decision": {},
+ "post": true,
+ "note": "pass = shortqa gate passed and every plate rendered (hard gate). post = pass AND tools/jev.py decide (code: shortqa hard gate AND Jev frame checks AND script go; Jev parts skipped without secret JEV). --post is only used after heal.py re-passed shortqa. Hark posts only post=true."
+}
